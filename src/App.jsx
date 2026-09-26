@@ -11,7 +11,7 @@ import "./App.css";
 // ========================================================
 
 const API_BASE_URL =
-  "https://study-flow-ai-backend-q1vkdm51h.vercel.app";
+  "https://study-flow-ai-backend-1jv0kkfma.vercel.app";
 
 // ========================================================
 // API HELPER
