@@ -1204,12 +1204,12 @@ function App() {
 
             <button
               className={
-                mode === "explanation"
+                mode === "explain"
                   ? "mode active"
                   : "mode"
               }
               onClick={() =>
-                setMode("explanation")
+                setMode("explain")
               }
             >
 
