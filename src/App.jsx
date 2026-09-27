@@ -898,7 +898,7 @@ function App() {
           </span>
 
           <span>
-            StudyFlow AI
+           <a href="#"> StudyFlow AI</a>
           </span>
 
         </div>
