@@ -104,7 +104,7 @@ body {
 .logo-icon {
 
   width: 55px;
-
+  padding-left: 5px;
   height: 52px;
 
   border-radius: 12px;
