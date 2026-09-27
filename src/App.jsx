@@ -894,7 +894,7 @@ function App() {
         <div className="logo">
 
           <div className="logo-icon">
-            <a href="#heroclass"><img src="favicon.png" height="65px" width="65px"></img></a>
+            <img src="favicon.png" height="65px" width="65px"></img>
           </div>
           <span>
            <a href="#heroclass"> StudyFlow AI</a>
