@@ -894,11 +894,11 @@ function App() {
         <div className="logo">
 
           <span className="logo-icon">
-            ✦
+            <img src="./assets/favicon.png"></img>
           </span>
 
           <span>
-           <a href="#"> StudyFlow AI</a>
+           <a href="#heroclass"> StudyFlow AI</a>
           </span>
 
         </div>
@@ -927,7 +927,7 @@ function App() {
             HERO
         ================================================= */}
 
-        <section className="hero">
+        <section className="hero" id="heroclass">
 
           <h1>
             Study smarter,
