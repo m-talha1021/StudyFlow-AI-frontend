@@ -1204,7 +1204,7 @@ function App() {
 
             <button
               className={
-                mode === "explain"
+                mode === "explanation"
                   ? "mode active"
                   : "mode"
               }
