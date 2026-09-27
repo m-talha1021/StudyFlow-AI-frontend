@@ -894,7 +894,7 @@ function App() {
         <div className="logo">
 
           <span className="logo-icon">
-            <img src="favicon.png"></img>
+            <img src="favicon.png" height="50px" width="60px"></img>
           </span>
 
           <span>
