@@ -1220,7 +1220,7 @@ function App() {
               <div>
 
                 <strong>
-                  Explain
+                  Explanation
                 </strong>
 
                 <small>
