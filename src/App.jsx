@@ -1209,7 +1209,7 @@ function App() {
                   : "mode"
               }
               onClick={() =>
-                setMode("explain")
+                setMode("explanation")
               }
             >
 
