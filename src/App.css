@@ -2907,3 +2907,244 @@ footer h3 {
   align-items: center;
   justify-content: center;
 }
+
+
+/* ============================================================
+   FLASHCARDS
+============================================================ */
+
+.flashcards-section {
+  width: min(900px, 92%);
+  margin: 45px auto 0;
+  padding: 28px;
+  box-sizing: border-box;
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 24px;
+
+  background: rgba(255, 255, 255, 0.045);
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.25);
+
+  scroll-margin-top: 30px;
+}
+
+.flashcards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.flashcards-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.flashcards-header h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.flashcards-header small {
+  display: block;
+  margin-top: 4px;
+  color: #a1a1aa;
+}
+
+.flashcard-progress {
+  text-align: center;
+  margin: 22px 0 14px;
+  color: #a1a1aa;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.flashcard {
+  width: 100%;
+  height: 330px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  perspective: 1200px;
+  text-align: center;
+}
+
+.flashcard:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 5px;
+  border-radius: 20px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s ease;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px;
+  box-sizing: border-box;
+
+  border-radius: 22px;
+  border: 1px solid rgba(139, 92, 246, 0.32);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(124, 58, 237, 0.22),
+      rgba(79, 70, 229, 0.10)
+    );
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.25);
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(79, 70, 229, 0.22),
+      rgba(124, 58, 237, 0.10)
+    );
+}
+
+.flashcard-label {
+  margin-bottom: 20px;
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.flashcard-face p {
+  max-width: 720px;
+  margin: 0;
+
+  color: #f8fafc;
+
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.5;
+  font-weight: 650;
+
+  overflow-wrap: anywhere;
+}
+
+.flashcard-face small {
+  margin-top: 24px;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+.flashcard-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  margin-top: 20px;
+}
+
+.flashcard-controls .secondary-button {
+  min-width: 105px;
+}
+
+.flashcard-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ============================================================
+   FLASHCARDS MOBILE
+============================================================ */
+
+@media (max-width: 768px) {
+
+  .flashcards-section {
+    width: 92%;
+    padding: 20px;
+    margin-top: 30px;
+  }
+
+  .flashcards-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .flashcards-header > .secondary-button {
+    width: 100%;
+  }
+
+  .flashcard {
+    height: 300px;
+  }
+
+  .flashcard-face {
+    padding: 25px 18px;
+  }
+
+  .flashcard-face p {
+    font-size: 20px;
+  }
+
+  .flashcard-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+  }
+
+  .flashcard-controls .secondary-button {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .flashcard {
+    height: 280px;
+  }
+
+  .flashcard-face p {
+    font-size: 18px;
+  }
+
+  .flashcard-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) {
+  .mode-buttons {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
