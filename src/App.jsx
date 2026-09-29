@@ -1,5 +1,3 @@
-
-
 import {
   useEffect,
   useRef,
@@ -13,7 +11,7 @@ import "./App.css";
 // ========================================================
 
 const API_BASE_URL =
-  "https://study-flow-ai-backend-q1vkdm51h.vercel.app";
+  "https://study-flow-ai-backend.vercel.app";
 
 // ========================================================
 // API HELPER
@@ -32,9 +30,9 @@ const apiRequest = async (endpoint, options = {}) => {
         ...(isFormData
           ? {}
           : {
-            "Content-Type":
-              "application/json",
-          }),
+              "Content-Type":
+                "application/json",
+            }),
 
         ...(options.headers || {}),
       },
@@ -54,8 +52,8 @@ const apiRequest = async (endpoint, options = {}) => {
   if (!response.ok || data.success === false) {
     throw new Error(
       data.error ||
-      data.message ||
-      `Request failed with status ${response.status}.`
+        data.message ||
+        `Request failed with status ${response.status}.`
     );
   }
 
@@ -73,7 +71,7 @@ function App() {
 
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState(null);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -87,6 +85,15 @@ function App() {
   const [result, setResult] = useState("");
   const [resultLanguage, setResultLanguage] =
     useState("");
+
+  // ========================================================
+  // FLASHCARDS
+  // ========================================================
+
+  const [flashcards, setFlashcards] = useState([]);
+  const [flashcardIndex, setFlashcardIndex] = useState(0);
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
 
   // ========================================================
   // CHATBOT
@@ -200,28 +207,22 @@ function App() {
   };
 
   // ========================================================
-  // PROCESS MULTIPLE FILES
+  // PROCESS FILE
   // ========================================================
 
-  const processFiles = async (selectedFiles) => {
-    const fileList = Array.from(selectedFiles || []).filter(Boolean);
-
-    if (!fileList.length) {
-      return false;
-    }
-
-    const MAX_FILES = 10;
-
-    if (fileList.length > MAX_FILES) {
-      alert(`Please select up to ${MAX_FILES} files at a time.`);
-      return false;
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
     }
 
     setProcessing(true);
-    setFiles(fileList);
+    setFile(selectedFile);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
 
     // Reset chat when new material is uploaded
     setChatMessages([]);
@@ -232,9 +233,10 @@ function App() {
     try {
       const formData = new FormData();
 
-      fileList.forEach((selectedFile) => {
-        formData.append("files", selectedFile);
-      });
+      formData.append(
+        "file",
+        selectedFile
+      );
 
       const data = await apiRequest(
         "/api/material",
@@ -247,13 +249,11 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-          "Could not process the selected files."
+            "Could not process the file."
         );
       }
 
       setMaterialReady(true);
-
-      return true;
 
     } catch (error) {
       console.error(
@@ -263,24 +263,15 @@ function App() {
 
       alert(
         error.message ||
-        "Could not process the selected files."
+          "Could not process the uploaded document or image."
       );
 
-      setFiles([]);
+      setFile(null);
       setMaterialReady(false);
-
-      return false;
 
     } finally {
       setProcessing(false);
     }
-  };
-
-  // Backward-compatible helper for camera uploads
-  const processFile = async (selectedFile) => {
-    return processFiles(
-      selectedFile ? [selectedFile] : []
-    );
   };
 
   // ========================================================
@@ -315,23 +306,20 @@ function App() {
   };
 
   // ========================================================
-  // MULTI-FILE SELECTION
+  // FILE SELECTION
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFiles =
-      Array.from(event.target.files || []);
+    const selectedFile =
+      event.target.files?.[0];
 
-    if (!selectedFiles.length) {
+    if (!selectedFile) {
       return;
     }
 
     setText("");
 
-    processFiles(selectedFiles);
-
-    // Allow selecting the same files again later.
-    event.target.value = "";
+    processFile(selectedFile);
   };
 
   // ========================================================
@@ -350,6 +338,9 @@ function App() {
     setProcessing(true);
     setResult("");
     setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
 
     setChatMessages([]);
     setChatQuestion("");
@@ -371,7 +362,7 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-          "Could not process the study material."
+            "Could not process the study material."
         );
       }
 
@@ -387,7 +378,7 @@ function App() {
 
       alert(
         error.message ||
-        "Could not process the study material."
+          "Could not process the study material."
       );
 
       return false;
@@ -398,10 +389,117 @@ function App() {
   };
 
   // ========================================================
+  // GENERATE FLASHCARDS
+  // ========================================================
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setFlashcardsLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload a document/image or paste your study material."
+        );
+
+        setFlashcardsLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/flashcards",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            count: 10,
+          }),
+        }
+      );
+
+      if (!data.success || !Array.isArray(data.cards)) {
+        throw new Error(
+          data.error || "Could not generate flashcards."
+        );
+      }
+
+      setFlashcards(data.cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+
+      setTimeout(() => {
+        document
+          .getElementById("flashcards-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      console.error(
+        "Flashcards error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Could not generate flashcards."
+      );
+
+    } finally {
+      setFlashcardsLoading(false);
+    }
+  };
+
+  const handleNextFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.min(
+        previous + 1,
+        flashcards.length - 1
+      )
+    );
+  };
+
+  const handlePreviousFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.max(previous - 1, 0)
+    );
+  };
+
+  const handleFlipFlashcard = () => {
+    setFlashcardFlipped((previous) => !previous);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
+    if (mode === "flashcards") {
+      await handleGenerateFlashcards();
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
@@ -426,7 +524,7 @@ function App() {
       // No material
       if (
         !ready &&
-        files.length === 0 &&
+        !file &&
         !text.trim()
       ) {
         alert(
@@ -453,7 +551,7 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-          "Could not generate the result."
+            "Could not generate the result."
         );
       }
 
@@ -484,7 +582,7 @@ function App() {
 
       alert(
         error.message ||
-        "Could not generate the result."
+          "Could not generate the result."
       );
 
     } finally {
@@ -604,7 +702,7 @@ function App() {
 
       alert(
         error.message ||
-        "Could not download the PDF."
+          "Could not download the PDF."
       );
     }
   };
@@ -917,12 +1015,11 @@ function App() {
 
         <div className="logo">
 
-          <span className="logo-icon">
-            ✦
-          </span>
-
+          <div className="logo-icon">
+            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
+          </div>
           <span>
-            StudyFlow AI
+           <a href="#heroclass"> StudyFlow AI</a>
           </span>
 
         </div>
@@ -951,7 +1048,7 @@ function App() {
             HERO
         ================================================= */}
 
-        <section className="hero">
+        <section className="hero" id="heroclass">
 
           <h1>
             Study smarter,
@@ -1000,10 +1097,13 @@ function App() {
                 event.target.value
               );
 
-              setFiles([]);
+              setFile(null);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
+              setFlashcards([]);
+              setFlashcardIndex(0);
+              setFlashcardFlipped(false);
 
               setChatMessages([]);
               setChatQuestion("");
@@ -1031,17 +1131,17 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing selected files..."
-                : "Upload your documents or images"}
+                ? "Processing document or image..."
+                : "Upload your document or image"}
             </strong>
 
             <small>
-              Select multiple PDF, DOCX, PPTX, JPG, PNG or WEBP files
+              PDF, DOCX, PPTX,
+              JPG, PNG or WEBP
             </small>
 
             <input
               type="file"
-              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               onChange={
                 handleFileChange
@@ -1133,23 +1233,15 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {files.length > 0 && (
-            <div className="selected-file selected-files-list">
-              <div className="selected-files-summary">
-                📎 <strong>{files.length} file{files.length === 1 ? "" : "s"} selected</strong>
-              </div>
+          {file && (
+            <div className="selected-file">
 
-              <div className="selected-files-names">
-                {files.map((selectedFile, index) => (
-                  <div
-                    className="selected-file-item"
-                    key={`${selectedFile.name}-${selectedFile.size}-${index}`}
-                  >
-                    <span>📄</span>
-                    <span>{selectedFile.name}</span>
-                  </div>
-                ))}
-              </div>
+              📎 Selected:{" "}
+
+              <strong>
+                {file.name}
+              </strong>
+
             </div>
           )}
 
@@ -1171,10 +1263,11 @@ function App() {
 
             <button
               type="button"
-              className={`chatbot-heading-button ${chatOpen
-                ? "chatbot-heading-active"
-                : ""
-                }`}
+              className={`chatbot-heading-button ${
+                chatOpen
+                  ? "chatbot-heading-active"
+                  : ""
+              }`}
               onClick={toggleChat}
               aria-label={
                 chatOpen
@@ -1251,7 +1344,7 @@ function App() {
               <div>
 
                 <strong>
-                  Explain
+                  Explanation
                 </strong>
 
                 <small>
@@ -1293,6 +1386,37 @@ function App() {
 
             </button>
 
+            {/* FLASHCARDS */}
+
+            <button
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
+            >
+
+              <span>
+                🗂️
+              </span>
+
+              <div>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -1302,13 +1426,16 @@ function App() {
             onClick={handleGenerate}
             disabled={
               processing ||
-              generating
+              generating ||
+              flashcardsLoading
             }
           >
 
-            {generating
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : `✨ Generate ${mode}`}
 
           </button>
 
@@ -1353,13 +1480,13 @@ function App() {
                   <small>
 
                     {resultLanguage ===
-                      "arabic"
+                    "arabic"
                       ? "العربية"
                       : resultLanguage ===
-                        "urdu"
+                          "urdu"
                         ? "Urdu"
                         : resultLanguage ===
-                          "mixed"
+                            "mixed"
                           ? "Mixed language"
                           : "English"}
 
@@ -1422,7 +1549,7 @@ function App() {
               dir={
                 resultLanguage ===
                   "arabic" ||
-                  resultLanguage ===
+                resultLanguage ===
                   "urdu"
                   ? "rtl"
                   : "ltr"
@@ -1446,6 +1573,117 @@ function App() {
         )}
 
       </main>
+
+      {/* ==================================================
+          FLASHCARDS
+      ================================================== */}
+
+      {flashcards.length > 0 && (
+        <section
+          className="flashcards-section"
+          id="flashcards-section"
+        >
+
+          <div className="flashcards-header">
+            <div>
+              <span className="result-icon">🗂️</span>
+              <div>
+                <h2>Flashcards</h2>
+                <small>
+                  Tap the card to reveal the answer
+                </small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateFlashcards}
+              disabled={flashcardsLoading}
+            >
+              {flashcardsLoading
+                ? "⏳ Generating..."
+                : "🔄 Regenerate"}
+            </button>
+          </div>
+
+          <div className="flashcard-progress">
+            Card {flashcardIndex + 1} of {flashcards.length}
+          </div>
+
+          <button
+            type="button"
+            className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+            onClick={handleFlipFlashcard}
+            aria-label="Flip flashcard"
+          >
+            <div className="flashcard-inner">
+
+              <div className="flashcard-face flashcard-front">
+                <span className="flashcard-label">
+                  QUESTION
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.front}
+                </p>
+
+                <small>
+                  Click to reveal answer
+                </small>
+              </div>
+
+              <div className="flashcard-face flashcard-back">
+                <span className="flashcard-label">
+                  ANSWER
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.back}
+                </p>
+
+                <small>
+                  Click to see the question
+                </small>
+              </div>
+
+            </div>
+          </button>
+
+          <div className="flashcard-controls">
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handlePreviousFlashcard}
+              disabled={flashcardIndex === 0}
+            >
+              ← Previous
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleFlipFlashcard}
+            >
+              🔄 Flip
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleNextFlashcard}
+              disabled={
+                flashcardIndex === flashcards.length - 1
+              }
+            >
+              Next →
+            </button>
+
+          </div>
+
+        </section>
+      )}
 
       {/* ==================================================
           CHAT POPUP
@@ -1516,44 +1754,44 @@ function App() {
 
             {chatMessages.length ===
               0 && (
-                <div className="chat-welcome">
+              <div className="chat-welcome">
 
-                  <div className="chat-welcome-icon">
-                    ✨
-                  </div>
-
-                  <h3>
-                    Ask me anything
-                  </h3>
-
-                  <p>
-                    Hi! I'm StudyFlow AI,
-                    your AI-powered study
-                    assistant. You can ask me
-                    questions about your
-                    uploaded or pasted study
-                    material, and I'll do my
-                    best to help you
-                    understand it better.
-                  </p>
-
+                <div className="chat-welcome-icon">
+                  ✨
                 </div>
-              )}
+
+                <h3>
+                  Ask me anything
+                </h3>
+
+                <p>
+                  Hi! I'm StudyFlow AI,
+                  your AI-powered study
+                  assistant. You can ask me
+                  questions about your
+                  uploaded or pasted study
+                  material, and I'll do my
+                  best to help you
+                  understand it better.
+                </p>
+
+              </div>
+            )}
 
             {chatMessages.map(
               (message, index) => {
                 const isRTL =
                   message.language ===
-                  "urdu" ||
+                    "urdu" ||
                   message.language ===
-                  "arabic";
+                    "arabic";
 
                 return (
                   <div
                     key={index}
                     className={
                       message.role ===
-                        "user"
+                      "user"
                         ? "chat-message user-message"
                         : "chat-message assistant-message"
                     }
@@ -1567,7 +1805,7 @@ function App() {
                     <div className="message-avatar">
 
                       {message.role ===
-                        "user"
+                      "user"
                         ? "👤"
                         : "🤖"}
 
