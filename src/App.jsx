@@ -72,6 +72,7 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -207,16 +208,24 @@ function App() {
   };
 
   // ========================================================
-  // PROCESS FILE
+  // PROCESS MULTIPLE FILES
   // ========================================================
 
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
+  const processFiles = async (selectedFiles) => {
+    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
+
+    if (!validFiles.length) {
+      return;
+    }
+
+    if (validFiles.length > 10) {
+      alert("Please select a maximum of 10 files at a time.");
       return;
     }
 
     setProcessing(true);
-    setFile(selectedFile);
+    setFiles(validFiles);
+    setFile(validFiles[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -224,7 +233,6 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded
     setChatMessages([]);
     setChatQuestion("");
 
@@ -233,10 +241,9 @@ function App() {
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        selectedFile
-      );
+      validFiles.forEach((selectedFile) => {
+        formData.append("files", selectedFile);
+      });
 
       const data = await apiRequest(
         "/api/material",
@@ -249,7 +256,7 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-            "Could not process the file."
+            "Could not process the selected files."
         );
       }
 
@@ -263,15 +270,25 @@ function App() {
 
       alert(
         error.message ||
-          "Could not process the uploaded document or image."
+          "Could not process the uploaded files."
       );
 
+      setFiles([]);
       setFile(null);
       setMaterialReady(false);
 
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Keep the single-file helper for the camera workflow.
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
+    }
+
+    await processFiles([selectedFile]);
   };
 
   // ========================================================
@@ -310,16 +327,20 @@ function App() {
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
+    const selectedFiles = Array.from(
+      event.target.files || []
+    );
 
-    if (!selectedFile) {
+    if (!selectedFiles.length) {
       return;
     }
 
     setText("");
 
-    processFile(selectedFile);
+    processFiles(selectedFiles);
+
+    // Allow selecting the same files again later.
+    event.target.value = "";
   };
 
   // ========================================================
@@ -1098,6 +1119,7 @@ function App() {
               );
 
               setFile(null);
+              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1131,17 +1153,18 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing document or image..."
-                : "Upload your document or image"}
+                ? "Processing selected files..."
+                : "Upload your documents or images"}
             </strong>
 
             <small>
-              PDF, DOCX, PPTX,
-              JPG, PNG or WEBP
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
             <input
               type="file"
+              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               onChange={
                 handleFileChange
@@ -1233,14 +1256,26 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {file && (
-            <div className="selected-file">
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
 
-              📎 Selected:{" "}
+              <div className="selected-files-header">
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
+              </div>
 
-              <strong>
-                {file.name}
-              </strong>
+              <div className="selected-files-list">
+                {files.map((selectedFile, index) => (
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
+                  </div>
+                ))}
+              </div>
 
             </div>
           )}
