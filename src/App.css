@@ -2914,8 +2914,8 @@ footer h3 {
 ============================================================ */
 
 .flashcards-section {
-  width: min(700px, 90%);
-  margin: 42px auto 0;
+  width: min(900px, 92%);
+  margin: 45px auto 0;
   padding: 28px;
   box-sizing: border-box;
 
@@ -2944,12 +2944,12 @@ footer h3 {
 .flashcards-header > div:first-child {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 13px;
 }
 
 .flashcards-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 21px;
 }
 
 .flashcards-header small {
@@ -2963,12 +2963,12 @@ footer h3 {
   margin: 22px 0 14px;
   color: #a1a1aa;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
 }
 
 .flashcard {
-  width: 80%;
-  height: 290px;
+  width: 100%;
+  height: 330px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -3039,13 +3039,13 @@ footer h3 {
 .flashcard-label {
   margin-bottom: 20px;
   color: #a78bfa;
-  font-size: 11px;
-  font-weight: 780;
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: 1.5px;
 }
 
 .flashcard-face p {
-  max-width: 680px;
+  max-width: 720px;
   margin: 0;
 
   color: #f8fafc;
@@ -3073,7 +3073,7 @@ footer h3 {
 }
 
 .flashcard-controls .secondary-button {
-  min-width: 92px;
+  min-width: 105px;
 }
 
 .flashcard-controls button:disabled {
@@ -3090,7 +3090,7 @@ footer h3 {
 @media (max-width: 768px) {
 
   .flashcards-section {
-    width: 100%;
+    width: 92%;
     padding: 20px;
     margin-top: 30px;
   }
@@ -3101,11 +3101,11 @@ footer h3 {
   }
 
   .flashcards-header > .secondary-button {
-    width: 80%;
+    width: 100%;
   }
 
   .flashcard {
-    height: 270px;
+    height: 300px;
   }
 
   .flashcard-face {
@@ -3113,7 +3113,7 @@ footer h3 {
   }
 
   .flashcard-face p {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .flashcard-controls {
@@ -3124,7 +3124,7 @@ footer h3 {
 
   .flashcard-controls .secondary-button {
     min-width: 0;
-    width: 85%;
+    width: 100%;
   }
 }
 
