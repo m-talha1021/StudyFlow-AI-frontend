@@ -34,40 +34,33 @@ body {
 ============================================================ */
 
 .app {
+
   min-height: 100vh;
 
   background:
-    radial-gradient(
-      circle at 0% 0%,
-      rgba(49, 46, 129, 0.9) 0%,
-      transparent 35%
-    ),
 
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(88, 28, 135, 0.85) 0%,
-      transparent 50%
-    ),
+    radial-gradient(circle at top left,
+      #312e81 0,
+      transparent 35%),
 
-    radial-gradient(
-      circle at 0% 50%,
-      rgba(52, 52, 42, 0.75) 0%,
-      transparent 20%
-    ),
+    radial-gradient(circle at top right,
+      #581c87 0,
+      transparent 50%),
 
-    radial-gradient(
-      circle at 100% 50%,
-      rgba(61, 67, 191, 0.8) 0%,
-      transparent 25%
-    ),
+    radial-gradient(circle at center left,
+      #34342a 0,
+      transparent 20%),
+
+    radial-gradient(circle at center right,
+      #3d43bf 0,
+      transparent 25%),
 
     #09090f;
 
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-color: #09090f;
 
   color: #f8fafc;
+
 }
 
 
@@ -580,6 +573,62 @@ textarea::placeholder {
 .selected-file strong {
 
   color: #e4e4e7;
+
+}
+
+
+.selected-files-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+}
+
+
+.selected-files-summary {
+
+  font-size: 14px;
+
+}
+
+
+.selected-files-names {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+
+  max-height: 180px;
+
+  overflow-y: auto;
+
+}
+
+
+.selected-file-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 7px 9px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #d4d4d8;
+
+  font-size: 13px;
+
+  overflow-wrap: anywhere;
 
 }
 
@@ -2908,200 +2957,602 @@ footer h3 {
   justify-content: center;
 }
 
+/* ============================================================
+   AUTHENTICATION + WELCOME PAGE
+============================================================ */
+
+.auth-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(104, 61, 255, 0.24), transparent 34%),
+    linear-gradient(145deg, #080810 0%, #0d0919 55%, #120820 100%);
+  color: #fff;
+}
+
+.public-navbar,
+.app-navbar {
+  min-height: 76px;
+  padding: 0 5vw;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 7, 13, 0.82);
+  backdrop-filter: blur(18px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.brand-mark img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.public-nav-actions,
+.app-nav-user,
+.app-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.public-nav-actions button,
+.app-nav-links button,
+.logout-button,
+.nav-link-button,
+.nav-signup-button {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  font: inherit;
+}
+
+.nav-link-button,
+.app-nav-links button {
+  padding: 10px 12px;
+}
+
+.nav-link-button:hover,
+.app-nav-links button:hover {
+  color: #fff;
+}
+
+.nav-signup-button,
+.logout-button {
+  padding: 10px 17px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #6438e8, #7a46f6);
+  box-shadow: 0 8px 24px rgba(100, 56, 232, 0.25);
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  max-width: 180px;
+}
+
+.user-pill strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.welcome-page {
+  min-height: calc(100vh - 77px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 70px 24px 100px;
+  box-sizing: border-box;
+}
+
+.welcome-hero {
+  width: min(1050px, 100%);
+  text-align: center;
+}
+
+.welcome-badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(111, 67, 244, 0.14);
+  border: 1px solid rgba(132, 94, 255, 0.3);
+  color: #cfc4ff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.welcome-hero h1 {
+  margin: 22px 0 16px;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.welcome-hero h1 span {
+  background: linear-gradient(90deg, #5de4ff, #8a52ff, #b657ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.welcome-hero > p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.welcome-actions {
+  margin: 30px 0 50px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primary-auth-button,
+.secondary-auth-button {
+  border-radius: 14px;
+  padding: 13px 21px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-auth-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  background: linear-gradient(135deg, #6438e8, #8c4cff);
+  box-shadow: 0 12px 35px rgba(100, 56, 232, 0.3);
+}
+
+.secondary-auth-button {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.primary-auth-button:hover,
+.secondary-auth-button:hover {
+  transform: translateY(-2px);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.feature-grid > div {
+  min-height: 145px;
+  padding: 22px 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.feature-grid span {
+  font-size: 30px;
+}
+
+.feature-grid strong {
+  font-size: 15px;
+}
+
+.feature-grid small {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+}
+
+.auth-page {
+  min-height: calc(100vh - 77px);
+  display: grid;
+  place-items: center;
+  padding: 40px 20px 70px;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: min(430px, 100%);
+  padding: 34px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 26px;
+  background: rgba(17, 14, 28, 0.9);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+}
+
+.auth-card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #6438e8, #914eff);
+  font-size: 23px;
+}
+
+.auth-card h1 {
+  margin: 22px 0 7px;
+  font-size: 30px;
+}
+
+.auth-card > p {
+  margin: 0 0 24px;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.auth-card label {
+  display: block;
+  margin: 16px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.auth-card input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font: inherit;
+}
+
+.auth-card input:focus {
+  border-color: rgba(126, 82, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(126, 82, 255, 0.12);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.auth-error {
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 91, 117, 0.25);
+  border-radius: 11px;
+  background: rgba(255, 91, 117, 0.08);
+  color: #ffb3c0;
+  font-size: 13px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px !important;
+}
+
+.auth-switch button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #ae8cff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-loading-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #09090f;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ============================================================
+   APP NAVBAR
+============================================================ */
+
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-nav-links {
+  justify-content: center;
+  flex: 1;
+}
+
+.app-nav-links button {
+  font-size: 14px;
+}
+
+.logout-button {
+  cursor: pointer;
+}
 
 /* ============================================================
    FLASHCARDS
 ============================================================ */
 
 .flashcards-section {
-  width: min(900px, 92%);
-  margin: 45px auto 0;
+  width: min(1050px, calc(100% - 32px));
+  margin: 34px auto 0;
   padding: 28px;
   box-sizing: border-box;
-
-  border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: 24px;
-
-  background: rgba(255, 255, 255, 0.045);
-
-  box-shadow:
-    0 25px 80px rgba(0, 0, 0, 0.25);
-
-  scroll-margin-top: 30px;
+  border: 1px solid rgba(130, 85, 255, 0.2);
+  background: linear-gradient(145deg, rgba(28, 17, 48, 0.86), rgba(12, 12, 21, 0.92));
 }
 
 .flashcards-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-
-  padding-bottom: 20px;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.flashcards-header > div:first-child {
-  display: flex;
-  align-items: center;
-  gap: 13px;
+  gap: 20px;
 }
 
 .flashcards-header h2 {
-  margin: 0;
-  font-size: 21px;
+  margin: 5px 0 4px;
 }
 
-.flashcards-header small {
-  display: block;
-  margin-top: 4px;
-  color: #a1a1aa;
+.flashcards-header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.section-kicker {
+  color: #9b7cff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.flashcards-generate-button {
+  border: 0;
+  border-radius: 13px;
+  padding: 13px 17px;
+  background: linear-gradient(135deg, #6438e8, #8c4cff);
+  color: #fff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.flashcards-generate-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.flashcards-empty {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.flashcards-empty > div {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+
+.flashcards-empty h3 {
+  margin: 0 0 7px;
+  color: #fff;
+}
+
+.flashcards-empty p {
+  margin: 0;
+  max-width: 500px;
+}
+
+.flashcard-spinner {
+  animation: flashcardPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes flashcardPulse {
+  from { transform: scale(0.9) rotate(-8deg); opacity: 0.5; }
+  to { transform: scale(1.1) rotate(8deg); opacity: 1; }
+}
+
+.flashcard-study-area {
+  padding-top: 25px;
 }
 
 .flashcard-progress {
+  margin-bottom: 13px;
   text-align: center;
-  margin: 22px 0 14px;
-  color: #a1a1aa;
+  color: rgba(255, 255, 255, 0.55);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .flashcard {
-  width: 100%;
+  display: block;
+  width: min(720px, 100%);
   height: 330px;
+  margin: 0 auto;
   padding: 0;
   border: 0;
   background: transparent;
-  color: white;
   cursor: pointer;
   perspective: 1200px;
-  text-align: center;
-}
-
-.flashcard:focus-visible {
-  outline: 2px solid #8b5cf6;
-  outline-offset: 5px;
-  border-radius: 20px;
 }
 
 .flashcard-inner {
-  position: relative;
   width: 100%;
   height: 100%;
+  position: relative;
   transition: transform 0.55s ease;
   transform-style: preserve-3d;
 }
 
-.flashcard.flipped .flashcard-inner {
+.flashcard.is-flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
 
 .flashcard-face {
   position: absolute;
   inset: 0;
-
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 25px;
+  border: 1px solid rgba(151, 112, 255, 0.28);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  padding: 35px;
-  box-sizing: border-box;
-
-  border-radius: 22px;
-  border: 1px solid rgba(139, 92, 246, 0.32);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(124, 58, 237, 0.22),
-      rgba(79, 70, 229, 0.10)
-    );
-
-  box-shadow:
-    0 20px 55px rgba(0, 0, 0, 0.25);
-
+  flex-direction: column;
+  text-align: center;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+}
+
+.flashcard-front {
+  background: radial-gradient(circle at top, rgba(107, 68, 245, 0.32), rgba(20, 14, 34, 0.98));
 }
 
 .flashcard-back {
   transform: rotateY(180deg);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(79, 70, 229, 0.22),
-      rgba(124, 58, 237, 0.10)
-    );
+  background: radial-gradient(circle at bottom, rgba(23, 190, 207, 0.17), rgba(12, 18, 28, 0.98));
 }
 
-.flashcard-label {
-  margin-bottom: 20px;
-  color: #a78bfa;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+.flashcard-face span {
+  margin-bottom: 22px;
+  color: #a88fff;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.2em;
 }
 
-.flashcard-face p {
-  max-width: 720px;
-  margin: 0;
-
-  color: #f8fafc;
-
-  font-size: clamp(20px, 3vw, 28px);
-  line-height: 1.5;
-  font-weight: 650;
-
-  overflow-wrap: anywhere;
+.flashcard-face strong {
+  max-width: 600px;
+  color: #fff;
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.35;
 }
 
 .flashcard-face small {
-  margin-top: 24px;
-  color: #a1a1aa;
-  font-size: 12px;
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .flashcard-controls {
+  margin-top: 18px;
   display: flex;
   justify-content: center;
   gap: 10px;
-  flex-wrap: wrap;
-
-  margin-top: 20px;
 }
 
-.flashcard-controls .secondary-button {
-  min-width: 105px;
+.flashcard-controls button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 11px;
+  padding: 10px 15px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font: inherit;
 }
 
-.flashcard-controls button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
+.flashcard-controls .flip-button {
+  background: rgba(100, 56, 232, 0.2);
+  border-color: rgba(132, 92, 255, 0.35);
 }
 
+@media (max-width: 900px) {
+  .app-nav-links {
+    display: none;
+  }
 
-/* ============================================================
-   FLASHCARDS MOBILE
-============================================================ */
-
-@media (max-width: 768px) {
-
-  .flashcards-section {
-    width: 92%;
-    padding: 20px;
-    margin-top: 30px;
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .flashcards-header {
     align-items: flex-start;
     flex-direction: column;
   }
+}
 
-  .flashcards-header > .secondary-button {
-    width: 100%;
+@media (max-width: 560px) {
+  .public-navbar,
+  .app-navbar {
+    padding: 0 16px;
+  }
+
+  .brand-mark {
+    font-size: 17px;
+  }
+
+  .user-pill {
+    max-width: 105px;
+  }
+
+  .logout-button {
+    padding: 9px 12px;
+  }
+
+  .welcome-page {
+    padding-top: 45px;
+  }
+
+  .welcome-hero h1 {
+    font-size: 48px;
+  }
+
+  .welcome-hero > p {
+    font-size: 15px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 25px 20px;
+  }
+
+  .flashcards-section {
+    padding: 20px 14px;
+    width: calc(100% - 20px);
   }
 
   .flashcard {
@@ -3109,165 +3560,6 @@ footer h3 {
   }
 
   .flashcard-face {
-    padding: 25px 18px;
-  }
-
-  .flashcard-face p {
-    font-size: 20px;
-  }
-
-  .flashcard-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    width: 100%;
-  }
-
-  .flashcard-controls .secondary-button {
-    min-width: 0;
-    width: 100%;
-  }
-}
-
-@media (max-width: 380px) {
-
-  .flashcard {
-    height: 280px;
-  }
-
-  .flashcard-face p {
-    font-size: 18px;
-  }
-
-  .flashcard-controls {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 769px) {
-  .mode-buttons {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* ============================================================
-   MULTIPLE FILE UPLOAD
-   ============================================================ */
-
-.selected-files-list {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 15px;
-  padding: 14px;
-  border-radius: 14px;
-  background: rgba(139, 92, 246, 0.07);
-  border: 1px solid rgba(139, 92, 246, 0.22);
-}
-
-.selected-files-summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #e4e4e7;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.selected-files-names {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  max-height: 180px;
-  overflow-y: auto;
-  padding-right: 3px;
-}
-
-.selected-file-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  padding: 8px 10px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.045);
-  color: #c4b5fd;
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.selected-file-item::before {
-  content: "📄";
-  flex: 0 0 auto;
-  font-size: 14px;
-}
-
-.selected-file-item span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.selected-files-names::-webkit-scrollbar {
-  width: 5px;
-}
-
-.selected-files-names::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.selected-files-names::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.45);
-  border-radius: 999px;
-}
-
-/* Make the upload area clearly communicate multi-file support. */
-.upload-box {
-  position: relative;
-}
-
-.upload-box small {
-  text-align: center;
-  max-width: 90%;
-}
-
-/* ============================================================
-   MULTIPLE FILE UPLOAD - MOBILE
-   ============================================================ */
-
-@media (max-width: 768px) {
-  .selected-files-list {
-    padding: 11px;
-    margin-top: 12px;
-  }
-
-  .selected-files-summary {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
-  .selected-files-names {
-    max-height: 145px;
-    gap: 6px;
-  }
-
-  .selected-file-item {
-    padding: 7px 8px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .selected-files-list {
-    padding: 10px;
-    border-radius: 12px;
-  }
-
-  .selected-files-names {
-    max-height: 125px;
-  }
-
-  .selected-file-item {
-    font-size: 11px;
-    padding: 7px;
+    padding: 26px 20px;
   }
 }
