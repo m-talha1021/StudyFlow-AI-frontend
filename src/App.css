@@ -2914,7 +2914,7 @@ footer h3 {
 ============================================================ */
 
 .flashcards-section {
-  width: min(500px, 83%);
+  width: min(700px, 90%);
   margin: 42px auto 0;
   padding: 28px;
   box-sizing: border-box;
@@ -3090,7 +3090,7 @@ footer h3 {
 @media (max-width: 768px) {
 
   .flashcards-section {
-    width: 85%;
+    width: 100%;
     padding: 20px;
     margin-top: 30px;
   }
