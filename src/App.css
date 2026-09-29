@@ -3148,3 +3148,67 @@ footer h3 {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+
+/* ============================================================
+   MULTIPLE SELECTED FILES
+============================================================ */
+
+.selected-files {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.selected-files-header {
+  font-weight: 600;
+  color: #e4e4e7;
+  margin-bottom: 10px;
+}
+
+.selected-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.selected-file-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.selected-file-item strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-file-item small {
+  flex: 0 0 auto;
+  color: #71717a;
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .selected-files-list {
+    max-height: 180px;
+  }
+
+  .selected-file-item {
+    padding: 7px 8px;
+    gap: 7px;
+  }
+
+  .selected-file-item small {
+    display: none;
+  }
+}
