@@ -87,6 +87,15 @@ function App() {
     useState("");
 
   // ========================================================
+  // FLASHCARDS
+  // ========================================================
+
+  const [flashcards, setFlashcards] = useState([]);
+  const [flashcardIndex, setFlashcardIndex] = useState(0);
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+
+  // ========================================================
   // CHATBOT
   // ========================================================
 
@@ -211,6 +220,9 @@ function App() {
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
 
     // Reset chat when new material is uploaded
     setChatMessages([]);
@@ -326,6 +338,9 @@ function App() {
     setProcessing(true);
     setResult("");
     setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
 
     setChatMessages([]);
     setChatQuestion("");
@@ -374,10 +389,117 @@ function App() {
   };
 
   // ========================================================
+  // GENERATE FLASHCARDS
+  // ========================================================
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setFlashcardsLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload a document/image or paste your study material."
+        );
+
+        setFlashcardsLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/flashcards",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            count: 10,
+          }),
+        }
+      );
+
+      if (!data.success || !Array.isArray(data.cards)) {
+        throw new Error(
+          data.error || "Could not generate flashcards."
+        );
+      }
+
+      setFlashcards(data.cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+
+      setTimeout(() => {
+        document
+          .getElementById("flashcards-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      console.error(
+        "Flashcards error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Could not generate flashcards."
+      );
+
+    } finally {
+      setFlashcardsLoading(false);
+    }
+  };
+
+  const handleNextFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.min(
+        previous + 1,
+        flashcards.length - 1
+      )
+    );
+  };
+
+  const handlePreviousFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.max(previous - 1, 0)
+    );
+  };
+
+  const handleFlipFlashcard = () => {
+    setFlashcardFlipped((previous) => !previous);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
+    if (mode === "flashcards") {
+      await handleGenerateFlashcards();
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
@@ -979,6 +1101,9 @@ function App() {
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
+              setFlashcards([]);
+              setFlashcardIndex(0);
+              setFlashcardFlipped(false);
 
               setChatMessages([]);
               setChatQuestion("");
@@ -1261,6 +1386,37 @@ function App() {
 
             </button>
 
+            {/* FLASHCARDS */}
+
+            <button
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
+            >
+
+              <span>
+                🗂️
+              </span>
+
+              <div>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -1270,13 +1426,16 @@ function App() {
             onClick={handleGenerate}
             disabled={
               processing ||
-              generating
+              generating ||
+              flashcardsLoading
             }
           >
 
-            {generating
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : `✨ Generate ${mode}`}
 
           </button>
 
@@ -1414,6 +1573,117 @@ function App() {
         )}
 
       </main>
+
+      {/* ==================================================
+          FLASHCARDS
+      ================================================== */}
+
+      {flashcards.length > 0 && (
+        <section
+          className="flashcards-section"
+          id="flashcards-section"
+        >
+
+          <div className="flashcards-header">
+            <div>
+              <span className="result-icon">🗂️</span>
+              <div>
+                <h2>Flashcards</h2>
+                <small>
+                  Tap the card to reveal the answer
+                </small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateFlashcards}
+              disabled={flashcardsLoading}
+            >
+              {flashcardsLoading
+                ? "⏳ Generating..."
+                : "🔄 Regenerate"}
+            </button>
+          </div>
+
+          <div className="flashcard-progress">
+            Card {flashcardIndex + 1} of {flashcards.length}
+          </div>
+
+          <button
+            type="button"
+            className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+            onClick={handleFlipFlashcard}
+            aria-label="Flip flashcard"
+          >
+            <div className="flashcard-inner">
+
+              <div className="flashcard-face flashcard-front">
+                <span className="flashcard-label">
+                  QUESTION
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.front}
+                </p>
+
+                <small>
+                  Click to reveal answer
+                </small>
+              </div>
+
+              <div className="flashcard-face flashcard-back">
+                <span className="flashcard-label">
+                  ANSWER
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.back}
+                </p>
+
+                <small>
+                  Click to see the question
+                </small>
+              </div>
+
+            </div>
+          </button>
+
+          <div className="flashcard-controls">
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handlePreviousFlashcard}
+              disabled={flashcardIndex === 0}
+            >
+              ← Previous
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleFlipFlashcard}
+            >
+              🔄 Flip
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleNextFlashcard}
+              disabled={
+                flashcardIndex === flashcards.length - 1
+              }
+            >
+              Next →
+            </button>
+
+          </div>
+
+        </section>
+      )}
 
       {/* ==================================================
           CHAT POPUP
