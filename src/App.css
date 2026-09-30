@@ -3574,21 +3574,21 @@ footer h3 {
 }
 
 .app-nav-links > button {
-  border: 0;
+  border: 1px solid ;
   border-radius: 10px;
   padding: 10px 15px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.78);
+  background: black;
+  color: white;
   cursor: pointer;
   font: inherit;
-  font-weight: 650;
+  font-weight: 800;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .app-nav-links > button:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
+  color: #ffffff;
+  background: blue;
+  transform: translateY(-2px);
 }
 
 .app-nav-user {
