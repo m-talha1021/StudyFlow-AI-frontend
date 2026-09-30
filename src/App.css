@@ -2996,7 +2996,8 @@ footer h3 {
 .app-nav-links button {
   padding: 10px 18px;
   border-radius: 10px;
-  border: 1px solid blue;
+  border: 1px solid #1b68bf;
+  background-color: #1b49bf;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
@@ -3093,7 +3094,6 @@ footer h3 {
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
-  border: 1px #2b93e3 solid;
 }
 
 .primary-auth-button,
@@ -3138,7 +3138,7 @@ footer h3 {
   flex-direction: column;
   justify-content: center;
   gap: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #1b68bf;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.035);
 }
