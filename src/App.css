@@ -2955,11 +2955,12 @@ footer h3 {
   letter-spacing: -0.03em;
   white-space: nowrap;
   text-decoration: none;
+   padding-left:5px;
 }
 
 .brand-mark img {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   border-radius: 13px;
   filter: drop-shadow(0 7px 18px rgba(79, 70, 229, 0.38));
@@ -2967,7 +2968,7 @@ footer h3 {
 }
 
 .brand-mark:hover img {
-  transform: translateY(-1px) scale(1.04);
+  transform: translateY(-1px) scale(1.07);
   filter: drop-shadow(0 9px 22px rgba(139, 92, 246, 0.52));
 }
 
@@ -2993,8 +2994,9 @@ footer h3 {
 
 .nav-link-button,
 .app-nav-links button {
-  padding: 10px 14px;
-  border-radius: 12px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid blue;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
@@ -3009,8 +3011,8 @@ footer h3 {
 .logout-button {
   padding: 11px 18px;
   border-radius: 13px;
-  color: #fff;
-  background: linear-gradient(135deg, #6438e8, #8b45e8);
+  color: #ffffff;
+  background:linear-gradient(135deg, #6438e8, #8c4cff);
   box-shadow: 0 9px 26px rgba(100, 56, 232, 0.28);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -3091,6 +3093,7 @@ footer h3 {
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
+  border: 1px #2b93e3 solid;
 }
 
 .primary-auth-button,
@@ -3275,7 +3278,6 @@ footer h3 {
 ============================================================ */
 
 .app-navbar {
-  position: sticky;
   top: 0;
   z-index: 1000;
 }
