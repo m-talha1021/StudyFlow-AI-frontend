@@ -3574,21 +3574,21 @@ footer h3 {
 }
 
 .app-nav-links > button {
-  border: 1px solid ;
+  border: 0;
   border-radius: 10px;
   padding: 10px 15px;
-  background: black;
-  color: white;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
   cursor: pointer;
   font: inherit;
-  font-weight: 800;
+  font-weight: 650;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .app-nav-links > button:hover {
-  color: #ffffff;
-  background: blue;
-  transform: translateY(-2px);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .app-nav-user {
@@ -3926,5 +3926,250 @@ footer h3 {
 
   .history-panel {
     padding: 23px 17px;
+  }
+}
+
+/* ============================================================
+   NAVBAR POLISH - GRADIENT BUTTONS + MOBILE
+   ============================================================ */
+
+.public-navbar,
+.app-navbar {
+  isolation: isolate;
+}
+
+/* Logged-in navigation buttons */
+.app-nav-links > button {
+  position: relative;
+  border: 1px solid rgba(167, 139, 250, 0.18);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 56, 232, 0.20),
+    rgba(190, 24, 93, 0.16)
+  );
+  color: rgba(255, 255, 255, 0.88);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.app-nav-links > button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.82),
+    rgba(219, 39, 119, 0.72)
+  );
+  border-color: rgba(216, 180, 254, 0.42);
+  color: #fff;
+  box-shadow:
+    0 8px 24px rgba(124, 58, 237, 0.24),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+/* Username + logout */
+.user-pill {
+  border: 1px solid rgba(167, 139, 250, 0.18);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 56, 232, 0.18),
+    rgba(190, 24, 93, 0.13)
+  );
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.logout-button {
+  background: linear-gradient(135deg, #6d3df0 0%, #c02672 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(139, 45, 150, 0.28);
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #7c4dff 0%, #db2777 100%);
+  box-shadow: 0 12px 30px rgba(219, 39, 119, 0.28);
+}
+
+/* Public navbar buttons */
+.public-nav-actions .nav-link-button {
+  border: 1px solid rgba(167, 139, 250, 0.16);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 56, 232, 0.16),
+    rgba(190, 24, 93, 0.12)
+  );
+}
+
+.public-nav-actions .nav-link-button:hover {
+  background: linear-gradient(135deg, #6d3df0, #c02672);
+  color: #fff;
+  border-color: rgba(255,255,255,0.14);
+}
+
+.nav-signup-button {
+  background: linear-gradient(135deg, #6d3df0 0%, #c02672 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.nav-signup-button:hover {
+  background: linear-gradient(135deg, #7c4dff 0%, #db2777 100%);
+}
+
+/* Hamburger */
+.navbar-menu-button {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(167, 139, 250, 0.30) !important;
+  background: linear-gradient(135deg, rgba(109,61,240,0.85), rgba(192,38,114,0.82)) !important;
+  box-shadow: 0 8px 24px rgba(109, 61, 240, 0.22);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.navbar-menu-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(192, 38, 114, 0.24);
+}
+
+.navbar-menu-button span {
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* ============================================================
+   MOBILE NAVIGATION
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .app-navbar {
+    min-height: 64px;
+    padding: 0 12px 0 15px;
+  }
+
+  .app-navbar .brand-mark {
+    gap: 8px;
+    font-size: 16px;
+    min-width: 0;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar-menu-button {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .app-nav-links {
+    top: calc(100% + 8px);
+    left: 10px;
+    right: 10px;
+    width: auto;
+    padding: 9px;
+    gap: 6px;
+    border-radius: 18px;
+    background:
+      linear-gradient(145deg, rgba(19, 14, 35, 0.98), rgba(13, 10, 24, 0.98));
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    box-shadow:
+      0 24px 65px rgba(0,0,0,.48),
+      0 0 35px rgba(124,58,237,.12);
+  }
+
+  .app-nav-links > button {
+    min-height: 46px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    text-align: left;
+    background: linear-gradient(
+      135deg,
+      rgba(99,56,232,.24),
+      rgba(190,24,93,.18)
+    );
+  }
+
+  .app-nav-links > button:hover,
+  .app-nav-links > button:active {
+    transform: none;
+    background: linear-gradient(135deg, #6d3df0, #c02672);
+  }
+
+  .mobile-account-block {
+    margin-top: 5px;
+    padding: 12px 8px 5px;
+    border-top: 1px solid rgba(255,255,255,.09);
+  }
+
+  .mobile-account-block > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+
+  .mobile-logout-button {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6d3df0, #c02672);
+    color: #fff;
+    box-shadow: 0 7px 18px rgba(192,38,114,.18);
+  }
+
+  /* Public welcome/auth navbar */
+  .public-navbar {
+    min-height: 64px;
+    padding: 0 15px;
+    gap: 10px;
+  }
+
+  .public-navbar .brand-mark {
+    min-width: 0;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .public-navbar .brand-mark img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .public-nav-actions {
+    gap: 6px;
+  }
+
+  .public-nav-actions .nav-link-button,
+  .public-nav-actions .nav-signup-button {
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-navbar {
+    padding-left: 11px;
+    padding-right: 10px;
+  }
+
+  .app-navbar .brand-mark {
+    font-size: 15px;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .public-navbar .brand-mark span {
+    display: none;
+  }
+
+  .public-nav-actions .nav-link-button,
+  .public-nav-actions .nav-signup-button {
+    padding: 8px 9px;
+    font-size: 12px;
   }
 }
