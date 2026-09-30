@@ -72,6 +72,7 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -223,13 +224,20 @@ function App() {
   // PROCESS FILE
   // ========================================================
 
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
+  const processFile = async (selectedFilesInput) => {
+    const files = Array.isArray(selectedFilesInput)
+      ? selectedFilesInput.filter(Boolean)
+      : selectedFilesInput
+        ? [selectedFilesInput]
+        : [];
+
+    if (files.length === 0) {
       return;
     }
 
     setProcessing(true);
-    setFile(selectedFile);
+    setSelectedFiles(files);
+    setFile(files[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -237,19 +245,16 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded
     setChatMessages([]);
     setChatQuestion("");
-
     stopSpeech();
 
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        selectedFile
-      );
+      files.forEach((selectedFile) => {
+        formData.append("files", selectedFile);
+      });
 
       const data = await apiRequest(
         "/api/material",
@@ -261,78 +266,23 @@ function App() {
 
       if (!data.success) {
         throw new Error(
-          data.error ||
-            "Could not process the file."
+          data.error || "Could not process the selected files."
         );
       }
 
       setMaterialReady(true);
-
     } catch (error) {
-      console.error(
-        "File processing error:",
-        error
-      );
-
+      console.error("File processing error:", error);
+      setSelectedFiles([]);
+      setFile(null);
+              setSelectedFiles([]);
       alert(
         error.message ||
-          "Could not process the uploaded document or image."
+          "Could not process the uploaded files."
       );
-
-      setFile(null);
-      setMaterialReady(false);
-
     } finally {
       setProcessing(false);
     }
-  };
-
-  // ========================================================
-  // CAMERA CAPTURE
-  // ========================================================
-
-  const handleCameraCapture = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
-
-    if (!selectedFile) {
-      return;
-    }
-
-    setText("");
-
-    processFile(selectedFile);
-
-    event.target.value = "";
-  };
-
-  // ========================================================
-  // OPEN CAMERA
-  // ========================================================
-
-  const openCamera = () => {
-    if (processing) {
-      return;
-    }
-
-    cameraInputRef.current?.click();
-  };
-
-  // ========================================================
-  // FILE SELECTION
-  // ========================================================
-
-  const handleFileChange = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
-
-    if (!selectedFile) {
-      return;
-    }
-
-    setText("");
-
-    processFile(selectedFile);
   };
 
   // ========================================================
@@ -1193,6 +1143,7 @@ function App() {
               );
 
               setFile(null);
+              setSelectedFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1238,6 +1189,7 @@ function App() {
             <input
               type="file"
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
+              multiple
               onChange={
                 handleFileChange
               }
@@ -1328,15 +1280,28 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {file && (
-            <div className="selected-file">
+          {selectedFiles.length > 0 && (
+            <div className="selected-files">
+              <div className="selected-files-header">
+                📎 Selected {selectedFiles.length} file{selectedFiles.length === 1 ? "" : "s"}
+              </div>
 
-              📎 Selected:{" "}
-
-              <strong>
-                {file.name}
-              </strong>
-
+              <div className="selected-files-list">
+                {selectedFiles.map((selectedFile, index) => (
+                  <div
+                    className="selected-file"
+                    key={`${selectedFile.name}-${index}`}
+                  >
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
