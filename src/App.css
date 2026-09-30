@@ -3588,8 +3588,8 @@ footer h3 {
 }
 
 .app-nav-links > button:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  background: #612fc4;
   transform: translateY(-1px);
 }
 
@@ -3826,16 +3826,16 @@ footer h3 {
   }
 
   .navbar-menu-button {
-    width: 44px;
-    height: 44px;
+    width: 35px;
+    height: 35px;
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
+    border-radius: 9px;
     background: rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 3.5px;
     cursor: pointer;
   }
 
@@ -3843,7 +3843,7 @@ footer h3 {
     width: 19px;
     height: 2px;
     border-radius: 99px;
-    background: #fff;
+    background: #ffffff;
   }
 
   .app-nav-links {
@@ -3869,7 +3869,7 @@ footer h3 {
 
   .app-nav-links > button {
     width: 100%;
-    padding: 13px 14px;
+    padding: 10px 11px;
     text-align: left;
   }
 
