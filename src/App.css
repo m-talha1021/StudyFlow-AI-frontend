@@ -3149,66 +3149,354 @@ footer h3 {
   }
 }
 
-
 /* ============================================================
-   MULTIPLE SELECTED FILES
+   AI STUDY PLANNER
 ============================================================ */
 
-.selected-files {
-  width: 100%;
-  box-sizing: border-box;
+.study-planner-form {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
 }
 
-.selected-files-header {
-  font-weight: 600;
-  color: #e4e4e7;
-  margin-bottom: 10px;
+.study-planner-form-header > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.selected-files-list {
+.study-planner-icon,
+.study-plan-title-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  border-radius: 13px;
+  background: rgba(124, 58, 237, 0.14);
+  font-size: 21px;
+}
+
+.study-planner-form h3,
+.study-planner-form p {
+  margin: 0;
+}
+
+.study-planner-form h3 {
+  font-size: 17px;
+}
+
+.study-planner-form p {
+  margin-top: 4px;
+  color: #a1a1aa;
+  font-size: 13px;
+}
+
+.study-planner-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.study-planner-fields label {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  max-height: 220px;
-  overflow-y: auto;
-  padding-right: 3px;
+  color: #d4d4d8;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.selected-file-item {
+.study-planner-fields input,
+.study-planner-fields select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 11px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.20);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.study-planner-fields input:focus,
+.study-planner-fields select:focus {
+  border-color: rgba(139, 92, 246, 0.65);
+}
+
+.study-planner-fields select option {
+  background: #15131f;
+  color: #f8fafc;
+}
+
+.study-planner-goal {
+  grid-column: 1 / -1;
+}
+
+/* ============================================================
+   STUDY PLAN RESULT
+============================================================ */
+
+.study-plan-section {
+  width: 92%;
+  max-width: 1050px;
+  margin: 30px auto 0;
+  padding: 26px;
+  border: 1px solid rgba(139, 92, 246, 0.20);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+.study-plan-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.study-plan-header > div:first-child {
   display: flex;
   align-items: center;
-  gap: 9px;
-  min-width: 0;
-  padding: 8px 10px;
-  border-radius: 9px;
-  background: rgba(0, 0, 0, 0.18);
+  gap: 13px;
 }
 
-.selected-file-item strong {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.study-plan-header h2 {
+  margin: 0;
+  color: #fafafa;
+  font-size: 25px;
+}
+
+.study-plan-header p {
+  max-width: 720px;
+  margin: 6px 0 0;
+  color: #a1a1aa;
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+.study-plan-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.study-plan-meta span,
+.study-plan-duration {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.12);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.selected-file-item small {
-  flex: 0 0 auto;
-  color: #71717a;
-  font-size: 11px;
+.study-plan-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 22px;
 }
 
-@media (max-width: 600px) {
-  .selected-files-list {
-    max-height: 180px;
+.study-plan-progress > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.study-plan-progress strong {
+  color: #a1a1aa;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.study-plan-progress span {
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.study-plan-days {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.study-plan-day {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 16px;
+  padding: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.13);
+}
+
+.study-plan-day-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+  border-radius: 14px;
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.study-plan-day-number span {
+  color: #a78bfa;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.study-plan-day-number strong {
+  margin-top: 2px;
+  color: #fafafa;
+  font-size: 23px;
+}
+
+.study-plan-day-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.study-plan-day-top h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 17px;
+}
+
+.study-plan-day-top small {
+  display: block;
+  margin-top: 4px;
+  color: #71717a;
+  font-size: 12px;
+}
+
+.study-plan-day-content ul {
+  display: grid;
+  gap: 8px;
+  margin: 13px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-plan-day-content li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: #d4d4d8;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.study-plan-task-dot {
+  color: #a78bfa;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.study-plan-day-content li div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.study-plan-day-content li strong {
+  font-weight: 600;
+}
+
+.study-plan-day-content li small {
+  color: #a1a1aa;
+}
+
+.study-plan-review {
+  margin-top: 13px;
+  padding: 10px 12px;
+  border-left: 3px solid #8b5cf6;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.07);
+  color: #c4b5fd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Planner adds a fifth mode card on larger screens. */
+@media (min-width: 1100px) {
+  .mode-buttons {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .study-planner-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .selected-file-item {
-    padding: 7px 8px;
-    gap: 7px;
+  .study-plan-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .study-planner-form {
+    padding: 15px;
   }
 
-  .selected-file-item small {
-    display: none;
+  .study-planner-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .study-planner-goal {
+    grid-column: auto;
+  }
+
+  .study-plan-section {
+    width: 92%;
+    padding: 18px;
+  }
+
+  .study-plan-header h2 {
+    font-size: 20px;
+  }
+
+  .study-plan-progress {
+    grid-template-columns: 1fr;
+  }
+
+  .study-plan-day {
+    grid-template-columns: 52px 1fr;
+    gap: 11px;
+    padding: 13px;
+  }
+
+  .study-plan-day-number {
+    min-height: 56px;
+  }
+
+  .study-plan-day-number strong {
+    font-size: 19px;
+  }
+
+  .study-plan-day-top {
+    flex-direction: column;
+  }
+
+  .study-plan-duration {
+    align-self: flex-start;
   }
 }
