@@ -1081,8 +1081,8 @@ function App() {
           </h1>
 
           <p>
-            Upload your study material or paste
-            your notes, then let AI help you learn.
+            Upload your study notes or paste
+            your content, then let AI help you learn.
           </p>
 
         </section>
@@ -1158,7 +1158,7 @@ function App() {
             </strong>
 
             <small>
-              Select multiple PDF, DOCX, PPTX,
+              Select PDF, DOCX, PPTX,
               JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
