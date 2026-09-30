@@ -38,7 +38,7 @@ body {
 
   background:
     radial-gradient(
-      circle at 0% 0%,
+      circle at 50% 0%,
       rgba(37, 99, 235, 0.85) 0%,
       transparent 35%
     ),
