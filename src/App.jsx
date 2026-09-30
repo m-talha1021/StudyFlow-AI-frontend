@@ -4,6 +4,23 @@ import {
   useState,
 } from "react";
 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { auth, db } from "./firebase";
+
 import "./App.css";
 
 // ========================================================
@@ -11,7 +28,6 @@ import "./App.css";
 // ========================================================
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
   "https://study-flow-ai-backend.vercel.app";
 
 // ========================================================
@@ -34,12 +50,6 @@ const apiRequest = async (endpoint, options = {}) => {
               "Content-Type":
                 "application/json",
             }),
-
-        ...(localStorage.getItem("studyflow_token")
-          ? {
-              Authorization: `Bearer ${localStorage.getItem("studyflow_token")}`,
-            }
-          : {}),
 
         ...(options.headers || {}),
       },
@@ -68,171 +78,167 @@ const apiRequest = async (endpoint, options = {}) => {
 };
 
 // ========================================================
-// AUTH UI
-// ========================================================
-
-function BrandMark() {
-  return (
-    <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI" />
-      <span>StudyFlow AI</span>
-    </div>
-  );
-}
-
-function WelcomePage({ onLogin, onSignup }) {
-  return (
-    <div className="auth-shell">
-      <nav className="public-navbar">
-        <BrandMark />
-        <div className="public-nav-actions">
-          <button className="nav-link-button" onClick={onLogin}>Login</button>
-          <button className="nav-signup-button" onClick={onSignup}>Sign Up</button>
-        </div>
-      </nav>
-
-      <main className="welcome-page">
-        <section className="welcome-hero">
-          <div className="welcome-badge">✦ AI-powered learning</div>
-          <h1>Study smarter.<br /><span>Understand faster.</span></h1>
-          <p>
-            StudyFlow AI turns your notes, documents and images into summaries,
-            explanations, quizzes, flashcards and an interactive study assistant.
-          </p>
-          <div className="welcome-actions">
-            <button className="primary-auth-button" onClick={onSignup}>Get Started</button>
-            <button className="secondary-auth-button" onClick={onLogin}>I already have an account</button>
-          </div>
-
-          <div className="feature-grid">
-            <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
-            <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
-            <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-}
-
-function AuthPage({ mode, onModeChange, onSubmit, loading, error, form, setForm }) {
-  const isSignup = mode === "signup";
-  return (
-    <div className="auth-shell">
-      <nav className="public-navbar">
-        <BrandMark />
-        <button className="nav-link-button" onClick={() => onModeChange("welcome")}>← Back</button>
-      </nav>
-
-      <main className="auth-page">
-        <form className="auth-card" onSubmit={onSubmit}>
-         <div className="auth-brand">
-  <div className="auth-brand-logo">
-    <img src="/favicon.png" alt="StudyFlow AI" />
-  </div>
-
-  <span className="auth-brand-name">StudyFlow AI</span>
-</div>
-          <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
-          <p>{isSignup ? "Start your personalized StudyFlow experience." : "Log in to continue learning."}</p>
-
-          {error && <div className="auth-error">{error}</div>}
-
-          {isSignup && (
-            <label>
-              Full name
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your name"
-                autoComplete="name"
-                required
-              />
-            </label>
-          )}
-
-          <label>
-            Email
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="you@example.com"
-              autoComplete="email"
-              required
-            />
-          </label>
-
-          <label>
-            Password
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="At least 6 characters"
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              minLength={6}
-              required
-            />
-          </label>
-
-          {isSignup && (
-            <label>
-              Confirm password
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                placeholder="Repeat your password"
-                autoComplete="new-password"
-                minLength={6}
-                required
-              />
-            </label>
-          )}
-
-          <button className="primary-auth-button auth-submit" type="submit" disabled={loading}>
-            {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
-          </button>
-
-          <p className="auth-switch">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button type="button" onClick={() => onModeChange(isSignup ? "login" : "signup")}>
-              {isSignup ? "Login" : "Sign up"}
-            </button>
-          </p>
-        </form>
-      </main>
-    </div>
-  );
-}
-
-// ========================================================
 // APP
 // ========================================================
 
 function App() {
   // ========================================================
-  // AUTHENTICATION
+  // FIREBASE AUTHENTICATION
   // ========================================================
 
-  const [authChecked, setAuthChecked] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authView, setAuthView] = useState("welcome");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [historyItems, setHistoryItems] = useState([]);
-  const [authLoading, setAuthLoading] = useState(false);
+  const [authUser, setAuthUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authMode, setAuthMode] = useState("login");
+  const [authName, setAuthName] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authConfirmPassword, setAuthConfirmPassword] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
   const [authError, setAuthError] = useState("");
-  const [authForm, setAuthForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [authMessage, setAuthMessage] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setAuthUser(currentUser);
+      setAuthLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const resetAuthMessages = () => {
+    setAuthError("");
+    setAuthMessage("");
+  };
+
+  const handleAuthSubmit = async (event) => {
+    event.preventDefault();
+    resetAuthMessages();
+
+    const email = authEmail.trim();
+
+    if (!email || !authPassword) {
+      setAuthError("Please enter your email and password.");
+      return;
+    }
+
+    if (authMode === "signup") {
+      if (!authName.trim()) {
+        setAuthError("Please enter your name.");
+        return;
+      }
+
+      if (authPassword.length < 6) {
+        setAuthError("Password must contain at least 6 characters.");
+        return;
+      }
+
+      if (authPassword !== authConfirmPassword) {
+        setAuthError("Passwords do not match.");
+        return;
+      }
+    }
+
+    setAuthBusy(true);
+
+    try {
+      if (authMode === "signup") {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          authPassword
+        );
+
+        const user = credential.user;
+
+        await updateProfile(user, {
+          displayName: authName.trim(),
+        });
+
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            uid: user.uid,
+            email: user.email || email,
+            displayName: authName.trim(),
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setAuthMessage("Account created successfully.");
+      } else {
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          authPassword
+        );
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+
+      const code = error?.code || "";
+      const messages = {
+        "auth/email-already-in-use": "An account with this email already exists.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/weak-password": "Password is too weak. Use at least 6 characters.",
+        "auth/invalid-credential": "Incorrect email or password.",
+        "auth/user-not-found": "No account was found with this email.",
+        "auth/wrong-password": "Incorrect email or password.",
+        "auth/too-many-requests": "Too many attempts. Please try again later.",
+        "auth/network-request-failed": "Network error. Please check your connection.",
+      };
+
+      setAuthError(
+        messages[code] ||
+          error?.message ||
+          "Authentication failed. Please try again."
+      );
+    } finally {
+      setAuthBusy(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    resetAuthMessages();
+
+    const email = authEmail.trim();
+
+    if (!email) {
+      setAuthError("Enter your email address first.");
+      return;
+    }
+
+    setAuthBusy(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthMessage("Password reset email sent. Check your inbox.");
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setAuthError(
+        error?.message ||
+          "Could not send the password reset email."
+      );
+    } finally {
+      setAuthBusy(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setAuthMode("login");
+      setAuthPassword("");
+      setAuthConfirmPassword("");
+      setAuthError("");
+      setAuthMessage("");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert(error?.message || "Could not log out.");
+    }
+  };
 
   // ========================================================
   // STUDY MATERIAL
@@ -241,6 +247,7 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -260,9 +267,23 @@ function App() {
   // ========================================================
 
   const [flashcards, setFlashcards] = useState([]);
-  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const [testLoading, setTestLoading] = useState(false);
+  const [testQuestions, setTestQuestions] = useState([]);
+  const [testAnswers, setTestAnswers] = useState({});
+  const [testIndex, setTestIndex] = useState(0);
+  const [testStarted, setTestStarted] = useState(false);
+  const [testFinished, setTestFinished] = useState(false);
+  const [testTimeLeft, setTestTimeLeft] = useState(0);
+  const [testTotalSeconds, setTestTotalSeconds] = useState(0);
+  const [testScore, setTestScore] = useState(0);
 
   // ========================================================
   // CHATBOT
@@ -307,75 +328,28 @@ function App() {
     useState(false);
 
   // ========================================================
-  // RESTORE LOGIN SESSION
+  // TEST TIMER
   // ========================================================
 
   useEffect(() => {
-    const restoreSession = async () => {
-      const token = localStorage.getItem("studyflow_token");
-      if (!token) {
-        setAuthChecked(true);
-        return;
-      }
+    if (!testStarted || testFinished) return;
 
-      try {
-        const data = await apiRequest("/api/auth/me");
-        setUser(data.user);
-      } catch {
-        localStorage.removeItem("studyflow_token");
-        setUser(null);
-      } finally {
-        setAuthChecked(true);
-      }
-    };
-
-    restoreSession();
-  }, []);
-
-  // ========================================================
-  // USER-SPECIFIC LOCAL HISTORY
-  // ========================================================
-
-  useEffect(() => {
-    if (!user?.email) {
-      setHistoryItems([]);
+    if (testTimeLeft <= 0) {
+      const score = testQuestions.reduce((total, question, index) => {
+        return total + (testAnswers[index] === question.answer ? 1 : 0);
+      }, 0);
+      setTestScore(score);
+      setTestFinished(true);
+      setTestStarted(false);
       return;
     }
 
-    try {
-      const key = `studyflow_history_${user.email.toLowerCase()}`;
-      const saved = JSON.parse(localStorage.getItem(key) || "[]");
-      setHistoryItems(Array.isArray(saved) ? saved : []);
-    } catch {
-      setHistoryItems([]);
-    }
-  }, [user?.email]);
+    const timer = window.setInterval(() => {
+      setTestTimeLeft((previous) => Math.max(previous - 1, 0));
+    }, 1000);
 
-  const addHistoryItem = (type, title, detail = "") => {
-    if (!user?.email) return;
-
-    const key = `studyflow_history_${user.email.toLowerCase()}`;
-    const item = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      type,
-      title,
-      detail,
-      timestamp: new Date().toISOString(),
-    };
-
-    setHistoryItems((previous) => {
-      const next = [item, ...previous].slice(0, 100);
-      localStorage.setItem(key, JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const clearUserHistory = () => {
-    if (!user?.email) return;
-    const key = `studyflow_history_${user.email.toLowerCase()}`;
-    localStorage.removeItem(key);
-    setHistoryItems([]);
-  };
+    return () => window.clearInterval(timer);
+  }, [testStarted, testFinished, testTimeLeft]);
 
   // ========================================================
   // SCROLL LISTENER
@@ -447,125 +421,24 @@ function App() {
   };
 
   // ========================================================
-  // AUTHENTICATION HANDLERS
+  // PROCESS MULTIPLE FILES
   // ========================================================
 
-  const handleAuthSubmit = async (event) => {
-    event.preventDefault();
-    setAuthError("");
+  const processFiles = async (selectedFiles) => {
+    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
 
-    const isSignup = authView === "signup";
-    if (isSignup && authForm.password !== authForm.confirmPassword) {
-      setAuthError("Passwords do not match.");
+    if (!validFiles.length) {
       return;
     }
 
-    setAuthLoading(true);
-    try {
-      const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
-      const body = isSignup
-        ? { name: authForm.name.trim(), email: authForm.email.trim(), password: authForm.password }
-        : { email: authForm.email.trim(), password: authForm.password };
-
-      const data = await apiRequest(endpoint, {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
-
-      localStorage.setItem("studyflow_token", data.token);
-      setUser(data.user);
-      setAuthView("app");
-      setAuthForm({ name: "", email: "", password: "", confirmPassword: "" });
-      setAuthError("");
-    } catch (error) {
-      setAuthError(error.message || "Authentication failed.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      if (localStorage.getItem("studyflow_token")) {
-        await apiRequest("/api/auth/logout", { method: "POST" });
-      }
-    } catch {
-      // The local token is still cleared below.
-    }
-
-    localStorage.removeItem("studyflow_token");
-    setUser(null);
-    setAuthView("welcome");
-    setText("");
-    setFile(null);
-    setMaterialReady(false);
-    setResult("");
-    setFlashcards([]);
-    setChatMessages([]);
-    setChatOpen(false);
-    setHistoryOpen(false);
-    setMobileMenuOpen(false);
-    stopSpeech();
-  };
-
-  const openAuth = (view) => {
-    setAuthError("");
-    setAuthView(view);
-  };
-
-  // ========================================================
-  // FLASHCARD GENERATION
-  // ========================================================
-
-  const handleGenerateFlashcards = async () => {
-    if (!materialReady) {
-      alert("Please upload or paste study material first.");
-      document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    setFlashcardsLoading(true);
-    setFlashcardFlipped(false);
-
-    try {
-      const data = await apiRequest("/api/flashcards", {
-        method: "POST",
-        body: JSON.stringify({ count: 10 }),
-      });
-
-      setFlashcards(data.cards || []);
-      setFlashcardIndex(0);
-      setTimeout(() => {
-        document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } catch (error) {
-      alert(error.message || "Could not generate flashcards.");
-    } finally {
-      setFlashcardsLoading(false);
-    }
-  };
-
-  const nextFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index + 1) % flashcards.length);
-  };
-
-  const previousFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index - 1 + flashcards.length) % flashcards.length);
-  };
-
-  // ========================================================
-  // PROCESS FILE
-  // ========================================================
-
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
+    if (validFiles.length > 10) {
+      alert("Please select a maximum of 10 files at a time.");
       return;
     }
 
     setProcessing(true);
-    setFile(selectedFile);
+    setFiles(validFiles);
+    setFile(validFiles[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -573,7 +446,6 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded
     setChatMessages([]);
     setChatQuestion("");
 
@@ -582,10 +454,9 @@ function App() {
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        selectedFile
-      );
+      validFiles.forEach((selectedFile) => {
+        formData.append("files", selectedFile);
+      });
 
       const data = await apiRequest(
         "/api/material",
@@ -598,12 +469,11 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-            "Could not process the file."
+            "Could not process the selected files."
         );
       }
 
       setMaterialReady(true);
-      addHistoryItem("Upload", selectedFile.name, "Study material uploaded");
 
     } catch (error) {
       console.error(
@@ -613,15 +483,25 @@ function App() {
 
       alert(
         error.message ||
-          "Could not process the uploaded document or image."
+          "Could not process the uploaded files."
       );
 
+      setFiles([]);
       setFile(null);
       setMaterialReady(false);
 
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Keep the single-file helper for the camera workflow.
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
+    }
+
+    await processFiles([selectedFile]);
   };
 
   // ========================================================
@@ -660,16 +540,20 @@ function App() {
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
+    const selectedFiles = Array.from(
+      event.target.files || []
+    );
 
-    if (!selectedFile) {
+    if (!selectedFiles.length) {
       return;
     }
 
     setText("");
 
-    processFile(selectedFile);
+    processFiles(selectedFiles);
+
+    // Allow selecting the same files again later.
+    event.target.value = "";
   };
 
   // ========================================================
@@ -717,7 +601,6 @@ function App() {
       }
 
       setMaterialReady(true);
-      addHistoryItem("Material", "Pasted study material", `${text.trim().slice(0, 80)}${text.trim().length > 80 ? "…" : ""}`);
 
       return true;
 
@@ -740,10 +623,222 @@ function App() {
   };
 
   // ========================================================
+  // GENERATE FLASHCARDS
+  // ========================================================
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setFlashcardsLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload a document/image or paste your study material."
+        );
+
+        setFlashcardsLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/flashcards",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            count: 10,
+          }),
+        }
+      );
+
+      if (!data.success || !Array.isArray(data.cards)) {
+        throw new Error(
+          data.error || "Could not generate flashcards."
+        );
+      }
+
+      setFlashcards(data.cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+
+      setTimeout(() => {
+        document
+          .getElementById("flashcards-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      console.error(
+        "Flashcards error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Could not generate flashcards."
+      );
+
+    } finally {
+      setFlashcardsLoading(false);
+    }
+  };
+
+  const handleNextFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.min(
+        previous + 1,
+        flashcards.length - 1
+      )
+    );
+  };
+
+  const handlePreviousFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.max(previous - 1, 0)
+    );
+  };
+
+  const handleFlipFlashcard = () => {
+    setFlashcardFlipped((previous) => !previous);
+  };
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const formatTestTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
+  const calculateTestScore = () => {
+    return testQuestions.reduce((score, question, index) => {
+      return score + (testAnswers[index] === question.answer ? 1 : 0);
+    }, 0);
+  };
+
+  const finishTest = () => {
+    const score = calculateTestScore();
+    setTestScore(score);
+    setTestFinished(true);
+    setTestStarted(false);
+    setTestIndex(0);
+  };
+
+  const handleGenerateTest = async () => {
+    setTestLoading(true);
+    setResult("");
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+        if (!processed) return;
+        ready = true;
+      }
+
+      if (!ready && files.length === 0 && !file && !text.trim()) {
+        alert("Please upload study material or paste your notes first.");
+        return;
+      }
+
+      const data = await apiRequest("/api/test-concepts", {
+        method: "POST",
+        body: JSON.stringify({ count: 30 }),
+      });
+
+      if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
+        throw new Error(data.error || "Could not generate the test.");
+      }
+
+      setTestQuestions(data.questions);
+      setTestAnswers({});
+      setTestIndex(0);
+      setTestScore(0);
+      setTestFinished(false);
+      setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
+      setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
+      setTestStarted(false);
+
+      setTimeout(() => {
+        document.getElementById("test-concepts-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error("Test concepts error:", error);
+      alert(error.message || "Could not generate the test.");
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const startTest = () => {
+    setTestAnswers({});
+    setTestIndex(0);
+    setTestScore(0);
+    setTestFinished(false);
+    setTestTimeLeft(testTotalSeconds);
+    setTestStarted(true);
+  };
+
+  const selectTestAnswer = (option) => {
+    if (testFinished || !testStarted) return;
+    setTestAnswers((previous) => ({
+      ...previous,
+      [testIndex]: option,
+    }));
+  };
+
+  const nextTestQuestion = () => {
+    if (testIndex >= testQuestions.length - 1) {
+      finishTest();
+      return;
+    }
+    setTestIndex((previous) => previous + 1);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
+    if (mode === "flashcards") {
+      await handleGenerateFlashcards();
+      return;
+    }
+
+    if (mode === "test") {
+      await handleGenerateTest();
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
@@ -806,12 +901,6 @@ function App() {
       setResultLanguage(
         data.language || "english"
       );
-
-      const modeLabel =
-        mode === "summary" ? "Summary" :
-        mode === "explain" ? "Explanation" :
-        mode === "quiz" ? "Quiz" : mode;
-      addHistoryItem("AI", modeLabel, "Generated from study material");
 
       setTimeout(() => {
         document
@@ -1224,8 +1313,6 @@ function App() {
           ]
         );
 
-        addHistoryItem("Chat", "AI Chat", question);
-
       } catch (error) {
         console.error(
           "Chat error:",
@@ -1253,29 +1340,291 @@ function App() {
     };
 
   // ========================================================
-  // AUTH GATING
+  // AUTHENTICATION UI
   // ========================================================
 
-  if (!authChecked) {
-    return <div className="auth-loading-screen">Loading StudyFlow AI...</div>;
+  const authInputStyle = {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "13px 14px",
+    borderRadius: "12px",
+    border: "1px solid rgba(148, 163, 184, 0.18)",
+    outline: "none",
+    background: "rgba(2, 6, 23, 0.62)",
+    color: "#f8fafc",
+    fontSize: "15px",
+  };
+
+  if (authLoading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#09090f",
+          color: "#f8fafc",
+          fontFamily: "inherit",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "44px", marginBottom: "14px" }}>🎓</div>
+          <h2 style={{ margin: 0 }}>StudyFlow AI</h2>
+          <p style={{ opacity: 0.7 }}>Checking your account...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (!user) {
-    if (authView === "login" || authView === "signup") {
-      return (
-        <AuthPage
-          mode={authView}
-          onModeChange={(view) => setAuthView(view)}
-          onSubmit={handleAuthSubmit}
-          loading={authLoading}
-          error={authError}
-          form={authForm}
-          setForm={setAuthForm}
-        />
-      );
-    }
+  if (!authUser) {
+    const isSignup = authMode === "signup";
 
-    return <WelcomePage onLogin={() => openAuth("login")} onSignup={() => openAuth("signup")} />;
+    return (
+      <div
+        className="auth-page"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "28px 18px",
+          boxSizing: "border-box",
+          background:
+            "radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.35), transparent 35%), radial-gradient(circle at 90% 15%, rgba(168, 85, 247, 0.35), transparent 40%), #09090f",
+          color: "#f8fafc",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "470px",
+            padding: "32px",
+            borderRadius: "24px",
+            background: "rgba(17, 17, 27, 0.88)",
+            border: "1px solid rgba(168, 85, 247, 0.28)",
+            boxShadow: "0 24px 80px rgba(0, 0, 0, 0.45)",
+            backdropFilter: "blur(18px)",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: "26px" }}>
+            <img
+              src="/favicon.png"
+              alt="StudyFlow AI"
+              style={{
+                width: "72px",
+                height: "72px",
+                objectFit: "contain",
+                borderRadius: "18px",
+                marginBottom: "12px",
+              }}
+            />
+            <h1
+              style={{
+                margin: 0,
+                fontSize: "32px",
+                lineHeight: 1.15,
+                fontWeight: 800,
+              }}
+            >
+              {isSignup ? "Create your account" : "Welcome back"}
+            </h1>
+            <p style={{ margin: "10px 0 0", color: "#a1a1aa" }}>
+              {isSignup
+                ? "Start learning smarter with StudyFlow AI."
+                : "Log in to continue learning with StudyFlow AI."}
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "8px",
+              padding: "5px",
+              borderRadius: "14px",
+              background: "rgba(255,255,255,0.045)",
+              marginBottom: "22px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("login");
+                resetAuthMessages();
+              }}
+              style={{
+                border: "0",
+                borderRadius: "10px",
+                padding: "11px",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: 700,
+                background: !isSignup
+                  ? "linear-gradient(135deg, #6d28d9, #9333ea, #db2777)"
+                  : "transparent",
+              }}
+            >
+              Login
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("signup");
+                resetAuthMessages();
+              }}
+              style={{
+                border: "0",
+                borderRadius: "10px",
+                padding: "11px",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: 700,
+                background: isSignup
+                  ? "linear-gradient(135deg, #6d28d9, #9333ea, #db2777)"
+                  : "transparent",
+              }}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <form onSubmit={handleAuthSubmit}>
+            {isSignup && (
+              <label style={{ display: "block", marginBottom: "14px" }}>
+                <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Name</span>
+                <input
+                  type="text"
+                  value={authName}
+                  onChange={(event) => setAuthName(event.target.value)}
+                  placeholder="Your name"
+                  autoComplete="name"
+                  style={authInputStyle}
+                />
+              </label>
+            )}
+
+            <label style={{ display: "block", marginBottom: "14px" }}>
+              <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Email</span>
+              <input
+                type="email"
+                value={authEmail}
+                onChange={(event) => setAuthEmail(event.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
+                style={authInputStyle}
+              />
+            </label>
+
+            <label style={{ display: "block", marginBottom: "14px" }}>
+              <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Password</span>
+              <input
+                type="password"
+                value={authPassword}
+                onChange={(event) => setAuthPassword(event.target.value)}
+                placeholder="At least 6 characters"
+                autoComplete={isSignup ? "new-password" : "current-password"}
+                style={authInputStyle}
+              />
+            </label>
+
+            {isSignup && (
+              <label style={{ display: "block", marginBottom: "14px" }}>
+                <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Confirm password</span>
+                <input
+                  type="password"
+                  value={authConfirmPassword}
+                  onChange={(event) => setAuthConfirmPassword(event.target.value)}
+                  placeholder="Enter password again"
+                  autoComplete="new-password"
+                  style={authInputStyle}
+                />
+              </label>
+            )}
+
+            {!isSignup && (
+              <div style={{ textAlign: "right", marginBottom: "16px" }}>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={authBusy}
+                  style={{
+                    border: 0,
+                    background: "transparent",
+                    color: "#c084fc",
+                    cursor: "pointer",
+                    padding: 0,
+                    fontSize: "14px",
+                  }}
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
+            {authError && (
+              <div
+                style={{
+                  marginBottom: "14px",
+                  padding: "11px 13px",
+                  borderRadius: "10px",
+                  color: "#fecaca",
+                  background: "rgba(127, 29, 29, 0.25)",
+                  border: "1px solid rgba(248, 113, 113, 0.25)",
+                  fontSize: "14px",
+                }}
+              >
+                {authError}
+              </div>
+            )}
+
+            {authMessage && (
+              <div
+                style={{
+                  marginBottom: "14px",
+                  padding: "11px 13px",
+                  borderRadius: "10px",
+                  color: "#bbf7d0",
+                  background: "rgba(20, 83, 45, 0.25)",
+                  border: "1px solid rgba(74, 222, 128, 0.22)",
+                  fontSize: "14px",
+                }}
+              >
+                {authMessage}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={authBusy}
+              style={{
+                width: "100%",
+                border: "0",
+                borderRadius: "13px",
+                padding: "14px 18px",
+                color: "white",
+                fontSize: "16px",
+                fontWeight: 800,
+                cursor: authBusy ? "not-allowed" : "pointer",
+                opacity: authBusy ? 0.7 : 1,
+                background: "linear-gradient(135deg, #6d28d9 0%, #9333ea 48%, #db2777 100%)",
+                boxShadow: "0 12px 30px rgba(147, 51, 234, 0.25)",
+              }}
+            >
+              {authBusy
+                ? "Please wait..."
+                : isSignup
+                  ? "Create account"
+                  : "Login"}
+            </button>
+          </form>
+
+          <p style={{ textAlign: "center", color: "#71717a", fontSize: "12px", margin: "20px 0 0" }}>
+            Your account is secured by Firebase Authentication.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // ========================================================
@@ -1286,110 +1635,53 @@ function App() {
     <div className="app">
 
       {/* ==================================================
-          NAVBAR
+          HEADER
       ================================================== */}
 
-      <header className="app-navbar">
-        <BrandMark />
+      <header className="header">
 
-        <nav className={`app-nav-links ${mobileMenuOpen ? "mobile-open" : ""}`}>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("performance-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          >
-            Dashboard
-          </button>
+        <div className="logo">
 
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          >
-            Upload
-          </button>
-
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setHistoryOpen(true);
-            }}
-          >
-            History
-          </button>
-
-          <div className="mobile-account-block">
-            <span>👤 {user?.name || "Student"}</span>
-            <button className="mobile-logout-button" onClick={handleLogout}>Logout</button>
+          <div className="logo-icon">
+            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
           </div>
-        </nav>
+          <span>
+           <a href="#heroclass"> StudyFlow AI</a>
+          </span>
 
-        <div className="app-nav-user">
-          <div className="user-pill">
-            <span>👤</span>
-            <strong>{user?.name || "Student"}</strong>
+        </div>
+
+        <p className="tagline">
+          <b>
+            Your AI-powered study assistant
+          </b>
+        </p>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="uploadBtn">
+            <a href="#inputcard">
+              Upload
+            </a>
           </div>
 
-          <button className="logout-button" onClick={handleLogout}>
+          <button
+            type="button"
+            onClick={handleLogout}
+            style={{
+              border: "1px solid rgba(168, 85, 247, 0.35)",
+              borderRadius: "12px",
+              padding: "10px 16px",
+              color: "#fff",
+              background: "linear-gradient(135deg, rgba(109,40,217,.9), rgba(219,39,119,.9))",
+              cursor: "pointer",
+              fontWeight: 700,
+            }}
+          >
             Logout
           </button>
-
-          <button
-            className="navbar-menu-button"
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            aria-label="Toggle navigation menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
         </div>
+
       </header>
-
-      {historyOpen && (
-        <div className="history-overlay" onClick={() => setHistoryOpen(false)}>
-          <section className="history-panel" onClick={(event) => event.stopPropagation()}>
-            <div className="history-panel-header">
-              <div>
-                <span className="history-eyebrow">YOUR ACTIVITY</span>
-                <h2>{user?.name || "Student"}'s History</h2>
-                <p>Your recent StudyFlow activity on this device.</p>
-              </div>
-              <button className="history-close" onClick={() => setHistoryOpen(false)} aria-label="Close history">×</button>
-            </div>
-
-            {historyItems.length === 0 ? (
-              <div className="history-empty">
-                <div>🗂️</div>
-                <h3>No history yet</h3>
-                <p>Upload material or generate a result and your activity will appear here.</p>
-              </div>
-            ) : (
-              <>
-                <div className="history-list">
-                  {historyItems.map((item) => (
-                    <article className="history-item" key={item.id}>
-                      <div className="history-item-icon">
-                        {item.type === "Upload" ? "📄" : item.type === "Chat" ? "🤖" : item.type === "AI" ? "✨" : "📝"}
-                      </div>
-                      <div className="history-item-content">
-                        <strong>{item.title}</strong>
-                        <small>{item.detail}</small>
-                        <time>{new Date(item.timestamp).toLocaleString()}</time>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-                <button className="history-clear-button" onClick={clearUserHistory}>Clear history</button>
-              </>
-            )}
-          </section>
-        </div>
-      )}
 
       {/* ==================================================
           MAIN
@@ -1417,27 +1709,6 @@ function App() {
             your notes, then let AI help you learn.
           </p>
 
-        </section>
-
-        {/* =================================================
-            PERFORMANCE DASHBOARD
-        ================================================= */}
-
-        <section className="performance-section" id="performance-section">
-          <div className="performance-header">
-            <div>
-              <span className="performance-eyebrow">DASHBOARD</span>
-              <h2>Performance Analysis</h2>
-              <p>Your StudyFlow activity at a glance.</p>
-            </div>
-          </div>
-
-          <div className="performance-grid">
-            <div className="performance-card"><span>📚</span><strong>{historyItems.filter((item) => item.type === "Upload" || item.type === "Material").length}</strong><small>Materials added</small></div>
-            <div className="performance-card"><span>✨</span><strong>{historyItems.filter((item) => item.type === "AI").length}</strong><small>AI activities</small></div>
-            <div className="performance-card"><span>🤖</span><strong>{historyItems.filter((item) => item.type === "Chat").length}</strong><small>AI questions</small></div>
-            <div className="performance-card"><span>📈</span><strong>{historyItems.length}</strong><small>Total activities</small></div>
-          </div>
         </section>
 
         {/* =================================================
@@ -1472,6 +1743,7 @@ function App() {
               );
 
               setFile(null);
+              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1505,17 +1777,18 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing document or image..."
-                : "Upload your document or image"}
+                ? "Processing selected files..."
+                : "Upload your documents or images"}
             </strong>
 
             <small>
-              PDF, DOCX, PPTX,
-              JPG, PNG or WEBP
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
             <input
               type="file"
+              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               onChange={
                 handleFileChange
@@ -1607,14 +1880,26 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {file && (
-            <div className="selected-file">
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
 
-              📎 Selected:{" "}
+              <div className="selected-files-header">
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
+              </div>
 
-              <strong>
-                {file.name}
-              </strong>
+              <div className="selected-files-list">
+                {files.map((selectedFile, index) => (
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
+                  </div>
+                ))}
+              </div>
 
             </div>
           )}
@@ -1625,7 +1910,7 @@ function App() {
             ACTION SECTION
         ================================================= */}
 
-        <section className="action-section" id="action-section">
+        <section className="action-section">
 
           {/* HEADING + CHATBOT ICON */}
 
@@ -1760,6 +2045,54 @@ function App() {
 
             </button>
 
+            {/* FLASHCARDS */}
+
+            <button
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
+            >
+
+              <span>
+                🗂️
+              </span>
+
+              <div>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* TEST CONCEPTS */}
+
+            <button
+              className={
+                mode === "test"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("test")}
+            >
+              <span>⏱️</span>
+              <div>
+                <strong>Test concepts</strong>
+                <small>Timed MCQ exam from your material</small>
+              </div>
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -1769,87 +2102,21 @@ function App() {
             onClick={handleGenerate}
             disabled={
               processing ||
-              generating
+              generating ||
+              flashcardsLoading
             }
           >
 
-            {generating
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : mode === "test"
+                  ? "⏱️ Generate Test"
+                  : `✨ Generate ${mode}`}
 
           </button>
 
-        </section>
-
-        {/* =================================================
-            FLASHCARDS
-        ================================================= */}
-
-        <section className="flashcards-section" id="flashcards-section">
-          <div className="flashcards-header">
-            <div>
-              <span className="section-kicker">ACTIVE RECALL</span>
-              <h2>Flashcards</h2>
-              <p>Turn your current study material into quick review cards.</p>
-            </div>
-            <button
-              className="flashcards-generate-button"
-              onClick={handleGenerateFlashcards}
-              disabled={flashcardsLoading || processing}
-            >
-              {flashcardsLoading ? "⏳ Generating..." : flashcards.length ? "🔄 Regenerate" : "🗂️ Generate Flashcards"}
-            </button>
-          </div>
-
-          {!flashcards.length && !flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div>🗂️</div>
-              <h3>Learn with active recall</h3>
-              <p>Upload or paste material, then generate a set of AI-powered flashcards.</p>
-            </div>
-          )}
-
-          {flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div className="flashcard-spinner">✦</div>
-              <h3>Creating your flashcards...</h3>
-              <p>StudyFlow AI is selecting important concepts from your material.</p>
-            </div>
-          )}
-
-          {flashcards.length > 0 && !flashcardsLoading && (
-            <div className="flashcard-study-area">
-              <div className="flashcard-progress">
-                Card {flashcardIndex + 1} of {flashcards.length}
-              </div>
-
-              <button
-                type="button"
-                className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
-                onClick={() => setFlashcardFlipped((value) => !value)}
-                aria-label="Flip flashcard"
-              >
-                <div className="flashcard-inner">
-                  <div className="flashcard-face flashcard-front">
-                    <span>QUESTION</span>
-                    <strong>{flashcards[flashcardIndex]?.front}</strong>
-                    <small>Click to reveal answer</small>
-                  </div>
-                  <div className="flashcard-face flashcard-back">
-                    <span>ANSWER</span>
-                    <strong>{flashcards[flashcardIndex]?.back}</strong>
-                    <small>Click to see the question</small>
-                  </div>
-                </div>
-              </button>
-
-              <div className="flashcard-controls">
-                <button type="button" onClick={previousFlashcard}>← Previous</button>
-                <button type="button" className="flip-button" onClick={() => setFlashcardFlipped((value) => !value)}>↻ Flip</button>
-                <button type="button" onClick={nextFlashcard}>Next →</button>
-              </div>
-            </div>
-          )}
         </section>
 
         {/* =================================================
@@ -1984,6 +2251,207 @@ function App() {
         )}
 
       </main>
+
+      {/* ==================================================
+          FLASHCARDS
+      ================================================== */}
+
+      {flashcards.length > 0 && (
+        <section
+          className="flashcards-section"
+          id="flashcards-section"
+        >
+
+          <div className="flashcards-header">
+            <div>
+              <span className="result-icon">🗂️</span>
+              <div>
+                <h2>Flashcards</h2>
+                <small>
+                  Tap the card to reveal the answer
+                </small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateFlashcards}
+              disabled={flashcardsLoading}
+            >
+              {flashcardsLoading
+                ? "⏳ Generating..."
+                : "🔄 Regenerate"}
+            </button>
+          </div>
+
+          <div className="flashcard-progress">
+            Card {flashcardIndex + 1} of {flashcards.length}
+          </div>
+
+          <button
+            type="button"
+            className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+            onClick={handleFlipFlashcard}
+            aria-label="Flip flashcard"
+          >
+            <div className="flashcard-inner">
+
+              <div className="flashcard-face flashcard-front">
+                <span className="flashcard-label">
+                  QUESTION
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.front}
+                </p>
+
+                <small>
+                  Click to reveal answer
+                </small>
+              </div>
+
+              <div className="flashcard-face flashcard-back">
+                <span className="flashcard-label">
+                  ANSWER
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.back}
+                </p>
+
+                <small>
+                  Click to see the question
+                </small>
+              </div>
+
+            </div>
+          </button>
+
+          <div className="flashcard-controls">
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handlePreviousFlashcard}
+              disabled={flashcardIndex === 0}
+            >
+              ← Previous
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleFlipFlashcard}
+            >
+              🔄 Flip
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleNextFlashcard}
+              disabled={
+                flashcardIndex === flashcards.length - 1
+              }
+            >
+              Next →
+            </button>
+
+          </div>
+
+        </section>
+      )}
+
+      {/* ==================================================
+          TEST CONCEPTS
+      ================================================== */}
+
+      {testQuestions.length > 0 && (
+        <section className="test-concepts-section" id="test-concepts-section">
+          <div className="test-concepts-header">
+            <div>
+              <span className="section-kicker">EXAM SIMULATION</span>
+              <h2>Test concepts</h2>
+              <p>Timed multiple-choice questions generated from your study material.</p>
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateTest}
+              disabled={testLoading}
+            >
+              {testLoading ? "Generating..." : "Regenerate test"}
+            </button>
+          </div>
+
+          {!testStarted && !testFinished && (
+            <div className="test-start-card">
+              <div className="test-start-icon">⏱️</div>
+              <h3>{testQuestions.length} MCQs • {Math.round(testTotalSeconds / 60)} minutes</h3>
+              <p>Choose one answer for each question. Your result is shown after you submit or the timer expires.</p>
+              <button type="button" className="generate-button" onClick={startTest}>Start Test</button>
+            </div>
+          )}
+
+          {testStarted && !testFinished && testQuestions[testIndex] && (
+            <div className="test-question-card">
+              <div className="test-progress-row">
+                <span>Question {testIndex + 1} of {testQuestions.length}</span>
+                <strong className={testTimeLeft <= 60 ? "test-timer danger" : "test-timer"}>
+                  ⏱ {formatTestTime(testTimeLeft)}
+                </strong>
+              </div>
+
+              <div className="test-progress-track">
+                <span style={{ width: `${((testIndex + 1) / testQuestions.length) * 100}%` }} />
+              </div>
+
+              <h3>{testQuestions[testIndex].question}</h3>
+
+              <div className="test-options">
+                {testQuestions[testIndex].options.map((option, optionIndex) => {
+                  const selected = testAnswers[testIndex] === option;
+                  return (
+                    <button
+                      type="button"
+                      key={optionIndex}
+                      className={selected ? "test-option selected" : "test-option"}
+                      onClick={() => selectTestAnswer(option)}
+                    >
+                      <span>{String.fromCharCode(65 + optionIndex)}</span>
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                className="generate-button test-next-button"
+                onClick={nextTestQuestion}
+                disabled={!testAnswers[testIndex]}
+              >
+                {testIndex === testQuestions.length - 1 ? "Submit Test" : "Next Question →"}
+              </button>
+            </div>
+          )}
+
+          {testFinished && (
+            <div className="test-result-card">
+              <div className="test-result-icon">🏆</div>
+              <span className="section-kicker">TEST COMPLETE</span>
+              <h3>{testScore} / {testQuestions.length}</h3>
+              <p className="test-percentage">{Math.round((testScore / testQuestions.length) * 100)}%</p>
+              <p>You completed the Test concepts exam.</p>
+              <div className="test-result-actions">
+                <button type="button" className="generate-button" onClick={startTest}>Retake Test</button>
+                <button type="button" className="secondary-button" onClick={handleGenerateTest}>Generate New Test</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ==================================================
           CHAT POPUP
