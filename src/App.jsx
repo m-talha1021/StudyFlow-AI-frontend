@@ -13,13 +13,13 @@ import {
   updateProfile,
 } from "firebase/auth";
 
+import { auth, db } from "./firebase";
+
 import {
   doc,
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
-
-import { auth, db } from "./firebase";
 
 import "./App.css";
 
@@ -78,6 +78,215 @@ const apiRequest = async (endpoint, options = {}) => {
 };
 
 // ========================================================
+// AUTH UI
+// ========================================================
+
+function BrandMark() {
+  return (
+    <div className="brand-mark">
+      <img src="/favicon.png" alt="StudyFlow AI" />
+      <span>StudyFlow AI</span>
+    </div>
+  );
+}
+
+function WelcomePage({ onLogin, onSignup }) {
+  return (
+    <div className="auth-shell">
+      <nav className="public-navbar">
+        <BrandMark />
+        <div className="public-nav-actions">
+          <button type="button" className="nav-link-button" onClick={onLogin}>
+            Login
+          </button>
+          <button type="button" className="nav-signup-button" onClick={onSignup}>
+            Sign Up
+          </button>
+        </div>
+      </nav>
+
+      <main className="welcome-page">
+        <section className="welcome-hero">
+          <div className="welcome-badge">✦ AI-powered learning</div>
+          <h1>
+            Study smarter.<br />
+            <span>Understand faster.</span>
+          </h1>
+          <p>
+            StudyFlow AI turns your notes, documents and images into summaries,
+            explanations, quizzes, flashcards and an interactive study assistant.
+          </p>
+
+          <div className="welcome-actions">
+            <button type="button" className="primary-auth-button" onClick={onSignup}>
+              Get Started
+            </button>
+            <button type="button" className="secondary-auth-button" onClick={onLogin}>
+              I already have an account
+            </button>
+          </div>
+
+          <div className="feature-grid">
+            <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
+            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
+            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
+            <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
+            <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, form, setForm }) {
+  const isSignup = mode === "signup";
+
+  return (
+    <div className="auth-shell">
+      <nav className="public-navbar">
+        <BrandMark />
+        <button
+          type="button"
+          className="nav-link-button"
+          onClick={() => onModeChange("welcome")}
+        >
+          ← Back
+        </button>
+      </nav>
+
+      <main className="auth-page">
+        <form className="auth-card" onSubmit={onSubmit}>
+          <div className="auth-card-brand">
+            <img src="/favicon.png" alt="StudyFlow AI" />
+            <span>StudyFlow AI</span>
+          </div>
+
+          <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
+          <p>
+            {isSignup
+              ? "Start your personalized StudyFlow experience."
+              : "Log in to continue learning."}
+          </p>
+
+          {error && <div className="auth-error">{error}</div>}
+
+          {isSignup && (
+            <label>
+              Full name
+              <input
+                type="text"
+                value={form.name}
+                onChange={(event) =>
+                  setForm((previous) => ({
+                    ...previous,
+                    name: event.target.value,
+                  }))
+                }
+                placeholder="Your full name"
+                autoComplete="name"
+                required
+              />
+            </label>
+          )}
+
+          <label>
+            Email
+            <input
+              type="email"
+              value={form.email}
+              onChange={(event) =>
+                setForm((previous) => ({
+                  ...previous,
+                  email: event.target.value,
+                }))
+              }
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+            />
+          </label>
+
+          <label>
+            Password
+            <input
+              type="password"
+              value={form.password}
+              onChange={(event) =>
+                setForm((previous) => ({
+                  ...previous,
+                  password: event.target.value,
+                }))
+              }
+              placeholder="At least 6 characters"
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              minLength={6}
+              required
+            />
+          </label>
+
+          {isSignup && (
+            <label>
+              Confirm password
+              <input
+                type="password"
+                value={form.confirmPassword}
+                onChange={(event) =>
+                  setForm((previous) => ({
+                    ...previous,
+                    confirmPassword: event.target.value,
+                  }))
+                }
+                placeholder="Repeat your password"
+                autoComplete="new-password"
+                minLength={6}
+                required
+              />
+            </label>
+          )}
+
+          {!isSignup && (
+            <button
+              type="button"
+              className="forgot-password-button"
+              onClick={onForgotPassword}
+              disabled={loading}
+            >
+              Forgot password?
+            </button>
+          )}
+
+          <button
+            type="submit"
+            className="primary-auth-button auth-submit"
+            disabled={loading}
+          >
+            {loading
+              ? "Please wait..."
+              : isSignup
+                ? "Create Account"
+                : "Login"}
+          </button>
+
+          <p className="auth-switch">
+            {isSignup
+              ? "Already have an account?"
+              : "Don't have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => onModeChange(isSignup ? "login" : "signup")}
+              disabled={loading}
+            >
+              {isSignup ? "Login" : "Sign up"}
+            </button>
+          </p>
+        </form>
+      </main>
+    </div>
+  );
+}
+
+// ========================================================
 // APP
 // ========================================================
 
@@ -86,159 +295,17 @@ function App() {
   // FIREBASE AUTHENTICATION
   // ========================================================
 
-  const [authUser, setAuthUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [authMode, setAuthMode] = useState("login");
-  const [authName, setAuthName] = useState("");
-  const [authEmail, setAuthEmail] = useState("");
-  const [authPassword, setAuthPassword] = useState("");
-  const [authConfirmPassword, setAuthConfirmPassword] = useState("");
-  const [authBusy, setAuthBusy] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authView, setAuthView] = useState("welcome");
+  const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
-  const [authMessage, setAuthMessage] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setAuthUser(currentUser);
-      setAuthLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const resetAuthMessages = () => {
-    setAuthError("");
-    setAuthMessage("");
-  };
-
-  const handleAuthSubmit = async (event) => {
-    event.preventDefault();
-    resetAuthMessages();
-
-    const email = authEmail.trim();
-
-    if (!email || !authPassword) {
-      setAuthError("Please enter your email and password.");
-      return;
-    }
-
-    if (authMode === "signup") {
-      if (!authName.trim()) {
-        setAuthError("Please enter your name.");
-        return;
-      }
-
-      if (authPassword.length < 6) {
-        setAuthError("Password must contain at least 6 characters.");
-        return;
-      }
-
-      if (authPassword !== authConfirmPassword) {
-        setAuthError("Passwords do not match.");
-        return;
-      }
-    }
-
-    setAuthBusy(true);
-
-    try {
-      if (authMode === "signup") {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          authPassword
-        );
-
-        const user = credential.user;
-
-        await updateProfile(user, {
-          displayName: authName.trim(),
-        });
-
-        await setDoc(
-          doc(db, "users", user.uid),
-          {
-            uid: user.uid,
-            email: user.email || email,
-            displayName: authName.trim(),
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        setAuthMessage("Account created successfully.");
-      } else {
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          authPassword
-        );
-      }
-    } catch (error) {
-      console.error("Authentication error:", error);
-
-      const code = error?.code || "";
-      const messages = {
-        "auth/email-already-in-use": "An account with this email already exists.",
-        "auth/invalid-email": "Please enter a valid email address.",
-        "auth/weak-password": "Password is too weak. Use at least 6 characters.",
-        "auth/invalid-credential": "Incorrect email or password.",
-        "auth/user-not-found": "No account was found with this email.",
-        "auth/wrong-password": "Incorrect email or password.",
-        "auth/too-many-requests": "Too many attempts. Please try again later.",
-        "auth/network-request-failed": "Network error. Please check your connection.",
-      };
-
-      setAuthError(
-        messages[code] ||
-          error?.message ||
-          "Authentication failed. Please try again."
-      );
-    } finally {
-      setAuthBusy(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    resetAuthMessages();
-
-    const email = authEmail.trim();
-
-    if (!email) {
-      setAuthError("Enter your email address first.");
-      return;
-    }
-
-    setAuthBusy(true);
-
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAuthMessage("Password reset email sent. Check your inbox.");
-    } catch (error) {
-      console.error("Password reset error:", error);
-      setAuthError(
-        error?.message ||
-          "Could not send the password reset email."
-      );
-    } finally {
-      setAuthBusy(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setAuthMode("login");
-      setAuthPassword("");
-      setAuthConfirmPassword("");
-      setAuthError("");
-      setAuthMessage("");
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert(error?.message || "Could not log out.");
-    }
-  };
+  const [authForm, setAuthForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   // ========================================================
   // STUDY MATERIAL
@@ -326,6 +393,23 @@ function App() {
 
   const [showGoUp, setShowGoUp] =
     useState(false);
+
+  // ========================================================
+  // FIREBASE SESSION LISTENER
+  // ========================================================
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthChecked(true);
+
+      if (firebaseUser) {
+        setAuthView("app");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // ========================================================
   // TEST TIMER
@@ -418,6 +502,187 @@ function App() {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
+  };
+
+  // ========================================================
+  // FIREBASE AUTHENTICATION HANDLERS
+  // ========================================================
+
+  const handleAuthSubmit = async (event) => {
+    event.preventDefault();
+    setAuthError("");
+
+    const isSignup = authView === "signup";
+    const email = authForm.email.trim();
+    const password = authForm.password;
+
+    if (isSignup) {
+      if (!authForm.name.trim()) {
+        setAuthError("Please enter your full name.");
+        return;
+      }
+
+      if (password !== authForm.confirmPassword) {
+        setAuthError("Passwords do not match.");
+        return;
+      }
+    }
+
+    setAuthLoading(true);
+
+    try {
+      if (isSignup) {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const firebaseUser = credential.user;
+        const displayName = authForm.name.trim();
+
+        await updateProfile(firebaseUser, {
+          displayName,
+        });
+
+        await setDoc(
+          doc(db, "users", firebaseUser.uid),
+          {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setUser(firebaseUser);
+        setAuthView("app");
+      } else {
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        setUser(credential.user);
+        setAuthView("app");
+      }
+
+      setAuthForm({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setAuthError("");
+    } catch (error) {
+      console.error("Firebase authentication error:", error);
+
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setAuthError("This email is already registered.");
+          break;
+        case "auth/invalid-email":
+          setAuthError("Please enter a valid email address.");
+          break;
+        case "auth/weak-password":
+          setAuthError("Password should be at least 6 characters.");
+          break;
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          setAuthError("Invalid email or password.");
+          break;
+        case "auth/network-request-failed":
+          setAuthError(
+            "Failed to connect to Firebase. Check your Firebase configuration and internet connection."
+          );
+          break;
+        case "auth/operation-not-allowed":
+          setAuthError(
+            "Email/password sign-in is not enabled in Firebase Authentication."
+          );
+          break;
+        default:
+          setAuthError(error.message || "Authentication failed.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setAuthError("");
+
+    const email = authForm.email.trim();
+
+    if (!email) {
+      setAuthError("Enter your email address first.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthError("Password reset email sent. Check your inbox.");
+    } catch (error) {
+      console.error("Password reset error:", error);
+
+      if (error.code === "auth/user-not-found") {
+        setAuthError("No account was found with this email.");
+      } else if (error.code === "auth/invalid-email") {
+        setAuthError("Please enter a valid email address.");
+      } else {
+        setAuthError(error.message || "Could not send the reset email.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const openAuth = (view) => {
+    setAuthError("");
+    setAuthView(view);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+
+    setUser(null);
+    setAuthView("welcome");
+    setAuthForm({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setAuthError("");
+
+    setText("");
+    setFile(null);
+    setFiles([]);
+    setMaterialReady(false);
+    setResult("");
+    setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setChatMessages([]);
+    setChatQuestion("");
+    setChatOpen(false);
+    setTestQuestions([]);
+    setTestAnswers({});
+    setTestStarted(false);
+    setTestFinished(false);
+    setTestScore(0);
+    stopSpeech();
   };
 
   // ========================================================
@@ -1340,290 +1605,39 @@ function App() {
     };
 
   // ========================================================
-  // AUTHENTICATION UI
+  // AUTH GATE
   // ========================================================
 
-  const authInputStyle = {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "13px 14px",
-    borderRadius: "12px",
-    border: "1px solid rgba(148, 163, 184, 0.18)",
-    outline: "none",
-    background: "rgba(2, 6, 23, 0.62)",
-    color: "#f8fafc",
-    fontSize: "15px",
-  };
-
-  if (authLoading) {
+  if (!authChecked) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#09090f",
-          color: "#f8fafc",
-          fontFamily: "inherit",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "44px", marginBottom: "14px" }}>🎓</div>
-          <h2 style={{ margin: 0 }}>StudyFlow AI</h2>
-          <p style={{ opacity: 0.7 }}>Checking your account...</p>
-        </div>
+      <div className="auth-loading-screen">
+        <img src="/favicon.png" alt="StudyFlow AI" />
+        <span>Loading StudyFlow AI...</span>
       </div>
     );
   }
 
-  if (!authUser) {
-    const isSignup = authMode === "signup";
+  if (!user) {
+    if (authView === "login" || authView === "signup") {
+      return (
+        <AuthPage
+          mode={authView}
+          onModeChange={openAuth}
+          onSubmit={handleAuthSubmit}
+          onForgotPassword={handleForgotPassword}
+          loading={authLoading}
+          error={authError}
+          form={authForm}
+          setForm={setAuthForm}
+        />
+      );
+    }
 
     return (
-      <div
-        className="auth-page"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "28px 18px",
-          boxSizing: "border-box",
-          background:
-            "radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.35), transparent 35%), radial-gradient(circle at 90% 15%, rgba(168, 85, 247, 0.35), transparent 40%), #09090f",
-          color: "#f8fafc",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "470px",
-            padding: "32px",
-            borderRadius: "24px",
-            background: "rgba(17, 17, 27, 0.88)",
-            border: "1px solid rgba(168, 85, 247, 0.28)",
-            boxShadow: "0 24px 80px rgba(0, 0, 0, 0.45)",
-            backdropFilter: "blur(18px)",
-          }}
-        >
-          <div style={{ textAlign: "center", marginBottom: "26px" }}>
-            <img
-              src="/favicon.png"
-              alt="StudyFlow AI"
-              style={{
-                width: "72px",
-                height: "72px",
-                objectFit: "contain",
-                borderRadius: "18px",
-                marginBottom: "12px",
-              }}
-            />
-            <h1
-              style={{
-                margin: 0,
-                fontSize: "32px",
-                lineHeight: 1.15,
-                fontWeight: 800,
-              }}
-            >
-              {isSignup ? "Create your account" : "Welcome back"}
-            </h1>
-            <p style={{ margin: "10px 0 0", color: "#a1a1aa" }}>
-              {isSignup
-                ? "Start learning smarter with StudyFlow AI."
-                : "Log in to continue learning with StudyFlow AI."}
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "8px",
-              padding: "5px",
-              borderRadius: "14px",
-              background: "rgba(255,255,255,0.045)",
-              marginBottom: "22px",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode("login");
-                resetAuthMessages();
-              }}
-              style={{
-                border: "0",
-                borderRadius: "10px",
-                padding: "11px",
-                color: "white",
-                cursor: "pointer",
-                fontWeight: 700,
-                background: !isSignup
-                  ? "linear-gradient(135deg, #6d28d9, #9333ea, #db2777)"
-                  : "transparent",
-              }}
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode("signup");
-                resetAuthMessages();
-              }}
-              style={{
-                border: "0",
-                borderRadius: "10px",
-                padding: "11px",
-                color: "white",
-                cursor: "pointer",
-                fontWeight: 700,
-                background: isSignup
-                  ? "linear-gradient(135deg, #6d28d9, #9333ea, #db2777)"
-                  : "transparent",
-              }}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          <form onSubmit={handleAuthSubmit}>
-            {isSignup && (
-              <label style={{ display: "block", marginBottom: "14px" }}>
-                <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Name</span>
-                <input
-                  type="text"
-                  value={authName}
-                  onChange={(event) => setAuthName(event.target.value)}
-                  placeholder="Your name"
-                  autoComplete="name"
-                  style={authInputStyle}
-                />
-              </label>
-            )}
-
-            <label style={{ display: "block", marginBottom: "14px" }}>
-              <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Email</span>
-              <input
-                type="email"
-                value={authEmail}
-                onChange={(event) => setAuthEmail(event.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-                style={authInputStyle}
-              />
-            </label>
-
-            <label style={{ display: "block", marginBottom: "14px" }}>
-              <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Password</span>
-              <input
-                type="password"
-                value={authPassword}
-                onChange={(event) => setAuthPassword(event.target.value)}
-                placeholder="At least 6 characters"
-                autoComplete={isSignup ? "new-password" : "current-password"}
-                style={authInputStyle}
-              />
-            </label>
-
-            {isSignup && (
-              <label style={{ display: "block", marginBottom: "14px" }}>
-                <span style={{ display: "block", marginBottom: "7px", color: "#d4d4d8", fontSize: "14px" }}>Confirm password</span>
-                <input
-                  type="password"
-                  value={authConfirmPassword}
-                  onChange={(event) => setAuthConfirmPassword(event.target.value)}
-                  placeholder="Enter password again"
-                  autoComplete="new-password"
-                  style={authInputStyle}
-                />
-              </label>
-            )}
-
-            {!isSignup && (
-              <div style={{ textAlign: "right", marginBottom: "16px" }}>
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  disabled={authBusy}
-                  style={{
-                    border: 0,
-                    background: "transparent",
-                    color: "#c084fc",
-                    cursor: "pointer",
-                    padding: 0,
-                    fontSize: "14px",
-                  }}
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            {authError && (
-              <div
-                style={{
-                  marginBottom: "14px",
-                  padding: "11px 13px",
-                  borderRadius: "10px",
-                  color: "#fecaca",
-                  background: "rgba(127, 29, 29, 0.25)",
-                  border: "1px solid rgba(248, 113, 113, 0.25)",
-                  fontSize: "14px",
-                }}
-              >
-                {authError}
-              </div>
-            )}
-
-            {authMessage && (
-              <div
-                style={{
-                  marginBottom: "14px",
-                  padding: "11px 13px",
-                  borderRadius: "10px",
-                  color: "#bbf7d0",
-                  background: "rgba(20, 83, 45, 0.25)",
-                  border: "1px solid rgba(74, 222, 128, 0.22)",
-                  fontSize: "14px",
-                }}
-              >
-                {authMessage}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={authBusy}
-              style={{
-                width: "100%",
-                border: "0",
-                borderRadius: "13px",
-                padding: "14px 18px",
-                color: "white",
-                fontSize: "16px",
-                fontWeight: 800,
-                cursor: authBusy ? "not-allowed" : "pointer",
-                opacity: authBusy ? 0.7 : 1,
-                background: "linear-gradient(135deg, #6d28d9 0%, #9333ea 48%, #db2777 100%)",
-                boxShadow: "0 12px 30px rgba(147, 51, 234, 0.25)",
-              }}
-            >
-              {authBusy
-                ? "Please wait..."
-                : isSignup
-                  ? "Create account"
-                  : "Login"}
-            </button>
-          </form>
-
-          <p style={{ textAlign: "center", color: "#71717a", fontSize: "12px", margin: "20px 0 0" }}>
-            Your account is secured by Firebase Authentication.
-          </p>
-        </div>
-      </div>
+      <WelcomePage
+        onLogin={() => openAuth("login")}
+        onSignup={() => openAuth("signup")}
+      />
     );
   }
 
@@ -1657,28 +1671,25 @@ function App() {
           </b>
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="header-actions">
           <div className="uploadBtn">
             <a href="#inputcard">
               Upload
             </a>
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            style={{
-              border: "1px solid rgba(168, 85, 247, 0.35)",
-              borderRadius: "12px",
-              padding: "10px 16px",
-              color: "#fff",
-              background: "linear-gradient(135deg, rgba(109,40,217,.9), rgba(219,39,119,.9))",
-              cursor: "pointer",
-              fontWeight: 700,
-            }}
-          >
-            Logout
-          </button>
+          <div className="user-account">
+            <span className="user-name">
+              {user.displayName || user.email || "Account"}
+            </span>
+            <button
+              type="button"
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
       </header>
