@@ -2970,6 +2970,8 @@ footer h3 {
 .nav-link-button,
 .app-nav-links button {
   padding: 10px 12px;
+   border: 1px solid blue;
+   background-color: pink;
 }
 
 .nav-link-button:hover,
