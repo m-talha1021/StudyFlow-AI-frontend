@@ -301,6 +301,60 @@ body {
   background-color: rgb(58, 62, 66);
 }
 
+/* =========================================
+   AUTH PAGE BRAND
+========================================= */
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 34px;
+}
+
+.auth-brand-logo {
+  width: 78px;
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(167, 139, 250, 0.18);
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.25),
+    0 0 25px rgba(124, 58, 237, 0.08);
+
+  overflow: hidden;
+}
+
+.auth-brand-logo img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.auth-brand-name {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #ddd6fe 45%,
+    #f0abfc 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ============================================================
    INPUT CARD
 ============================================================ */
