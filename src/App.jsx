@@ -97,6 +97,20 @@ function App() {
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
 
   // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const [testLoading, setTestLoading] = useState(false);
+  const [testQuestions, setTestQuestions] = useState([]);
+  const [testAnswers, setTestAnswers] = useState({});
+  const [testIndex, setTestIndex] = useState(0);
+  const [testStarted, setTestStarted] = useState(false);
+  const [testFinished, setTestFinished] = useState(false);
+  const [testTimeLeft, setTestTimeLeft] = useState(0);
+  const [testTotalSeconds, setTestTotalSeconds] = useState(0);
+  const [testScore, setTestScore] = useState(0);
+
+  // ========================================================
   // CHATBOT
   // ========================================================
 
@@ -137,6 +151,30 @@ function App() {
 
   const [showGoUp, setShowGoUp] =
     useState(false);
+
+  // ========================================================
+  // TEST TIMER
+  // ========================================================
+
+  useEffect(() => {
+    if (!testStarted || testFinished) return;
+
+    if (testTimeLeft <= 0) {
+      const score = testQuestions.reduce((total, question, index) => {
+        return total + (testAnswers[index] === question.answer ? 1 : 0);
+      }, 0);
+      setTestScore(score);
+      setTestFinished(true);
+      setTestStarted(false);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setTestTimeLeft((previous) => Math.max(previous - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [testStarted, testFinished, testTimeLeft]);
 
   // ========================================================
   // SCROLL LISTENER
@@ -512,12 +550,117 @@ function App() {
   };
 
   // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const formatTestTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
+  const calculateTestScore = () => {
+    return testQuestions.reduce((score, question, index) => {
+      return score + (testAnswers[index] === question.answer ? 1 : 0);
+    }, 0);
+  };
+
+  const finishTest = () => {
+    const score = calculateTestScore();
+    setTestScore(score);
+    setTestFinished(true);
+    setTestStarted(false);
+    setTestIndex(0);
+  };
+
+  const handleGenerateTest = async () => {
+    setTestLoading(true);
+    setResult("");
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+        if (!processed) return;
+        ready = true;
+      }
+
+      if (!ready && files.length === 0 && !file && !text.trim()) {
+        alert("Please upload study material or paste your notes first.");
+        return;
+      }
+
+      const data = await apiRequest("/api/test-concepts", {
+        method: "POST",
+        body: JSON.stringify({ count: 30 }),
+      });
+
+      if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
+        throw new Error(data.error || "Could not generate the test.");
+      }
+
+      setTestQuestions(data.questions);
+      setTestAnswers({});
+      setTestIndex(0);
+      setTestScore(0);
+      setTestFinished(false);
+      setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
+      setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
+      setTestStarted(false);
+
+      setTimeout(() => {
+        document.getElementById("test-concepts-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error("Test concepts error:", error);
+      alert(error.message || "Could not generate the test.");
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const startTest = () => {
+    setTestAnswers({});
+    setTestIndex(0);
+    setTestScore(0);
+    setTestFinished(false);
+    setTestTimeLeft(testTotalSeconds);
+    setTestStarted(true);
+  };
+
+  const selectTestAnswer = (option) => {
+    if (testFinished || !testStarted) return;
+    setTestAnswers((previous) => ({
+      ...previous,
+      [testIndex]: option,
+    }));
+  };
+
+  const nextTestQuestion = () => {
+    if (testIndex >= testQuestions.length - 1) {
+      finishTest();
+      return;
+    }
+    setTestIndex((previous) => previous + 1);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
     if (mode === "flashcards") {
       await handleGenerateFlashcards();
+      return;
+    }
+
+    if (mode === "test") {
+      await handleGenerateTest();
       return;
     }
 
@@ -1081,8 +1224,8 @@ function App() {
           </h1>
 
           <p>
-            Upload your study notes or paste
-            your content, then let AI help you learn.
+            Upload your study material or paste
+            your notes, then let AI help you learn.
           </p>
 
         </section>
@@ -1158,7 +1301,7 @@ function App() {
             </strong>
 
             <small>
-              Select PDF, DOCX, PPTX,
+              Select multiple PDF, DOCX, PPTX,
               JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
@@ -1452,6 +1595,23 @@ function App() {
 
             </button>
 
+            {/* TEST CONCEPTS */}
+
+            <button
+              className={
+                mode === "test"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("test")}
+            >
+              <span>⏱️</span>
+              <div>
+                <strong>Test concepts</strong>
+                <small>Timed MCQ exam from your material</small>
+              </div>
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -1470,7 +1630,9 @@ function App() {
               ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
-                : `✨ Generate ${mode}`}
+                : mode === "test"
+                  ? "⏱️ Generate Test"
+                  : `✨ Generate ${mode}`}
 
           </button>
 
@@ -1717,6 +1879,96 @@ function App() {
 
           </div>
 
+        </section>
+      )}
+
+      {/* ==================================================
+          TEST CONCEPTS
+      ================================================== */}
+
+      {testQuestions.length > 0 && (
+        <section className="test-concepts-section" id="test-concepts-section">
+          <div className="test-concepts-header">
+            <div>
+              <span className="section-kicker">EXAM SIMULATION</span>
+              <h2>Test concepts</h2>
+              <p>Timed multiple-choice questions generated from your study material.</p>
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateTest}
+              disabled={testLoading}
+            >
+              {testLoading ? "Generating..." : "Regenerate test"}
+            </button>
+          </div>
+
+          {!testStarted && !testFinished && (
+            <div className="test-start-card">
+              <div className="test-start-icon">⏱️</div>
+              <h3>{testQuestions.length} MCQs • {Math.round(testTotalSeconds / 60)} minutes</h3>
+              <p>Choose one answer for each question. Your result is shown after you submit or the timer expires.</p>
+              <button type="button" className="generate-button" onClick={startTest}>Start Test</button>
+            </div>
+          )}
+
+          {testStarted && !testFinished && testQuestions[testIndex] && (
+            <div className="test-question-card">
+              <div className="test-progress-row">
+                <span>Question {testIndex + 1} of {testQuestions.length}</span>
+                <strong className={testTimeLeft <= 60 ? "test-timer danger" : "test-timer"}>
+                  ⏱ {formatTestTime(testTimeLeft)}
+                </strong>
+              </div>
+
+              <div className="test-progress-track">
+                <span style={{ width: `${((testIndex + 1) / testQuestions.length) * 100}%` }} />
+              </div>
+
+              <h3>{testQuestions[testIndex].question}</h3>
+
+              <div className="test-options">
+                {testQuestions[testIndex].options.map((option, optionIndex) => {
+                  const selected = testAnswers[testIndex] === option;
+                  return (
+                    <button
+                      type="button"
+                      key={optionIndex}
+                      className={selected ? "test-option selected" : "test-option"}
+                      onClick={() => selectTestAnswer(option)}
+                    >
+                      <span>{String.fromCharCode(65 + optionIndex)}</span>
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                className="generate-button test-next-button"
+                onClick={nextTestQuestion}
+                disabled={!testAnswers[testIndex]}
+              >
+                {testIndex === testQuestions.length - 1 ? "Submit Test" : "Next Question →"}
+              </button>
+            </div>
+          )}
+
+          {testFinished && (
+            <div className="test-result-card">
+              <div className="test-result-icon">🏆</div>
+              <span className="section-kicker">TEST COMPLETE</span>
+              <h3>{testScore} / {testQuestions.length}</h3>
+              <p className="test-percentage">{Math.round((testScore / testQuestions.length) * 100)}%</p>
+              <p>You completed the Test concepts exam.</p>
+              <div className="test-result-actions">
+                <button type="button" className="generate-button" onClick={startTest}>Retake Test</button>
+                <button type="button" className="secondary-button" onClick={handleGenerateTest}>Generate New Test</button>
+              </div>
+            </div>
+          )}
         </section>
       )}
 
