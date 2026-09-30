@@ -72,7 +72,7 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -95,19 +95,6 @@ function App() {
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
-
-  // ========================================================
-  // AI STUDY PLANNER
-  // ========================================================
-
-  const [plannerExamDate, setPlannerExamDate] = useState("");
-  const [plannerHours, setPlannerHours] = useState(2);
-  const [plannerStudyDays, setPlannerStudyDays] = useState(6);
-  const [plannerGoal, setPlannerGoal] = useState(
-    "Prepare thoroughly for my exam"
-  );
-  const [studyPlan, setStudyPlan] = useState(null);
-  const [plannerLoading, setPlannerLoading] = useState(false);
 
   // ========================================================
   // CHATBOT
@@ -221,23 +208,24 @@ function App() {
   };
 
   // ========================================================
-  // PROCESS FILE
+  // PROCESS MULTIPLE FILES
   // ========================================================
 
-  const processFile = async (selectedFilesInput) => {
-    const files = Array.isArray(selectedFilesInput)
-      ? selectedFilesInput.filter(Boolean)
-      : selectedFilesInput
-        ? [selectedFilesInput]
-        : [];
+  const processFiles = async (selectedFiles) => {
+    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
 
-    if (files.length === 0) {
+    if (!validFiles.length) {
+      return;
+    }
+
+    if (validFiles.length > 10) {
+      alert("Please select a maximum of 10 files at a time.");
       return;
     }
 
     setProcessing(true);
-    setSelectedFiles(files);
-    setFile(files[0]);
+    setFiles(validFiles);
+    setFile(validFiles[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -247,12 +235,13 @@ function App() {
 
     setChatMessages([]);
     setChatQuestion("");
+
     stopSpeech();
 
     try {
       const formData = new FormData();
 
-      files.forEach((selectedFile) => {
+      validFiles.forEach((selectedFile) => {
         formData.append("files", selectedFile);
       });
 
@@ -266,23 +255,92 @@ function App() {
 
       if (!data.success) {
         throw new Error(
-          data.error || "Could not process the selected files."
+          data.error ||
+            "Could not process the selected files."
         );
       }
 
       setMaterialReady(true);
+
     } catch (error) {
-      console.error("File processing error:", error);
-      setSelectedFiles([]);
-      setFile(null);
-              setSelectedFiles([]);
+      console.error(
+        "File processing error:",
+        error
+      );
+
       alert(
         error.message ||
           "Could not process the uploaded files."
       );
+
+      setFiles([]);
+      setFile(null);
+      setMaterialReady(false);
+
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Keep the single-file helper for the camera workflow.
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
+    }
+
+    await processFiles([selectedFile]);
+  };
+
+  // ========================================================
+  // CAMERA CAPTURE
+  // ========================================================
+
+  const handleCameraCapture = (event) => {
+    const selectedFile =
+      event.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    setText("");
+
+    processFile(selectedFile);
+
+    event.target.value = "";
+  };
+
+  // ========================================================
+  // OPEN CAMERA
+  // ========================================================
+
+  const openCamera = () => {
+    if (processing) {
+      return;
+    }
+
+    cameraInputRef.current?.click();
+  };
+
+  // ========================================================
+  // FILE SELECTION
+  // ========================================================
+
+  const handleFileChange = (event) => {
+    const selectedFiles = Array.from(
+      event.target.files || []
+    );
+
+    if (!selectedFiles.length) {
+      return;
+    }
+
+    setText("");
+
+    processFiles(selectedFiles);
+
+    // Allow selecting the same files again later.
+    event.target.value = "";
   };
 
   // ========================================================
@@ -454,94 +512,12 @@ function App() {
   };
 
   // ========================================================
-  // GENERATE AI STUDY PLAN
-  // ========================================================
-
-  const handleGenerateStudyPlan = async () => {
-    if (!plannerExamDate) {
-      alert("Please select your exam date.");
-      return;
-    }
-
-    if (!materialReady && !text.trim() && !file) {
-      alert(
-        "Please upload your study material or paste your notes before creating a study plan."
-      );
-      return;
-    }
-
-    setPlannerLoading(true);
-    setStudyPlan(null);
-    setResult("");
-    stopSpeech();
-
-    try {
-      let ready = materialReady;
-
-      if (!ready && text.trim()) {
-        const processed = await processPastedText();
-        if (!processed) {
-          setPlannerLoading(false);
-          return;
-        }
-        ready = true;
-      }
-
-      if (!ready) {
-        alert("Please process your study material first.");
-        setPlannerLoading(false);
-        return;
-      }
-
-      const data = await apiRequest("/api/study-plan", {
-        method: "POST",
-        body: JSON.stringify({
-          exam_date: plannerExamDate,
-          hours_per_day: Number(plannerHours),
-          study_days_per_week: Number(plannerStudyDays),
-          goal: plannerGoal.trim(),
-        }),
-      });
-
-      if (!data.success || !data.plan) {
-        throw new Error(
-          data.error || "Could not create your study plan."
-        );
-      }
-
-      setStudyPlan(data.plan);
-
-      setTimeout(() => {
-        document
-          .getElementById("study-plan-section")
-          ?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-      }, 100);
-
-    } catch (error) {
-      console.error("Study planner error:", error);
-      alert(
-        error.message || "Could not create your study plan."
-      );
-    } finally {
-      setPlannerLoading(false);
-    }
-  };
-
-  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
     if (mode === "flashcards") {
       await handleGenerateFlashcards();
-      return;
-    }
-
-    if (mode === "planner") {
-      await handleGenerateStudyPlan();
       return;
     }
 
@@ -1143,7 +1119,7 @@ function App() {
               );
 
               setFile(null);
-              setSelectedFiles([]);
+              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1177,19 +1153,19 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing document or image..."
-                : "Upload your document or image"}
+                ? "Processing selected files..."
+                : "Upload your documents or images"}
             </strong>
 
             <small>
-              PDF, DOCX, PPTX,
-              JPG, PNG or WEBP
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
             <input
               type="file"
-              accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               multiple
+              accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               onChange={
                 handleFileChange
               }
@@ -1280,18 +1256,16 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {selectedFiles.length > 0 && (
-            <div className="selected-files">
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
+
               <div className="selected-files-header">
-                📎 Selected {selectedFiles.length} file{selectedFiles.length === 1 ? "" : "s"}
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
               </div>
 
               <div className="selected-files-list">
-                {selectedFiles.map((selectedFile, index) => (
-                  <div
-                    className="selected-file"
-                    key={`${selectedFile.name}-${index}`}
-                  >
+                {files.map((selectedFile, index) => (
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
                     <span>📄</span>
                     <strong title={selectedFile.name}>
                       {selectedFile.name}
@@ -1302,6 +1276,7 @@ function App() {
                   </div>
                 ))}
               </div>
+
             </div>
           )}
 
@@ -1477,114 +1452,7 @@ function App() {
 
             </button>
 
-            {/* STUDY PLANNER */}
-
-            <button
-              className={
-                mode === "planner"
-                  ? "mode active"
-                  : "mode"
-              }
-              onClick={() =>
-                setMode("planner")
-              }
-            >
-
-              <span>
-                📅
-              </span>
-
-              <div>
-
-                <strong>
-                  Study Planner
-                </strong>
-
-                <small>
-                  Build a plan for your exam
-                </small>
-
-              </div>
-
-            </button>
-
           </div>
-
-          {/* STUDY PLANNER OPTIONS */}
-
-          {mode === "planner" && (
-            <div className="study-planner-form">
-
-              <div className="study-planner-form-header">
-                <div>
-                  <span className="study-planner-icon">📅</span>
-                  <div>
-                    <h3>Personalized Study Plan</h3>
-                    <p>Tell StudyFlow when and how you study.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="study-planner-fields">
-
-                <label>
-                  Exam date
-                  <input
-                    type="date"
-                    value={plannerExamDate}
-                    min={new Date().toISOString().split("T")[0]}
-                    onChange={(event) =>
-                      setPlannerExamDate(event.target.value)
-                    }
-                  />
-                </label>
-
-                <label>
-                  Study hours / day
-                  <input
-                    type="number"
-                    min="0.5"
-                    max="12"
-                    step="0.5"
-                    value={plannerHours}
-                    onChange={(event) =>
-                      setPlannerHours(event.target.value)
-                    }
-                  />
-                </label>
-
-                <label>
-                  Study days / week
-                  <select
-                    value={plannerStudyDays}
-                    onChange={(event) =>
-                      setPlannerStudyDays(event.target.value)
-                    }
-                  >
-                    <option value="3">3 days</option>
-                    <option value="4">4 days</option>
-                    <option value="5">5 days</option>
-                    <option value="6">6 days</option>
-                    <option value="7">7 days</option>
-                  </select>
-                </label>
-
-                <label className="study-planner-goal">
-                  Your goal
-                  <input
-                    type="text"
-                    value={plannerGoal}
-                    onChange={(event) =>
-                      setPlannerGoal(event.target.value)
-                    }
-                    placeholder="e.g. Score 90% in my final exam"
-                  />
-                </label>
-
-              </div>
-
-            </div>
-          )}
 
           {/* GENERATE */}
 
@@ -1594,18 +1462,15 @@ function App() {
             disabled={
               processing ||
               generating ||
-              flashcardsLoading ||
-              plannerLoading
+              flashcardsLoading
             }
           >
 
-            {generating || flashcardsLoading || plannerLoading
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
-                : mode === "planner"
-                  ? "✨ Create Study Plan"
-                  : `✨ Generate ${mode}`}
+                : `✨ Generate ${mode}`}
 
           </button>
 
@@ -1743,92 +1608,6 @@ function App() {
         )}
 
       </main>
-
-      {/* ==================================================
-          AI STUDY PLAN
-      ================================================== */}
-
-      {studyPlan && (
-        <section
-          className="study-plan-section"
-          id="study-plan-section"
-        >
-
-          <div className="study-plan-header">
-            <div>
-              <span className="study-plan-title-icon">📅</span>
-              <div>
-                <h2>{studyPlan.title || "Your AI Study Plan"}</h2>
-                <p>{studyPlan.overview}</p>
-              </div>
-            </div>
-
-            <div className="study-plan-meta">
-              <span>{studyPlan.days_remaining} days</span>
-              <span>{studyPlan.hours_per_day}h/day</span>
-            </div>
-          </div>
-
-          <div className="study-plan-progress">
-            <div>
-              <strong>Exam</strong>
-              <span>{studyPlan.exam_date}</span>
-            </div>
-            <div>
-              <strong>Study days</strong>
-              <span>{studyPlan.study_days_per_week}/week</span>
-            </div>
-            <div>
-              <strong>Total study time</strong>
-              <span>{studyPlan.total_study_hours} hours</span>
-            </div>
-          </div>
-
-          <div className="study-plan-days">
-            {(studyPlan.days || []).map((day, index) => (
-              <article className="study-plan-day" key={`${day.date || "day"}-${index}`}>
-                <div className="study-plan-day-number">
-                  <span>Day</span>
-                  <strong>{day.day || index + 1}</strong>
-                </div>
-
-                <div className="study-plan-day-content">
-                  <div className="study-plan-day-top">
-                    <div>
-                      <h3>{day.focus}</h3>
-                      <small>{day.date}</small>
-                    </div>
-                    {day.total_minutes && (
-                      <span className="study-plan-duration">
-                        {day.total_minutes} min
-                      </span>
-                    )}
-                  </div>
-
-                  <ul>
-                    {(day.tasks || []).map((task, taskIndex) => (
-                      <li key={taskIndex}>
-                        <span className="study-plan-task-dot">•</span>
-                        <div>
-                          <strong>{task.task}</strong>
-                          {task.duration && <small>{task.duration} min</small>}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {day.review && (
-                    <div className="study-plan-review">
-                      <strong>🔁 Review:</strong> {day.review}
-                    </div>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-
-        </section>
-      )}
 
       {/* ==================================================
           FLASHCARDS
