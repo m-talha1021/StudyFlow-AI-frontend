@@ -4748,3 +4748,331 @@ body {
     flex-basis: 40px;
   }
 }
+
+
+/* ============================================================
+   FINAL LAYOUT STABILITY OVERRIDES
+   Keep the original StudyFlow UI width and spacing unchanged
+   when generated results, flashcards, or tests appear.
+============================================================ */
+
+/* Reserve scrollbar space so the whole page does not shift
+   horizontally when generated content makes the page taller. */
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* All generated sections stay aligned with the 900px main app. */
+.generated-study-sections {
+  width: min(900px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 0 0 80px;
+  box-sizing: border-box;
+}
+
+/* Never allow generated cards to create a wider page. */
+.generated-study-sections > section,
+.result-section {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Keep the result visually attached to the existing main layout. */
+.result-section {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.result-header,
+.result-content {
+  min-width: 0;
+}
+
+.result-content {
+  max-width: 100%;
+}
+
+/* Flashcards use the same width as the main application. */
+.flashcards-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 34px auto 0;
+  box-sizing: border-box;
+}
+
+/* Test Concepts uses the same width instead of expanding to 1050px. */
+.test-concepts-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 34px auto 0;
+  padding: 28px;
+  box-sizing: border-box;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    rgba(28, 17, 48, 0.86),
+    rgba(12, 12, 21, 0.92)
+  );
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+  scroll-margin-top: 95px;
+  overflow: hidden;
+}
+
+.test-concepts-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.test-concepts-header h2 {
+  margin: 6px 0 7px;
+  font-size: 25px;
+}
+
+.test-concepts-header p {
+  margin: 0;
+  color: #a1a1aa;
+  line-height: 1.5;
+}
+
+.test-start-card,
+.test-question-card,
+.test-result-card {
+  margin-top: 24px;
+  padding: 28px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  box-sizing: border-box;
+}
+
+.test-start-card {
+  text-align: center;
+}
+
+.test-start-icon,
+.test-result-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 15px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(124, 58, 237, 0.16);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  font-size: 30px;
+}
+
+.test-start-card h3,
+.test-result-card h3 {
+  margin: 0 0 9px;
+  font-size: 21px;
+}
+
+.test-start-card p,
+.test-result-card p {
+  margin: 0 auto;
+  max-width: 620px;
+  color: #a1a1aa;
+  line-height: 1.6;
+}
+
+.test-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 12px;
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.test-timer {
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.test-timer.danger {
+  color: #fb7185;
+}
+
+.test-progress-track {
+  width: 100%;
+  height: 7px;
+  margin-bottom: 25px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.test-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7c3aed, #6366f1);
+  transition: width 0.25s ease;
+}
+
+.test-question-card h3 {
+  margin: 0 0 22px;
+  color: #ffffff;
+  font-size: clamp(20px, 3vw, 27px);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.test-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.test-option {
+  min-width: 0;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #ffffff;
+  text-align: left;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.test-option > span {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(124, 58, 237, 0.16);
+  color: #c4b5fd;
+  font-weight: 800;
+}
+
+.test-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(167, 139, 250, 0.48);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.test-option.selected {
+  border-color: #8b5cf6;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.24),
+    rgba(99, 102, 241, 0.16)
+  );
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.12);
+}
+
+.test-option.selected > span {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.test-next-button {
+  width: min(300px, 100%);
+  display: block;
+  margin: 24px auto 0;
+}
+
+.test-result-card {
+  text-align: center;
+}
+
+.test-percentage {
+  margin: 0 0 8px !important;
+  color: #c4b5fd !important;
+  font-size: 38px;
+  font-weight: 850;
+}
+
+.test-result-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.test-result-actions .generate-button {
+  margin-top: 0;
+}
+
+/* Keep result action buttons from changing the card width. */
+.result-actions {
+  max-width: 100%;
+  justify-content: flex-end;
+}
+
+.result-actions button {
+  white-space: nowrap;
+}
+
+/* Mobile: preserve the same UI, just stack controls where needed. */
+@media (max-width: 700px) {
+  .generated-study-sections {
+    width: calc(100% - 20px);
+    padding-bottom: 50px;
+  }
+
+  .result-section {
+    padding: 20px;
+  }
+
+  .result-header,
+  .test-concepts-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result-actions {
+    justify-content: flex-start;
+  }
+
+  .test-concepts-section {
+    padding: 20px 14px;
+  }
+
+  .test-start-card,
+  .test-question-card,
+  .test-result-card {
+    padding: 20px 14px;
+  }
+
+  .test-options {
+    grid-template-columns: 1fr;
+  }
+
+  .test-progress-row {
+    align-items: flex-start;
+  }
+
+  .flashcards-section {
+    width: 100%;
+  }
+}
