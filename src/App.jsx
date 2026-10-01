@@ -2072,11 +2072,11 @@ function App() {
                   key={stat.title}
                   className="dashboard-stat-card"
                   style={{
-                    minHeight: "145px",
-                    padding: "24px 28px",
-                    borderRadius: "18px",
+                    minHeight: "105px",
+                    padding: "19px 21px",
+                    borderRadius: "14px",
                     border: "1px solid rgba(148, 163, 184, 0.22)",
-                    background: "rgba(20, 29, 49, 0.92)",
+                    background: "rgba(50, 141, 168)",
                     boxSizing: "border-box",
                   }}
                 >
@@ -2085,13 +2085,13 @@ function App() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      gap: "12px",
+                      gap: "9px",
                     }}
                   >
                     <h3
                       style={{
                         margin: 0,
-                        fontSize: "15px",
+                        fontSize: "12px",
                         fontWeight: 650,
                       }}
                     >
@@ -2117,7 +2117,7 @@ function App() {
                     style={{
                       display: "block",
                       marginTop: "8px",
-                      fontSize: "34px",
+                      fontSize: "31px",
                       lineHeight: 1.05,
                     }}
                   >
@@ -2127,7 +2127,7 @@ function App() {
                   <p
                     style={{
                       margin: "8px 0 0",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       opacity: 0.72,
                     }}
                   >
