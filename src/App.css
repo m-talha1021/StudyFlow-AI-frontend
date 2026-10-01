@@ -5169,7 +5169,7 @@ a:active {
 
 .dashboard-card {
   position: relative;
-  min-height: 100px;
+  min-height: 195px;
   width: 200px;
   padding: 28px;
   border: 1px solid rgba(148, 163, 184, 0.18);
@@ -5179,7 +5179,6 @@ a:active {
   transition:
     transform 0.2s ease,
     border-color 0.2s ease;
-  cursor: pointer;
 }
 
 .dashboard-card:hover {
