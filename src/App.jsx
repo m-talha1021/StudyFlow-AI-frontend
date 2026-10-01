@@ -1043,7 +1043,7 @@ function App() {
 
       const data = await apiRequest("/api/test-concepts", {
         method: "POST",
-        body: JSON.stringify({ count: 30 }),
+        body: JSON.stringify({ count: 20 }),
       });
 
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
