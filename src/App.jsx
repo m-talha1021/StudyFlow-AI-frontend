@@ -183,7 +183,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="At least 6 characters"
+              placeholder="your password"
               autoComplete={isSignup ? "new-password" : "current-password"}
               minLength={6}
               required
