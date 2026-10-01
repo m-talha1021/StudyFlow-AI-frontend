@@ -160,7 +160,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
           <div className="auth-card-brand">
-            <img src="/favicon.png" alt="StudyFlow AI" />
             <span>StudyFlow AI</span>
           </div>
 
