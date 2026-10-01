@@ -3557,7 +3557,7 @@ footer h3 {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 700px) {
   .public-navbar,
   .app-navbar {
     padding: 0 16px;
@@ -3905,10 +3905,6 @@ footer h3 {
     padding: 0 15px;
   }
 
-  .app-nav-user .user-pill,
-  .app-nav-user .logout-button {
-    display: none;
-  }
 
   .navbar-menu-button {
     width: 35px;
