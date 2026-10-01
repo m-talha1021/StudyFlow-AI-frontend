@@ -5,7 +5,6 @@ import {
 } from "react";
 
 import "./App.css";
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -28,8 +27,9 @@ import { auth, db } from "./firebase";
 // ========================================================
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
   "https://study-flow-ai-backend.vercel.app";
+
+
 
 // ========================================================
 // API HELPER
@@ -51,12 +51,6 @@ const apiRequest = async (endpoint, options = {}) => {
               "Content-Type":
                 "application/json",
             }),
-
-        ...(auth.currentUser
-          ? {
-              Authorization: `Bearer ${await auth.currentUser.getIdToken()}`,
-            }
-          : {}),
 
         ...(options.headers || {}),
       },
@@ -145,7 +139,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
 
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
-          <div className="auth-card-icon"><img src="/assets/favicon.png"></div>
+          <div className="auth-card-icon"><img src="./assets/favicon.png"></div>
           <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
           <p>{isSignup ? "Start your personalized StudyFlow experience." : "Log in to continue learning."}</p>
 
@@ -232,27 +226,9 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
   );
 }
 
-// ========================================================
-// APP
-// ========================================================
+// ====Auth end
 
 function App() {
-  // ========================================================
-  // AUTHENTICATION
-  // ========================================================
-
-  const [authChecked, setAuthChecked] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authView, setAuthView] = useState("welcome");
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authError, setAuthError] = useState("");
-  const [authForm, setAuthForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
   // ========================================================
   // STUDY MATERIAL
   // ========================================================
@@ -260,6 +236,7 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -279,15 +256,36 @@ function App() {
   // ========================================================
 
   const [flashcards, setFlashcards] = useState([]);
-  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const [testLoading, setTestLoading] = useState(false);
+  const [testQuestions, setTestQuestions] = useState([]);
+  const [testAnswers, setTestAnswers] = useState({});
+  const [testIndex, setTestIndex] = useState(0);
+  const [testStarted, setTestStarted] = useState(false);
+  const [testFinished, setTestFinished] = useState(false);
+  const [testTimeLeft, setTestTimeLeft] = useState(0);
+  const [testTotalSeconds, setTestTotalSeconds] = useState(0);
+  const [testScore, setTestScore] = useState(0);
 
   // ========================================================
   // CHATBOT
   // ========================================================
 
   const [chatOpen, setChatOpen] =
+    useState(false);
+
+  // ========================================================
+  // MOBILE NAVBAR
+  // ========================================================
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
     useState(false);
 
   const [chatQuestion, setChatQuestion] =
@@ -326,30 +324,28 @@ function App() {
     useState(false);
 
   // ========================================================
-  // FIREBASE AUTH SESSION
+  // TEST TIMER
   // ========================================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (firebaseUser) => {
-        setUser(firebaseUser);
-        setAuthChecked(true);
+    if (!testStarted || testFinished) return;
 
-        if (firebaseUser) {
-          setAuthView("app");
-        } else {
-          setAuthView((current) =>
-            current === "login" || current === "signup"
-              ? current
-              : "welcome"
-          );
-        }
-      }
-    );
+    if (testTimeLeft <= 0) {
+      const score = testQuestions.reduce((total, question, index) => {
+        return total + (testAnswers[index] === question.answer ? 1 : 0);
+      }, 0);
+      setTestScore(score);
+      setTestFinished(true);
+      setTestStarted(false);
+      return;
+    }
 
-    return () => unsubscribe();
-  }, []);
+    const timer = window.setInterval(() => {
+      setTestTimeLeft((previous) => Math.max(previous - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [testStarted, testFinished, testTimeLeft]);
 
   // ========================================================
   // SCROLL LISTENER
@@ -421,231 +417,24 @@ function App() {
   };
 
   // ========================================================
-  // FIREBASE AUTHENTICATION HANDLERS
+  // PROCESS MULTIPLE FILES
   // ========================================================
 
-  const handleAuthSubmit = async (event) => {
-    event.preventDefault();
-    setAuthError("");
+  const processFiles = async (selectedFiles) => {
+    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
 
-    const isSignup = authView === "signup";
-    const email = authForm.email.trim();
-    const password = authForm.password;
-
-    if (isSignup) {
-      if (!authForm.name.trim()) {
-        setAuthError("Please enter your full name.");
-        return;
-      }
-
-      if (password !== authForm.confirmPassword) {
-        setAuthError("Passwords do not match.");
-        return;
-      }
-    }
-
-    setAuthLoading(true);
-
-    try {
-      if (isSignup) {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        const firebaseUser = credential.user;
-        const displayName = authForm.name.trim();
-
-        await updateProfile(firebaseUser, {
-          displayName,
-        });
-
-        await setDoc(
-          doc(db, "users", firebaseUser.uid),
-          {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        setUser(firebaseUser);
-        setAuthView("app");
-      } else {
-        const credential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        setUser(credential.user);
-        setAuthView("app");
-      }
-
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      console.error("Firebase authentication error:", error);
-
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          setAuthError("This email is already registered.");
-          break;
-        case "auth/invalid-email":
-          setAuthError("Please enter a valid email address.");
-          break;
-        case "auth/weak-password":
-          setAuthError("Password should be at least 6 characters.");
-          break;
-        case "auth/invalid-credential":
-        case "auth/wrong-password":
-        case "auth/user-not-found":
-          setAuthError("Invalid email or password.");
-          break;
-        case "auth/operation-not-allowed":
-          setAuthError(
-            "Email/password sign-in is not enabled in Firebase Authentication."
-          );
-          break;
-        case "auth/network-request-failed":
-          setAuthError(
-            "Could not connect to Firebase. Check your internet connection and Firebase configuration."
-          );
-          break;
-        default:
-          setAuthError(error.message || "Authentication failed.");
-      }
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    setAuthError("");
-    const email = authForm.email.trim();
-
-    if (!email) {
-      setAuthError("Enter your email address first.");
+    if (!validFiles.length) {
       return;
     }
 
-    setAuthLoading(true);
-
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAuthError("Password reset email sent. Check your inbox.");
-    } catch (error) {
-      console.error("Password reset error:", error);
-      setAuthError(error.message || "Could not send the reset email.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Firebase logout error:", error);
-    }
-
-    setUser(null);
-    setAuthView("welcome");
-    setAuthForm({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-    setText("");
-    setFile(null);
-    setMaterialReady(false);
-    setResult("");
-    setFlashcards([]);
-    setChatMessages([]);
-    setChatOpen(false);
-    stopSpeech();
-  };
-
-  const openAuth = (view) => {
-    setAuthError("");
-    setAuthView(view);
-  };
-
-  // ========================================================
-  // FLASHCARD GENERATION
-  // ========================================================
-
-  const handleGenerateFlashcards = async () => {
-    setFlashcardsLoading(true);
-    setFlashcardFlipped(false);
-
-    try {
-      let ready = materialReady;
-
-      // If the user pasted text but has not processed it yet, process it first.
-      if (!ready && text.trim()) {
-        const processed = await processPastedText();
-
-        if (!processed) {
-          return;
-        }
-
-        ready = true;
-      }
-
-      if (!ready && !file) {
-        alert("Please upload or paste study material first.");
-        document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-
-      const data = await apiRequest("/api/flashcards", {
-        method: "POST",
-        body: JSON.stringify({ count: 10 }),
-      });
-
-      setFlashcards(data.cards || []);
-      setFlashcardIndex(0);
-      setTimeout(() => {
-        document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } catch (error) {
-      alert(error.message || "Could not generate flashcards.");
-    } finally {
-      setFlashcardsLoading(false);
-    }
-  };
-
-  const nextFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index + 1) % flashcards.length);
-  };
-
-  const previousFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index - 1 + flashcards.length) % flashcards.length);
-  };
-
-  // ========================================================
-  // PROCESS FILE
-  // ========================================================
-
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
+    if (validFiles.length > 10) {
+      alert("Please select a maximum of 10 files at a time.");
       return;
     }
 
     setProcessing(true);
-    setFile(selectedFile);
+    setFiles(validFiles);
+    setFile(validFiles[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -653,7 +442,6 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded
     setChatMessages([]);
     setChatQuestion("");
 
@@ -662,10 +450,9 @@ function App() {
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        selectedFile
-      );
+      validFiles.forEach((selectedFile) => {
+        formData.append("files", selectedFile);
+      });
 
       const data = await apiRequest(
         "/api/material",
@@ -678,7 +465,7 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-            "Could not process the file."
+            "Could not process the selected files."
         );
       }
 
@@ -692,15 +479,25 @@ function App() {
 
       alert(
         error.message ||
-          "Could not process the uploaded document or image."
+          "Could not process the uploaded files."
       );
 
+      setFiles([]);
       setFile(null);
       setMaterialReady(false);
 
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Keep the single-file helper for the camera workflow.
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
+    }
+
+    await processFiles([selectedFile]);
   };
 
   // ========================================================
@@ -739,16 +536,20 @@ function App() {
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
+    const selectedFiles = Array.from(
+      event.target.files || []
+    );
 
-    if (!selectedFile) {
+    if (!selectedFiles.length) {
       return;
     }
 
     setText("");
 
-    processFile(selectedFile);
+    processFiles(selectedFiles);
+
+    // Allow selecting the same files again later.
+    event.target.value = "";
   };
 
   // ========================================================
@@ -818,14 +619,219 @@ function App() {
   };
 
   // ========================================================
+  // GENERATE FLASHCARDS
+  // ========================================================
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setFlashcardsLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload a document/image or paste your study material."
+        );
+
+        setFlashcardsLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/flashcards",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            count: 10,
+          }),
+        }
+      );
+
+      if (!data.success || !Array.isArray(data.cards)) {
+        throw new Error(
+          data.error || "Could not generate flashcards."
+        );
+      }
+
+      setFlashcards(data.cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+
+      setTimeout(() => {
+        document
+          .getElementById("flashcards-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      console.error(
+        "Flashcards error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Could not generate flashcards."
+      );
+
+    } finally {
+      setFlashcardsLoading(false);
+    }
+  };
+
+  const handleNextFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.min(
+        previous + 1,
+        flashcards.length - 1
+      )
+    );
+  };
+
+  const handlePreviousFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.max(previous - 1, 0)
+    );
+  };
+
+  const handleFlipFlashcard = () => {
+    setFlashcardFlipped((previous) => !previous);
+  };
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const formatTestTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
+  const calculateTestScore = () => {
+    return testQuestions.reduce((score, question, index) => {
+      return score + (testAnswers[index] === question.answer ? 1 : 0);
+    }, 0);
+  };
+
+  const finishTest = () => {
+    const score = calculateTestScore();
+    setTestScore(score);
+    setTestFinished(true);
+    setTestStarted(false);
+    setTestIndex(0);
+  };
+
+  const handleGenerateTest = async () => {
+    setTestLoading(true);
+    setResult("");
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+        if (!processed) return;
+        ready = true;
+      }
+
+      if (!ready && files.length === 0 && !file && !text.trim()) {
+        alert("Please upload study material or paste your notes first.");
+        return;
+      }
+
+      const data = await apiRequest("/api/test-concepts", {
+        method: "POST",
+        body: JSON.stringify({ count: 30 }),
+      });
+
+      if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
+        throw new Error(data.error || "Could not generate the test.");
+      }
+
+      setTestQuestions(data.questions);
+      setTestAnswers({});
+      setTestIndex(0);
+      setTestScore(0);
+      setTestFinished(false);
+      setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
+      setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
+      setTestStarted(false);
+
+      setTimeout(() => {
+        document.getElementById("test-concepts-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error("Test concepts error:", error);
+      alert(error.message || "Could not generate the test.");
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const startTest = () => {
+    setTestAnswers({});
+    setTestIndex(0);
+    setTestScore(0);
+    setTestFinished(false);
+    setTestTimeLeft(testTotalSeconds);
+    setTestStarted(true);
+  };
+
+  const selectTestAnswer = (option) => {
+    if (testFinished || !testStarted) return;
+    setTestAnswers((previous) => ({
+      ...previous,
+      [testIndex]: option,
+    }));
+  };
+
+  const nextTestQuestion = () => {
+    if (testIndex >= testQuestions.length - 1) {
+      finishTest();
+      return;
+    }
+    setTestIndex((previous) => previous + 1);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
-    // Flashcards use their dedicated generation endpoint, but remain
-    // one of the selectable study modes instead of a separate section.
     if (mode === "flashcards") {
       await handleGenerateFlashcards();
+      return;
+    }
+
+    if (mode === "test") {
+      await handleGenerateTest();
       return;
     }
 
@@ -853,6 +859,7 @@ function App() {
       // No material
       if (
         !ready &&
+        files.length === 0 &&
         !file &&
         !text.trim()
       ) {
@@ -1330,31 +1337,25 @@ function App() {
     };
 
   // ========================================================
-  // AUTH GATING
+  // NAVIGATION
   // ========================================================
 
-  if (!authChecked) {
-    return <div className="auth-loading-screen">Loading StudyFlow AI...</div>;
-  }
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
 
-  if (!user) {
-    if (authView === "login" || authView === "signup") {
-      return (
-        <AuthPage
-          mode={authView}
-          onModeChange={(view) => setAuthView(view)}
-          onSubmit={handleAuthSubmit}
-          onForgotPassword={handleForgotPassword}
-          loading={authLoading}
-          error={authError}
-          form={authForm}
-          setForm={setAuthForm}
-        />
-      );
-    }
+  const navigateToSection = (id) => {
+    closeMobileMenu();
 
-    return <WelcomePage onLogin={() => openAuth("login")} onSignup={() => openAuth("signup")} />;
-  }
+    window.requestAnimationFrame(() => {
+      document
+        .getElementById(id)
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+    });
+  };
 
   // ========================================================
   // UI
@@ -1365,24 +1366,87 @@ function App() {
 
       {/* ==================================================
           NAVBAR
+          Desktop: full navigation
+          Mobile: logo + name + hamburger menu
       ================================================== */}
 
       <header className="app-navbar">
-        <BrandMark />
 
-        <nav className="app-nav-links">
-          <button onClick={() => document.getElementById("heroclass")?.scrollIntoView({ behavior: "smooth" })}>Dashboard</button>
-          <button onClick={() => document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" })}>Study Material</button>
-          <button onClick={() => document.getElementById("action-section")?.scrollIntoView({ behavior: "smooth" })}>Quiz & AI</button>
+        <a
+          className="brand-mark"
+          href="#heroclass"
+          onClick={closeMobileMenu}
+          aria-label="StudyFlow AI home"
+        >
+          <img
+            src="favicon.png"
+            alt="StudyFlow AI logo"
+          />
+          <span>StudyFlow AI</span>
+        </a>
+
+        <nav
+          id="studyflow-mobile-navigation"
+          className={`app-nav-links ${
+            mobileMenuOpen ? "mobile-open" : ""
+          }`}
+          aria-label="Main navigation"
+        >
+          <button
+            type="button"
+            onClick={() => navigateToSection("heroclass")}
+          >
+            Dashboard
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToSection("inputcard")}
+          >
+            Study Material
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMode("flashcards");
+              navigateToSection("action-section");
+            }}
+          >
+            Flashcards
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToSection("action-section")}
+          >
+            Quiz &amp; AI
+          </button>
         </nav>
 
-        <div className="app-nav-user">
-          <div className="user-pill">
-            <span>👤</span>
-            <strong>{user?.name || "Student"}</strong>
-          </div>
-          <button className="logout-button" onClick={handleLogout}>Logout</button>
+        <div className="app-nav-user desktop-nav-user">
+          <button
+            type="button"
+            className="logout-button upload-nav-button"
+            onClick={() => navigateToSection("inputcard")}
+          >
+            Upload
+          </button>
         </div>
+
+        <button
+          type="button"
+          className="navbar-menu-button"
+          onClick={() => setMobileMenuOpen((previous) => !previous)}
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="studyflow-mobile-navigation"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
       </header>
 
       {/* ==================================================
@@ -1445,6 +1509,7 @@ function App() {
               );
 
               setFile(null);
+              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1478,17 +1543,18 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing document or image..."
-                : "Upload your document or image"}
+                ? "Processing selected files..."
+                : "Upload your documents or images"}
             </strong>
 
             <small>
-              PDF, DOCX, PPTX,
-              JPG, PNG or WEBP
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
             <input
               type="file"
+              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
               onChange={
                 handleFileChange
@@ -1580,14 +1646,26 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {file && (
-            <div className="selected-file">
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
 
-              📎 Selected:{" "}
+              <div className="selected-files-header">
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
+              </div>
 
-              <strong>
-                {file.name}
-              </strong>
+              <div className="selected-files-list">
+                {files.map((selectedFile, index) => (
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
+                  </div>
+                ))}
+              </div>
 
             </div>
           )}
@@ -1641,66 +1719,143 @@ function App() {
           <div className="mode-buttons">
 
             {/* SUMMARY */}
+
             <button
-              type="button"
-              className={mode === "summary" ? "mode active" : "mode"}
-              onClick={() => {
-                setMode("summary");
-                setResult("");
-              }}
+              className={
+                mode === "summary"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("summary")
+              }
             >
-              <span>📝</span>
+
+              <span>
+                📝
+              </span>
+
               <div>
-                <strong>Summary</strong>
-                <small>Key points from your material</small>
+
+                <strong>
+                  Summary
+                </strong>
+
+                <small>
+                  Key points from your material
+                </small>
+
               </div>
+
             </button>
 
-            {/* EXPLANATION */}
+            {/* EXPLAIN */}
+
             <button
-              type="button"
-              className={mode === "explain" ? "mode active" : "mode"}
-              onClick={() => {
-                setMode("explain");
-                setResult("");
-              }}
+              className={
+                mode === "explain"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("explain")
+              }
             >
-              <span>💡</span>
+
+              <span>
+                💡
+              </span>
+
               <div>
-                <strong>Explanation</strong>
-                <small>Understand difficult concepts</small>
+
+                <strong>
+                  Explanation
+                </strong>
+
+                <small>
+                  Understand difficult concepts
+                </small>
+
               </div>
+
             </button>
 
             {/* QUIZ */}
+
             <button
-              type="button"
-              className={mode === "quiz" ? "mode active" : "mode"}
-              onClick={() => {
-                setMode("quiz");
-                setResult("");
-              }}
+              className={
+                mode === "quiz"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("quiz")
+              }
             >
-              <span>🧠</span>
+
+              <span>
+                🧠
+              </span>
+
               <div>
-                <strong>Quiz</strong>
-                <small>Test your knowledge</small>
+
+                <strong>
+                  Quiz
+                </strong>
+
+                <small>
+                  Test your knowledge
+                </small>
+
               </div>
+
             </button>
 
             {/* FLASHCARDS */}
+
             <button
-              type="button"
-              className={mode === "flashcards" ? "mode active" : "mode"}
-              onClick={() => {
-                setMode("flashcards");
-                setResult("");
-              }}
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
             >
-              <span>🗂️</span>
+
+              <span>
+                🗂️
+              </span>
+
               <div>
-                <strong>Flashcards</strong>
-                <small>Active recall from your material</small>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* TEST CONCEPTS */}
+
+            <button
+              className={
+                mode === "test"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("test")}
+            >
+              <span>⏱️</span>
+              <div>
+                <strong>Test concepts</strong>
+                <small>Timed MCQ exam from your material</small>
               </div>
             </button>
 
@@ -1721,8 +1876,10 @@ function App() {
             {generating || flashcardsLoading
               ? "⏳ Generating..."
               : mode === "flashcards"
-                ? "🗂️ Generate Flashcards"
-                : `✨ Generate ${mode}`}
+                ? "✨ Generate Flashcards"
+                : mode === "test"
+                  ? "⏱️ Generate Test"
+                  : `✨ Generate ${mode}`}
 
           </button>
 
@@ -1732,66 +1889,7 @@ function App() {
             GENERATED RESULT
         ================================================= */}
 
-        {mode === "flashcards" && (flashcards.length > 0 || flashcardsLoading) && (
-          <section
-            className="result-section flashcards-result-section"
-            id="result-section"
-          >
-            <div className="result-header">
-              <div>
-                <span className="result-icon">🗂️</span>
-                <div>
-                  <h2>Flashcards</h2>
-                  <small>Active recall</small>
-                </div>
-              </div>
-            </div>
-
-            {flashcardsLoading && (
-              <div className="flashcards-empty">
-                <div className="flashcard-spinner">✦</div>
-                <h3>Creating your flashcards...</h3>
-                <p>StudyFlow AI is selecting important concepts from your material.</p>
-              </div>
-            )}
-
-            {flashcards.length > 0 && !flashcardsLoading && (
-              <div className="flashcard-study-area">
-                <div className="flashcard-progress">
-                  Card {flashcardIndex + 1} of {flashcards.length}
-                </div>
-
-                <button
-                  type="button"
-                  className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
-                  onClick={() => setFlashcardFlipped((value) => !value)}
-                  aria-label="Flip flashcard"
-                >
-                  <div className="flashcard-inner">
-                    <div className="flashcard-face flashcard-front">
-                      <span>QUESTION</span>
-                      <strong>{flashcards[flashcardIndex]?.front}</strong>
-                      <small>Click to reveal answer</small>
-                    </div>
-                    <div className="flashcard-face flashcard-back">
-                      <span>ANSWER</span>
-                      <strong>{flashcards[flashcardIndex]?.back}</strong>
-                      <small>Click to see the question</small>
-                    </div>
-                  </div>
-                </button>
-
-                <div className="flashcard-controls">
-                  <button type="button" onClick={previousFlashcard}>← Previous</button>
-                  <button type="button" className="flip-button" onClick={() => setFlashcardFlipped((value) => !value)}>↻ Flip</button>
-                  <button type="button" onClick={nextFlashcard}>Next →</button>
-                </div>
-              </div>
-            )}
-          </section>
-        )}
-
-        {mode !== "flashcards" && result && (
+        {result && (
           <section
             className="result-section"
             id="result-section"
@@ -1919,6 +2017,207 @@ function App() {
         )}
 
       </main>
+
+      {/* ==================================================
+          FLASHCARDS
+      ================================================== */}
+
+      {flashcards.length > 0 && (
+        <section
+          className="flashcards-section"
+          id="flashcards-section"
+        >
+
+          <div className="flashcards-header">
+            <div>
+              <span className="result-icon">🗂️</span>
+              <div>
+                <h2>Flashcards</h2>
+                <small>
+                  Tap the card to reveal the answer
+                </small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateFlashcards}
+              disabled={flashcardsLoading}
+            >
+              {flashcardsLoading
+                ? "⏳ Generating..."
+                : "🔄 Regenerate"}
+            </button>
+          </div>
+
+          <div className="flashcard-progress">
+            Card {flashcardIndex + 1} of {flashcards.length}
+          </div>
+
+          <button
+            type="button"
+            className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+            onClick={handleFlipFlashcard}
+            aria-label="Flip flashcard"
+          >
+            <div className="flashcard-inner">
+
+              <div className="flashcard-face flashcard-front">
+                <span className="flashcard-label">
+                  QUESTION
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.front}
+                </p>
+
+                <small>
+                  Click to reveal answer
+                </small>
+              </div>
+
+              <div className="flashcard-face flashcard-back">
+                <span className="flashcard-label">
+                  ANSWER
+                </span>
+
+                <p>
+                  {flashcards[flashcardIndex]?.back}
+                </p>
+
+                <small>
+                  Click to see the question
+                </small>
+              </div>
+
+            </div>
+          </button>
+
+          <div className="flashcard-controls">
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handlePreviousFlashcard}
+              disabled={flashcardIndex === 0}
+            >
+              ← Previous
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleFlipFlashcard}
+            >
+              🔄 Flip
+            </button>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleNextFlashcard}
+              disabled={
+                flashcardIndex === flashcards.length - 1
+              }
+            >
+              Next →
+            </button>
+
+          </div>
+
+        </section>
+      )}
+
+      {/* ==================================================
+          TEST CONCEPTS
+      ================================================== */}
+
+      {testQuestions.length > 0 && (
+        <section className="test-concepts-section" id="test-concepts-section">
+          <div className="test-concepts-header">
+            <div>
+              <span className="section-kicker">EXAM SIMULATION</span>
+              <h2>Test concepts</h2>
+              <p>Timed multiple-choice questions generated from your study material.</p>
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateTest}
+              disabled={testLoading}
+            >
+              {testLoading ? "Generating..." : "Regenerate test"}
+            </button>
+          </div>
+
+          {!testStarted && !testFinished && (
+            <div className="test-start-card">
+              <div className="test-start-icon">⏱️</div>
+              <h3>{testQuestions.length} MCQs • {Math.round(testTotalSeconds / 60)} minutes</h3>
+              <p>Choose one answer for each question. Your result is shown after you submit or the timer expires.</p>
+              <button type="button" className="generate-button" onClick={startTest}>Start Test</button>
+            </div>
+          )}
+
+          {testStarted && !testFinished && testQuestions[testIndex] && (
+            <div className="test-question-card">
+              <div className="test-progress-row">
+                <span>Question {testIndex + 1} of {testQuestions.length}</span>
+                <strong className={testTimeLeft <= 60 ? "test-timer danger" : "test-timer"}>
+                  ⏱ {formatTestTime(testTimeLeft)}
+                </strong>
+              </div>
+
+              <div className="test-progress-track">
+                <span style={{ width: `${((testIndex + 1) / testQuestions.length) * 100}%` }} />
+              </div>
+
+              <h3>{testQuestions[testIndex].question}</h3>
+
+              <div className="test-options">
+                {testQuestions[testIndex].options.map((option, optionIndex) => {
+                  const selected = testAnswers[testIndex] === option;
+                  return (
+                    <button
+                      type="button"
+                      key={optionIndex}
+                      className={selected ? "test-option selected" : "test-option"}
+                      onClick={() => selectTestAnswer(option)}
+                    >
+                      <span>{String.fromCharCode(65 + optionIndex)}</span>
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                className="generate-button test-next-button"
+                onClick={nextTestQuestion}
+                disabled={!testAnswers[testIndex]}
+              >
+                {testIndex === testQuestions.length - 1 ? "Submit Test" : "Next Question →"}
+              </button>
+            </div>
+          )}
+
+          {testFinished && (
+            <div className="test-result-card">
+              <div className="test-result-icon">🏆</div>
+              <span className="section-kicker">TEST COMPLETE</span>
+              <h3>{testScore} / {testQuestions.length}</h3>
+              <p className="test-percentage">{Math.round((testScore / testQuestions.length) * 100)}%</p>
+              <p>You completed the Test concepts exam.</p>
+              <div className="test-result-actions">
+                <button type="button" className="generate-button" onClick={startTest}>Retake Test</button>
+                <button type="button" className="secondary-button" onClick={handleGenerateTest}>Generate New Test</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ==================================================
           CHAT POPUP
