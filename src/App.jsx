@@ -160,6 +160,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
           <div className="auth-card-brand">
+            <img src="/favicon.png" alt="StudyFlow AI" />
             <span>StudyFlow AI</span>
           </div>
 
@@ -2361,6 +2362,13 @@ function App() {
       </main>
 
       {/* ==================================================
+          GENERATED STUDY SECTIONS
+          Keep generated UI aligned with the main app width.
+      ================================================== */}
+
+      <div className="generated-study-sections">
+
+      {/* ==================================================
           FLASHCARDS
       ================================================== */}
 
@@ -2399,7 +2407,7 @@ function App() {
 
           <button
             type="button"
-            className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+            className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
             onClick={handleFlipFlashcard}
             aria-label="Flip flashcard"
           >
@@ -2518,7 +2526,7 @@ function App() {
               <h3>{testQuestions[testIndex].question}</h3>
 
               <div className="test-options">
-                {testQuestions[testIndex].options.map((option, optionIndex) => {
+                {(Array.isArray(testQuestions[testIndex].options) ? testQuestions[testIndex].options : []).map((option, optionIndex) => {
                   const selected = testAnswers[testIndex] === option;
                   return (
                     <button
@@ -2560,6 +2568,8 @@ function App() {
           )}
         </section>
       )}
+
+      </div>
 
       {/* ==================================================
           CHAT POPUP
