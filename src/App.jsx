@@ -87,7 +87,7 @@ function BrandMark() {
   return (
     <div className="brand-mark">
       <img src="/favicon.png" alt="StudyFlow AI" />
-      <span>StudyFlow AI</span>
+      <span><b></>StudyFlow AI<></b></span>
     </div>
   );
 }
@@ -604,7 +604,7 @@ function App() {
           break;
         case "auth/network-request-failed":
           setAuthError(
-            "Failed to connect to Firebase. Check your Firebase configuration and internet connection."
+            "Failed: Check your Firebase configuration and internet connection."
           );
           break;
         case "auth/operation-not-allowed":
@@ -1037,7 +1037,7 @@ function App() {
       }
 
       if (!ready && files.length === 0 && !file && !text.trim()) {
-        alert("Please upload study material or paste your notes first.");
+        alert("Please upload study material or paste your content first.");
         return;
       }
 
