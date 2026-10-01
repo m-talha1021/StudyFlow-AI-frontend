@@ -18,6 +18,8 @@ import { auth, db } from "./firebase";
 import {
   doc,
   setDoc,
+  getDoc,
+  increment,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -315,6 +317,24 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // ========================================================
+  // DASHBOARD
+  // ========================================================
+
+  const [dashboardStats, setDashboardStats] = useState({
+    totalMaterials: 0,
+    studySessions: 0,
+    completedQuizzes: 0,
+    totalQuizScore: 0,
+    averageQuizScore: 0,
+    flashcardsCreated: 0,
+  });
+
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+
+  // Prevent the same quiz from being counted twice.
+  const testSubmissionRecordedRef = useRef(false);
+
+  // ========================================================
   // STUDY MATERIAL
   // ========================================================
 
@@ -417,6 +437,72 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // ========================================================
+  // LOAD CURRENT USER DASHBOARD
+  // ========================================================
+
+  useEffect(() => {
+    if (!user?.uid) {
+      setDashboardStats({
+        totalMaterials: 0,
+        studySessions: 0,
+        completedQuizzes: 0,
+        totalQuizScore: 0,
+        averageQuizScore: 0,
+        flashcardsCreated: 0,
+      });
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadDashboardStats = async () => {
+      setDashboardLoading(true);
+
+      try {
+        const snapshot = await getDoc(
+          doc(db, "users", user.uid)
+        );
+
+        if (cancelled) return;
+
+        const data = snapshot.exists()
+          ? snapshot.data()
+          : {};
+
+        const totalMaterials = Number(data.totalMaterials || 0);
+        const studySessions = Number(data.studySessions || 0);
+        const completedQuizzes = Number(data.completedQuizzes || 0);
+        const totalQuizScore = Number(data.totalQuizScore || 0);
+        const flashcardsCreated = Number(data.flashcardsCreated || 0);
+
+        setDashboardStats({
+          totalMaterials,
+          studySessions,
+          completedQuizzes,
+          totalQuizScore,
+          averageQuizScore:
+            completedQuizzes > 0
+              ? Math.round(totalQuizScore / completedQuizzes)
+              : 0,
+          flashcardsCreated,
+        });
+      } catch (error) {
+        console.error("Dashboard loading error:", error);
+      } finally {
+        if (!cancelled) {
+          setDashboardLoading(false);
+        }
+      }
+    };
+
+    loadDashboardStats();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.uid]);
 
   // ========================================================
   // TEST TIMER
@@ -553,6 +639,11 @@ function App() {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             displayName,
+            totalMaterials: 0,
+            studySessions: 0,
+            completedQuizzes: 0,
+            totalQuizScore: 0,
+            flashcardsCreated: 0,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
           },
@@ -686,6 +777,15 @@ function App() {
     setTestStarted(false);
     setTestFinished(false);
     setTestScore(0);
+    setDashboardStats({
+      totalMaterials: 0,
+      studySessions: 0,
+      completedQuizzes: 0,
+      totalQuizScore: 0,
+      averageQuizScore: 0,
+      flashcardsCreated: 0,
+    });
+    testSubmissionRecordedRef.current = false;
     stopSpeech();
   };
 
@@ -743,6 +843,27 @@ function App() {
       }
 
       setMaterialReady(true);
+
+      // Save this user's material and study-session activity.
+      if (user?.uid) {
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(
+          userRef,
+          {
+            totalMaterials: increment(validFiles.length),
+            studySessions: increment(1),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setDashboardStats((previous) => ({
+          ...previous,
+          totalMaterials: previous.totalMaterials + validFiles.length,
+          studySessions: previous.studySessions + 1,
+        }));
+      }
 
     } catch (error) {
       console.error(
@@ -945,6 +1066,26 @@ function App() {
       setFlashcardIndex(0);
       setFlashcardFlipped(false);
 
+      // Save generated flashcards for the current user.
+      if (user?.uid) {
+        const createdCount = data.cards.length;
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(
+          userRef,
+          {
+            flashcardsCreated: increment(createdCount),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setDashboardStats((previous) => ({
+          ...previous,
+          flashcardsCreated: previous.flashcardsCreated + createdCount,
+        }));
+      }
+
       setTimeout(() => {
         document
           .getElementById("flashcards-section")
@@ -1009,12 +1150,57 @@ function App() {
     }, 0);
   };
 
-  const finishTest = () => {
+  const finishTest = async () => {
+    // Prevent duplicate counting from rapid clicks or timer/submission overlap.
+    if (testFinished || testSubmissionRecordedRef.current) {
+      return;
+    }
+
+    testSubmissionRecordedRef.current = true;
+
     const score = calculateTestScore();
+    const totalQuestions = testQuestions.length;
+    const percentage =
+      totalQuestions > 0
+        ? Math.round((score / totalQuestions) * 100)
+        : 0;
+
     setTestScore(score);
     setTestFinished(true);
     setTestStarted(false);
     setTestIndex(0);
+
+    if (user?.uid && totalQuestions > 0) {
+      try {
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(
+          userRef,
+          {
+            completedQuizzes: increment(1),
+            totalQuizScore: increment(percentage),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setDashboardStats((previous) => {
+          const completedQuizzes = previous.completedQuizzes + 1;
+          const totalQuizScore = previous.totalQuizScore + percentage;
+
+          return {
+            ...previous,
+            completedQuizzes,
+            totalQuizScore,
+            averageQuizScore: Math.round(
+              totalQuizScore / completedQuizzes
+            ),
+          };
+        });
+      } catch (error) {
+        console.error("Could not save quiz statistics:", error);
+      }
+    }
   };
 
   const handleGenerateTest = async () => {
@@ -1050,6 +1236,7 @@ function App() {
       setTestIndex(0);
       setTestScore(0);
       setTestFinished(false);
+      testSubmissionRecordedRef.current = false;
       setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
       setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
       setTestStarted(false);
@@ -1073,6 +1260,7 @@ function App() {
     setTestIndex(0);
     setTestScore(0);
     setTestFinished(false);
+    testSubmissionRecordedRef.current = false;
     setTestTimeLeft(testTotalSeconds);
     setTestStarted(true);
   };
@@ -1678,7 +1866,7 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              document.getElementById("heroclass")?.scrollIntoView({
+              document.getElementById("dashboard-section")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
               });
@@ -1790,7 +1978,166 @@ function App() {
           MAIN
       ================================================== */}
 
+      <style>{`
+        .dashboard-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 20px;
+        }
+
+        @media (max-width: 700px) {
+          .dashboard-stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       <main className="container">
+
+        {/* =================================================
+            USER DASHBOARD
+        ================================================= */}
+
+        <section
+          id="dashboard-section"
+          className="dashboard-section"
+          style={{
+            padding: "28px 0 8px",
+            scrollMarginTop: "90px",
+          }}
+        >
+          <div
+            style={{
+              marginBottom: "22px",
+            }}
+          >
+            <span className="section-kicker">YOUR DASHBOARD</span>
+            <h2 style={{ margin: "6px 0 4px" }}>
+              {user?.displayName
+                ? `Welcome back, ${user.displayName}`
+                : "Your learning dashboard"}
+            </h2>
+            <p style={{ margin: 0 }}>
+              Your personal StudyFlow AI progress and activity.
+            </p>
+          </div>
+
+          {dashboardLoading ? (
+            <div
+              style={{
+                padding: "28px",
+                textAlign: "center",
+                borderRadius: "18px",
+                border: "1px solid rgba(148, 163, 184, 0.2)",
+                background: "rgba(15, 23, 42, 0.55)",
+              }}
+            >
+              Loading your dashboard...
+            </div>
+          ) : (
+            <div className="dashboard-stats-grid">
+              {[
+                {
+                  title: "Total Materials",
+                  value: dashboardStats.totalMaterials,
+                  text: "Files in your library",
+                  icon: "📄",
+                },
+                {
+                  title: "Study Sessions",
+                  value: dashboardStats.studySessions,
+                  text: "Learning moments",
+                  icon: "📚",
+                },
+                {
+                  title: "Completed Quizzes",
+                  value: dashboardStats.completedQuizzes,
+                  text: "Quizzes completed",
+                  icon: "📝",
+                },
+                {
+                  title: "Average Quiz Score",
+                  value: `${dashboardStats.averageQuizScore}%`,
+                  text: "Across all quizzes",
+                  icon: "📈",
+                },
+                {
+                  title: "Flashcards Created",
+                  value: dashboardStats.flashcardsCreated,
+                  text: "Concepts to remember",
+                  icon: "🗂️",
+                },
+              ].map((stat) => (
+                <div
+                  key={stat.title}
+                  className="dashboard-stat-card"
+                  style={{
+                    minHeight: "145px",
+                    padding: "24px 28px",
+                    borderRadius: "18px",
+                    border: "1px solid rgba(148, 163, 184, 0.22)",
+                    background: "rgba(20, 29, 49, 0.92)",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "12px",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: "15px",
+                        fontWeight: 650,
+                      }}
+                    >
+                      {stat.title}
+                    </h3>
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: "42px",
+                        height: "42px",
+                        display: "grid",
+                        placeItems: "center",
+                        borderRadius: "12px",
+                        background: "rgba(99, 102, 241, 0.18)",
+                        fontSize: "21px",
+                      }}
+                    >
+                      {stat.icon}
+                    </span>
+                  </div>
+
+                  <strong
+                    style={{
+                      display: "block",
+                      marginTop: "8px",
+                      fontSize: "34px",
+                      lineHeight: 1.05,
+                    }}
+                  >
+                    {stat.value}
+                  </strong>
+
+                  <p
+                    style={{
+                      margin: "8px 0 0",
+                      fontSize: "14px",
+                      opacity: 0.72,
+                    }}
+                  >
+                    {stat.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* =================================================
             HERO
