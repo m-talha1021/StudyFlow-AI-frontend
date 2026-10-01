@@ -86,7 +86,7 @@ const apiRequest = async (endpoint, options = {}) => {
 function BrandMark() {
   return (
     <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI" height="40px" width="40px" />
+      <img src="/favicon.png" alt="StudyFlow AI" />
       <span>StudyFlow AI</span>
     </div>
   );
@@ -308,6 +308,12 @@ function App() {
     password: "",
     confirmPassword: "",
   });
+
+  // ========================================================
+  // LOGGED-IN MOBILE NAVIGATION
+  // ========================================================
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // ========================================================
   // STUDY MATERIAL
@@ -651,6 +657,8 @@ function App() {
   };
 
   const handleLogout = async () => {
+    setMobileMenuOpen(false);
+
     try {
       await signOut(auth);
     } catch (error) {
@@ -1651,49 +1659,137 @@ function App() {
     <div className="app">
 
       {/* ==================================================
-          HEADER
+          LOGGED-IN NAVBAR
+          Desktop: logo + navigation + account
+          Mobile: logo + hamburger menu
       ================================================== */}
 
-      <header className="header">
+      <header className="app-navbar">
+        <a
+          className="brand-mark"
+          href="#heroclass"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-label="StudyFlow AI home"
+        >
+          <img src="/favicon.png" alt="StudyFlow AI logo" />
+          <span>StudyFlow AI</span>
+        </a>
 
-        <div className="logo">
+        <nav
+          id="studyflow-mobile-navigation"
+          className={`app-nav-links ${mobileMenuOpen ? "mobile-open" : ""}`}
+          aria-label="Main navigation"
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("heroclass")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Dashboard
+          </button>
 
-          <div className="logo-icon">
-            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
-          </div>
-          <span>
-           <a href="#heroclass"> StudyFlow AI</a>
-          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("inputcard")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Study Material
+          </button>
 
-        </div>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("flashcards");
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Flashcards
+          </button>
 
-        <p className="tagline">
-          <b>
-            Your AI-powered study assistant
-          </b>
-        </p>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Quiz &amp; AI
+          </button>
 
-        <div className="header-actions">
-          <div className="uploadBtn">
-            <a href="#inputcard">
-              Upload
-            </a>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("test");
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Test Concepts
+          </button>
 
-          <div className="user-account">
-            <span className="user-name">
-              {user.displayName || user.email || "Account"}
+          <div className="mobile-account-block">
+            <span>
+              👤 {user.displayName || user.email || "Account"}
             </span>
             <button
               type="button"
-              className="logout-button"
+              className="mobile-logout-button"
               onClick={handleLogout}
             >
               Logout
             </button>
           </div>
+        </nav>
+
+        <div className="app-nav-user desktop-nav-user">
+          <div className="user-pill">
+            <span aria-hidden="true">👤</span>
+            <strong title={user.displayName || user.email || "Account"}>
+              {user.displayName || user.email || "Account"}
+            </strong>
+          </div>
+
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </div>
 
+        <button
+          type="button"
+          className="navbar-menu-button"
+          onClick={() => setMobileMenuOpen((previous) => !previous)}
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="studyflow-mobile-navigation"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
       </header>
 
       {/* ==================================================
@@ -1923,7 +2019,7 @@ function App() {
             ACTION SECTION
         ================================================= */}
 
-        <section className="action-section">
+        <section className="action-section" id="action-section">
 
           {/* HEADING + CHATBOT ICON */}
 
@@ -1967,7 +2063,7 @@ function App() {
 
             {/* SUMMARY */}
 
-            <button
+            <button type="button"
               className={
                 mode === "summary"
                   ? "mode active"
@@ -1998,7 +2094,7 @@ function App() {
 
             {/* EXPLAIN */}
 
-            <button
+            <button type="button"
               className={
                 mode === "explain"
                   ? "mode active"
@@ -2029,7 +2125,7 @@ function App() {
 
             {/* QUIZ */}
 
-            <button
+            <button type="button"
               className={
                 mode === "quiz"
                   ? "mode active"
@@ -2060,7 +2156,7 @@ function App() {
 
             {/* FLASHCARDS */}
 
-            <button
+            <button type="button"
               className={
                 mode === "flashcards"
                   ? "mode active"
@@ -2091,7 +2187,7 @@ function App() {
 
             {/* TEST CONCEPTS */}
 
-            <button
+            <button type="button"
               className={
                 mode === "test"
                   ? "mode active"
