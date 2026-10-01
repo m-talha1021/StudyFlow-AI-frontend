@@ -4,7 +4,6 @@ import {
   useState,
 } from "react";
 
-import "./App.css";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -14,22 +13,23 @@ import {
   updateProfile,
 } from "firebase/auth";
 
+import { auth, db } from "./firebase";
+
 import {
   doc,
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
-import { auth, db } from "./firebase";
+import "./App.css";
 
 // ========================================================
 // BACKEND API
 // ========================================================
 
 const API_BASE_URL =
-  "https://study-flow-ai-backend.vercel.app";
-
-
+  (import.meta.env?.VITE_API_BASE_URL ||
+    "https://study-flow-ai-backend.vercel.app").replace(/\/+$/, "");
 
 // ========================================================
 // API HELPER
@@ -37,6 +37,7 @@ const API_BASE_URL =
 
 const apiRequest = async (endpoint, options = {}) => {
   const isFormData =
+    typeof FormData !== "undefined" &&
     options.body instanceof FormData;
 
   const response = await fetch(
@@ -85,7 +86,7 @@ const apiRequest = async (endpoint, options = {}) => {
 function BrandMark() {
   return (
     <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI"></img>
+      <img src="/favicon.png" alt="StudyFlow AI" />
       <span>StudyFlow AI</span>
     </div>
   );
@@ -97,22 +98,34 @@ function WelcomePage({ onLogin, onSignup }) {
       <nav className="public-navbar">
         <BrandMark />
         <div className="public-nav-actions">
-          <button className="nav-link-button" onClick={onLogin}>Login</button>
-          <button className="nav-signup-button" onClick={onSignup}>Sign Up</button>
+          <button type="button" className="nav-link-button" onClick={onLogin}>
+            Login
+          </button>
+          <button type="button" className="nav-signup-button" onClick={onSignup}>
+            Sign Up
+          </button>
         </div>
       </nav>
 
       <main className="welcome-page">
         <section className="welcome-hero">
           <div className="welcome-badge">✦ AI-powered learning</div>
-          <h1>Study smarter.<br /><span>Understand faster.</span></h1>
+          <h1>
+            Study smarter.<br />
+            <span>Understand faster.</span>
+          </h1>
           <p>
             StudyFlow AI turns your notes, documents and images into summaries,
             explanations, quizzes, flashcards and an interactive study assistant.
           </p>
+
           <div className="welcome-actions">
-            <button className="primary-auth-button" onClick={onSignup}>Get Started</button>
-            <button className="secondary-auth-button" onClick={onLogin}>I already have an account</button>
+            <button type="button" className="primary-auth-button" onClick={onSignup}>
+              Get Started
+            </button>
+            <button type="button" className="secondary-auth-button" onClick={onLogin}>
+              I already have an account
+            </button>
           </div>
 
           <div className="feature-grid">
@@ -130,18 +143,33 @@ function WelcomePage({ onLogin, onSignup }) {
 
 function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, form, setForm }) {
   const isSignup = mode === "signup";
+
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
         <BrandMark />
-        <button className="nav-link-button" onClick={() => onModeChange("welcome")}>← Back</button>
+        <button
+          type="button"
+          className="nav-link-button"
+          onClick={() => onModeChange("welcome")}
+        >
+          ← Back
+        </button>
       </nav>
 
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
-          <div className="auth-card-icon"><img src="./assets/favicon.png"></div>
+          <div className="auth-card-brand">
+            <img src="/favicon.png" alt="StudyFlow AI" />
+            <span>StudyFlow AI</span>
+          </div>
+
           <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
-          <p>{isSignup ? "Start your personalized StudyFlow experience." : "Log in to continue learning."}</p>
+          <p>
+            {isSignup
+              ? "Start your personalized StudyFlow experience."
+              : "Log in to continue learning."}
+          </p>
 
           {error && <div className="auth-error">{error}</div>}
 
@@ -151,8 +179,13 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your name"
+                onChange={(event) =>
+                  setForm((previous) => ({
+                    ...previous,
+                    name: event.target.value,
+                  }))
+                }
+                placeholder="Your full name"
                 autoComplete="name"
                 required
               />
@@ -164,7 +197,12 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             <input
               type="email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(event) =>
+                setForm((previous) => ({
+                  ...previous,
+                  email: event.target.value,
+                }))
+              }
               placeholder="you@example.com"
               autoComplete="email"
               required
@@ -176,8 +214,13 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             <input
               type="password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="your password"
+              onChange={(event) =>
+                setForm((previous) => ({
+                  ...previous,
+                  password: event.target.value,
+                }))
+              }
+              placeholder="At least 6 characters"
               autoComplete={isSignup ? "new-password" : "current-password"}
               minLength={6}
               required
@@ -190,7 +233,12 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               <input
                 type="password"
                 value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                onChange={(event) =>
+                  setForm((previous) => ({
+                    ...previous,
+                    confirmPassword: event.target.value,
+                  }))
+                }
                 placeholder="Repeat your password"
                 autoComplete="new-password"
                 minLength={6}
@@ -202,7 +250,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
           {!isSignup && (
             <button
               type="button"
-              className="auth-forgot-button"
+              className="forgot-password-button"
               onClick={onForgotPassword}
               disabled={loading}
             >
@@ -210,13 +258,27 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             </button>
           )}
 
-          <button className="primary-auth-button auth-submit" type="submit" disabled={loading}>
-            {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
+          <button
+            type="submit"
+            className="primary-auth-button auth-submit"
+            disabled={loading}
+          >
+            {loading
+              ? "Please wait..."
+              : isSignup
+                ? "Create Account"
+                : "Login"}
           </button>
 
           <p className="auth-switch">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button type="button" onClick={() => onModeChange(isSignup ? "login" : "signup")}>
+            {isSignup
+              ? "Already have an account?"
+              : "Don't have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => onModeChange(isSignup ? "login" : "signup")}
+              disabled={loading}
+            >
               {isSignup ? "Login" : "Sign up"}
             </button>
           </p>
@@ -226,9 +288,27 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
   );
 }
 
-// ====Auth end
+// ========================================================
+// APP
+// ========================================================
 
 function App() {
+  // ========================================================
+  // FIREBASE AUTHENTICATION
+  // ========================================================
+
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authView, setAuthView] = useState("welcome");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [authForm, setAuthForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   // ========================================================
   // STUDY MATERIAL
   // ========================================================
@@ -281,13 +361,6 @@ function App() {
   const [chatOpen, setChatOpen] =
     useState(false);
 
-  // ========================================================
-  // MOBILE NAVBAR
-  // ========================================================
-
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
-
   const [chatQuestion, setChatQuestion] =
     useState("");
 
@@ -322,6 +395,23 @@ function App() {
 
   const [showGoUp, setShowGoUp] =
     useState(false);
+
+  // ========================================================
+  // FIREBASE SESSION LISTENER
+  // ========================================================
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthChecked(true);
+
+      if (firebaseUser) {
+        setAuthView("app");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // ========================================================
   // TEST TIMER
@@ -414,6 +504,187 @@ function App() {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
+  };
+
+  // ========================================================
+  // FIREBASE AUTHENTICATION HANDLERS
+  // ========================================================
+
+  const handleAuthSubmit = async (event) => {
+    event.preventDefault();
+    setAuthError("");
+
+    const isSignup = authView === "signup";
+    const email = authForm.email.trim();
+    const password = authForm.password;
+
+    if (isSignup) {
+      if (!authForm.name.trim()) {
+        setAuthError("Please enter your full name.");
+        return;
+      }
+
+      if (password !== authForm.confirmPassword) {
+        setAuthError("Passwords do not match.");
+        return;
+      }
+    }
+
+    setAuthLoading(true);
+
+    try {
+      if (isSignup) {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const firebaseUser = credential.user;
+        const displayName = authForm.name.trim();
+
+        await updateProfile(firebaseUser, {
+          displayName,
+        });
+
+        await setDoc(
+          doc(db, "users", firebaseUser.uid),
+          {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        setUser(firebaseUser);
+        setAuthView("app");
+      } else {
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        setUser(credential.user);
+        setAuthView("app");
+      }
+
+      setAuthForm({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setAuthError("");
+    } catch (error) {
+      console.error("Firebase authentication error:", error);
+
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setAuthError("This email is already registered.");
+          break;
+        case "auth/invalid-email":
+          setAuthError("Please enter a valid email address.");
+          break;
+        case "auth/weak-password":
+          setAuthError("Password should be at least 6 characters.");
+          break;
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          setAuthError("Invalid email or password.");
+          break;
+        case "auth/network-request-failed":
+          setAuthError(
+            "Failed to connect to Firebase. Check your Firebase configuration and internet connection."
+          );
+          break;
+        case "auth/operation-not-allowed":
+          setAuthError(
+            "Email/password sign-in is not enabled in Firebase Authentication."
+          );
+          break;
+        default:
+          setAuthError(error.message || "Authentication failed.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setAuthError("");
+
+    const email = authForm.email.trim();
+
+    if (!email) {
+      setAuthError("Enter your email address first.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthError("Password reset email sent. Check your inbox.");
+    } catch (error) {
+      console.error("Password reset error:", error);
+
+      if (error.code === "auth/user-not-found") {
+        setAuthError("No account was found with this email.");
+      } else if (error.code === "auth/invalid-email") {
+        setAuthError("Please enter a valid email address.");
+      } else {
+        setAuthError(error.message || "Could not send the reset email.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const openAuth = (view) => {
+    setAuthError("");
+    setAuthView(view);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+
+    setUser(null);
+    setAuthView("welcome");
+    setAuthForm({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setAuthError("");
+
+    setText("");
+    setFile(null);
+    setFiles([]);
+    setMaterialReady(false);
+    setResult("");
+    setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setChatMessages([]);
+    setChatQuestion("");
+    setChatOpen(false);
+    setTestQuestions([]);
+    setTestAnswers({});
+    setTestStarted(false);
+    setTestFinished(false);
+    setTestScore(0);
+    stopSpeech();
   };
 
   // ========================================================
@@ -859,7 +1130,6 @@ function App() {
       // No material
       if (
         !ready &&
-        files.length === 0 &&
         !file &&
         !text.trim()
       ) {
@@ -1337,25 +1607,41 @@ function App() {
     };
 
   // ========================================================
-  // NAVIGATION
+  // AUTH GATE
   // ========================================================
 
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
+  if (!authChecked) {
+    return (
+      <div className="auth-loading-screen">
+        <img src="/favicon.png" alt="StudyFlow AI" />
+        <span>Loading StudyFlow AI...</span>
+      </div>
+    );
+  }
 
-  const navigateToSection = (id) => {
-    closeMobileMenu();
+  if (!user) {
+    if (authView === "login" || authView === "signup") {
+      return (
+        <AuthPage
+          mode={authView}
+          onModeChange={openAuth}
+          onSubmit={handleAuthSubmit}
+          onForgotPassword={handleForgotPassword}
+          loading={authLoading}
+          error={authError}
+          form={authForm}
+          setForm={setAuthForm}
+        />
+      );
+    }
 
-    window.requestAnimationFrame(() => {
-      document
-        .getElementById(id)
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-    });
-  };
+    return (
+      <WelcomePage
+        onLogin={() => openAuth("login")}
+        onSignup={() => openAuth("signup")}
+      />
+    );
+  }
 
   // ========================================================
   // UI
@@ -1365,87 +1651,48 @@ function App() {
     <div className="app">
 
       {/* ==================================================
-          NAVBAR
-          Desktop: full navigation
-          Mobile: logo + name + hamburger menu
+          HEADER
       ================================================== */}
 
-      <header className="app-navbar">
+      <header className="header">
 
-        <a
-          className="brand-mark"
-          href="#heroclass"
-          onClick={closeMobileMenu}
-          aria-label="StudyFlow AI home"
-        >
-          <img
-            src="favicon.png"
-            alt="StudyFlow AI logo"
-          />
-          <span>StudyFlow AI</span>
-        </a>
+        <div className="logo">
 
-        <nav
-          id="studyflow-mobile-navigation"
-          className={`app-nav-links ${
-            mobileMenuOpen ? "mobile-open" : ""
-          }`}
-          aria-label="Main navigation"
-        >
-          <button
-            type="button"
-            onClick={() => navigateToSection("heroclass")}
-          >
-            Dashboard
-          </button>
+          <div className="logo-icon">
+            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
+          </div>
+          <span>
+           <a href="#heroclass"> StudyFlow AI</a>
+          </span>
 
-          <button
-            type="button"
-            onClick={() => navigateToSection("inputcard")}
-          >
-            Study Material
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMode("flashcards");
-              navigateToSection("action-section");
-            }}
-          >
-            Flashcards
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigateToSection("action-section")}
-          >
-            Quiz &amp; AI
-          </button>
-        </nav>
-
-        <div className="app-nav-user desktop-nav-user">
-          <button
-            type="button"
-            className="logout-button upload-nav-button"
-            onClick={() => navigateToSection("inputcard")}
-          >
-            Upload
-          </button>
         </div>
 
-        <button
-          type="button"
-          className="navbar-menu-button"
-          onClick={() => setMobileMenuOpen((previous) => !previous)}
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="studyflow-mobile-navigation"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        <p className="tagline">
+          <b>
+            Your AI-powered study assistant
+          </b>
+        </p>
+
+        <div className="header-actions">
+          <div className="uploadBtn">
+            <a href="#inputcard">
+              Upload
+            </a>
+          </div>
+
+          <div className="user-account">
+            <span className="user-name">
+              {user.displayName || user.email || "Account"}
+            </span>
+            <button
+              type="button"
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
 
       </header>
 
@@ -1676,7 +1923,7 @@ function App() {
             ACTION SECTION
         ================================================= */}
 
-        <section className="action-section" id="action-section">
+        <section className="action-section">
 
           {/* HEADING + CHATBOT ICON */}
 
