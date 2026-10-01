@@ -2197,7 +2197,7 @@ function App() {
               <span>⏱️</span>
               <div>
                 <strong>Test concepts</strong>
-                <small>Timed MCQ exam from your material</small>
+                <small>MCQ's test from your material</small>
               </div>
             </button>
 
@@ -2219,8 +2219,7 @@ function App() {
               ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
-                : mode === "test"
-                  ? "⏱️ Generate Test"
+                
                   : `✨ Generate ${mode}`}
 
           </button>
