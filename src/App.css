@@ -4246,3 +4246,166 @@ footer h3 {
     font-size: 12px;
   }
 }
+
+
+/* ============================================================
+   STUDYFLOW NAVBAR - MOBILE HAMBURGER OVERRIDES
+   Not sticky: normal document flow is preserved.
+============================================================ */
+.app-navbar {
+  position: relative;
+  top: auto;
+  width: 100%;
+  min-height: 74px;
+  padding: 0 clamp(16px, 5vw, 72px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  z-index: 1000;
+}
+
+.app-navbar .brand-mark {
+  flex: 0 0 auto;
+  text-decoration: none;
+}
+
+.app-navbar .app-nav-links {
+  position: static;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.app-navbar .desktop-nav-user {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.upload-nav-button {
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.app-navbar .navbar-menu-button {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .app-navbar {
+    min-height: 64px;
+    padding: 0 12px 0 15px;
+    gap: 10px;
+  }
+
+  .app-navbar .brand-mark {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  /* Only logo/name + hamburger remain visible on mobile. */
+  .app-navbar .desktop-nav-user {
+    display: none;
+  }
+
+  .app-navbar .navbar-menu-button {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid rgba(167, 139, 250, 0.30);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(109,61,240,0.85), rgba(192,38,114,0.82));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(109, 61, 240, 0.22);
+  }
+
+  .app-navbar .navbar-menu-button span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: #fff;
+  }
+
+  .app-navbar .app-nav-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 10px;
+    right: 10px;
+    width: auto;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex: none;
+    gap: 6px;
+    padding: 9px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(19, 14, 35, 0.98), rgba(13, 10, 24, 0.98));
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    box-shadow: 0 24px 65px rgba(0,0,0,.48), 0 0 35px rgba(124,58,237,.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .app-navbar .app-nav-links.mobile-open {
+    display: flex;
+  }
+
+  .app-navbar .app-nav-links > button {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    text-align: left;
+    font-size: 15px;
+    background: linear-gradient(135deg, rgba(99,56,232,.24), rgba(190,24,93,.18));
+  }
+
+  .app-navbar .app-nav-links > button:hover,
+  .app-navbar .app-nav-links > button:active {
+    transform: none;
+    background: linear-gradient(135deg, #6d3df0, #c02672);
+  }
+}
+
+@media (max-width: 380px) {
+  .app-navbar {
+    padding-left: 11px;
+    padding-right: 10px;
+  }
+
+  .app-navbar .brand-mark {
+    font-size: 15px;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .app-navbar .navbar-menu-button {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
