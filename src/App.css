@@ -3535,10 +3535,10 @@ footer h3 {
 }
 
 .flashcard-controls button {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #2ba1f0;
   border-radius: 11px;
   padding: 10px 15px;
-  color: #fff;
+  color: white;
   background: rgba(255, 255, 255, 0.06);
   cursor: pointer;
   font: inherit;
