@@ -4,6 +4,24 @@ import {
   useState,
 } from "react";
 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { auth, db } from "./firebase";
+
 import "./App.css";
 
 // ========================================================
@@ -65,6 +83,208 @@ const apiRequest = async (endpoint, options = {}) => {
 // ========================================================
 
 function App() {
+  // ========================================================
+  // FIREBASE AUTHENTICATION
+  // ========================================================
+
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authView, setAuthView] = useState("landing");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [authSuccess, setAuthSuccess] = useState("");
+  const [profileName, setProfileName] = useState("");
+
+  const [authName, setAuthName] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authConfirmPassword, setAuthConfirmPassword] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthChecked(true);
+
+      if (firebaseUser) {
+        setAuthView("app");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const clearAuthMessages = () => {
+    setAuthError("");
+    setAuthSuccess("");
+  };
+
+  const openAuthView = (view) => {
+    clearAuthMessages();
+    setAuthPassword("");
+    setAuthConfirmPassword("");
+    setAuthView(view);
+  };
+
+  const handleSignup = async (event) => {
+    event.preventDefault();
+    clearAuthMessages();
+
+    const name = authName.trim();
+    const email = authEmail.trim();
+
+    if (!name) {
+      setAuthError("Please enter your full name.");
+      return;
+    }
+
+    if (authPassword.length < 6) {
+      setAuthError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (authPassword !== authConfirmPassword) {
+      setAuthError("Passwords do not match.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    try {
+      const credential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          authPassword
+        );
+
+      await updateProfile(credential.user, {
+        displayName: name,
+      });
+
+      await setDoc(
+        doc(db, "users", credential.user.uid),
+        {
+          uid: credential.user.uid,
+          displayName: name,
+          email,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      setUser(auth.currentUser);
+      setAuthView("app");
+    } catch (error) {
+      setAuthError(
+        error?.code === "auth/email-already-in-use"
+          ? "An account with this email already exists."
+          : error?.message || "Unable to create your account."
+      );
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    clearAuthMessages();
+    setAuthLoading(true);
+
+    try {
+      const credential =
+        await signInWithEmailAndPassword(
+          auth,
+          authEmail.trim(),
+          authPassword
+        );
+
+      setUser(credential.user);
+      setAuthView("app");
+    } catch (error) {
+      setAuthError(
+        error?.code === "auth/invalid-credential"
+          ? "Incorrect email or password."
+          : error?.message || "Unable to log in."
+      );
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    clearAuthMessages();
+
+    if (!authEmail.trim()) {
+      setAuthError("Enter your email address first.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    try {
+      await sendPasswordResetEmail(auth, authEmail.trim());
+      setAuthSuccess("Password reset email sent. Check your inbox.");
+    } catch (error) {
+      setAuthError(
+        error?.message || "Unable to send the password reset email."
+      );
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+    setAuthView("landing");
+    setAuthName("");
+    setAuthEmail("");
+    setAuthPassword("");
+    setAuthConfirmPassword("");
+    clearAuthMessages();
+  };
+
+  const getDisplayName = async (firebaseUser) => {
+    if (!firebaseUser) return "Student";
+
+    if (firebaseUser.displayName) {
+      return firebaseUser.displayName;
+    }
+
+    try {
+      const profile = await getDoc(
+        doc(db, "users", firebaseUser.uid)
+      );
+
+      return profile.exists() && profile.data().displayName
+        ? profile.data().displayName
+        : "Student";
+    } catch {
+      return "Student";
+    }
+  };
+
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setProfileName("");
+      return;
+    }
+
+    getDisplayName(user).then((name) => {
+      if (!cancelled) {
+        setProfileName(name);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   // ========================================================
   // STUDY MATERIAL
   // ========================================================
@@ -1165,6 +1385,282 @@ function App() {
     };
 
   // ========================================================
+  // PUBLIC LANDING / LOGIN / SIGNUP
+  // ========================================================
+
+  if (!authChecked) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-brand">
+            <img src="favicon.png" alt="StudyFlow AI" />
+            <span>StudyFlow AI</span>
+          </div>
+          <p className="auth-loading">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user && authView !== "app") {
+    return (
+      <div className="auth-page">
+        <div className="auth-public-shell">
+
+          <header className="public-navbar">
+            <div className="public-brand">
+              <img src="favicon.png" alt="StudyFlow AI" />
+              <span>StudyFlow AI</span>
+            </div>
+
+            <div className="public-nav-actions">
+              <button
+                type="button"
+                onClick={() => openAuthView("login")}
+                className={authView === "login" ? "active" : ""}
+              >
+                Login
+              </button>
+
+              <button
+                type="button"
+                onClick={() => openAuthView("signup")}
+                className={authView === "signup" ? "active" : ""}
+              >
+                Sign Up
+              </button>
+            </div>
+          </header>
+
+          {authView === "landing" ? (
+            <main className="public-hero">
+              <div className="public-badge">
+                ✦ AI-powered learning
+              </div>
+
+              <h1>
+                Study smarter.
+                <br />
+                <span>Understand faster.</span>
+              </h1>
+
+              <p>
+                StudyFlow AI turns your notes, documents and images
+                into summaries, explanations, quizzes, flashcards
+                and an interactive study assistant.
+              </p>
+
+              <div className="public-hero-actions">
+                <button
+                  type="button"
+                  className="primary-auth-button"
+                  onClick={() => openAuthView("signup")}
+                >
+                  Get Started
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-auth-button"
+                  onClick={() => openAuthView("login")}
+                >
+                  I already have an account
+                </button>
+              </div>
+
+              <div className="public-feature-grid">
+                <div className="public-feature-card">
+                  <span>📄</span>
+                  <strong>Summaries</strong>
+                  <small>Key ideas from your material</small>
+                </div>
+
+                <div className="public-feature-card">
+                  <span>💡</span>
+                  <strong>Explain</strong>
+                  <small>Understand difficult concepts</small>
+                </div>
+
+                <div className="public-feature-card">
+                  <span>🧠</span>
+                  <strong>Quizzes</strong>
+                  <small>Test what you learned</small>
+                </div>
+
+                <div className="public-feature-card">
+                  <span>📁</span>
+                  <strong>Flashcards</strong>
+                  <small>Active recall made easy</small>
+                </div>
+
+                <div className="public-feature-card">
+                  <span>🤖</span>
+                  <strong>AI Chat</strong>
+                  <small>Ask questions about your material</small>
+                </div>
+              </div>
+            </main>
+          ) : (
+            <main className="auth-form-wrap">
+              <div className="auth-card">
+
+                <div className="auth-brand auth-brand-large">
+                  <img src="favicon.png" alt="StudyFlow AI" />
+                  <span>StudyFlow AI</span>
+                </div>
+
+                <h1>
+                  {authView === "signup"
+                    ? "Create your account"
+                    : "Welcome back"}
+                </h1>
+
+                <p className="auth-subtitle">
+                  {authView === "signup"
+                    ? "Start your personalized StudyFlow experience."
+                    : "Log in to continue learning."}
+                </p>
+
+                {authError && (
+                  <div className="auth-error">
+                    {authError}
+                  </div>
+                )}
+
+                {authSuccess && (
+                  <div className="auth-success">
+                    {authSuccess}
+                  </div>
+                )}
+
+                {authView === "signup" ? (
+                  <form onSubmit={handleSignup}>
+
+                    <label>Full name</label>
+                    <input
+                      type="text"
+                      value={authName}
+                      onChange={(e) => setAuthName(e.target.value)}
+                      placeholder="Your full name"
+                      autoComplete="name"
+                      required
+                    />
+
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={authEmail}
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      required
+                    />
+
+                    <label>Password</label>
+                    <input
+                      type="password"
+                      value={authPassword}
+                      onChange={(e) => setAuthPassword(e.target.value)}
+                      placeholder="At least 6 characters"
+                      autoComplete="new-password"
+                      required
+                    />
+
+                    <label>Confirm password</label>
+                    <input
+                      type="password"
+                      value={authConfirmPassword}
+                      onChange={(e) => setAuthConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      autoComplete="new-password"
+                      required
+                    />
+
+                    <button
+                      type="submit"
+                      className="primary-auth-button auth-submit"
+                      disabled={authLoading}
+                    >
+                      {authLoading
+                        ? "Creating account..."
+                        : "Create Account"}
+                    </button>
+
+                  </form>
+                ) : (
+                  <form onSubmit={handleLogin}>
+
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={authEmail}
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      required
+                    />
+
+                    <label>Password</label>
+                    <input
+                      type="password"
+                      value={authPassword}
+                      onChange={(e) => setAuthPassword(e.target.value)}
+                      placeholder="Your password"
+                      autoComplete="current-password"
+                      required
+                    />
+
+                    <button
+                      type="submit"
+                      className="primary-auth-button auth-submit"
+                      disabled={authLoading}
+                    >
+                      {authLoading ? "Logging in..." : "Login"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="forgot-password-button"
+                      onClick={handlePasswordReset}
+                      disabled={authLoading}
+                    >
+                      Forgot password?
+                    </button>
+
+                  </form>
+                )}
+
+                <div className="auth-switch">
+                  {authView === "signup"
+                    ? "Already have an account?"
+                    : "Don't have an account?"}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openAuthView(
+                        authView === "signup"
+                          ? "login"
+                          : "signup"
+                      )
+                    }
+                  >
+                    {authView === "signup"
+                      ? "Login"
+                      : "Sign Up"}
+                  </button>
+                </div>
+
+              </div>
+            </main>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // ========================================================
   // UI
   // ========================================================
 
@@ -1194,10 +1690,21 @@ function App() {
           </b>
         </p>
 
-        <div className="uploadBtn">
-          <a href="#inputcard">
-            Upload
-          </a>
+        <div className="header-actions">
+          <div className="uploadBtn">
+            <a href="#inputcard">
+              Upload
+            </a>
+          </div>
+
+          <button
+            type="button"
+            className="header-user-button"
+            onClick={handleLogout}
+            title={`Log out ${profileName || user?.displayName || "Student"}`}
+          >
+            👤 {profileName || user?.displayName || "Student"} · Logout
+          </button>
         </div>
 
       </header>
