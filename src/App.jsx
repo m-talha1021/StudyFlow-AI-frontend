@@ -17,7 +17,6 @@ import {
 
 import {
   doc,
-  getDoc,
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
@@ -261,8 +260,6 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
-  const [files, setFiles] = useState([]);
-  const [profileName, setProfileName] = useState("");
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -335,51 +332,19 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      async (firebaseUser) => {
+      (firebaseUser) => {
         setUser(firebaseUser);
+        setAuthChecked(true);
 
         if (firebaseUser) {
-          // Firebase Auth normally has displayName. Firestore is used
-          // as a fallback because the app stores the user's profile there.
-          setProfileName(
-            firebaseUser.displayName ||
-              firebaseUser.email?.split("@")[0] ||
-              "Student"
-          );
-
-          try {
-            const profileSnapshot = await getDoc(
-              doc(db, "users", firebaseUser.uid)
-            );
-
-            if (profileSnapshot.exists()) {
-              const profile = profileSnapshot.data();
-
-              setProfileName(
-                profile.displayName ||
-                  firebaseUser.displayName ||
-                  firebaseUser.email?.split("@")[0] ||
-                  "Student"
-              );
-            }
-          } catch (profileError) {
-            console.warn(
-              "Could not load Firestore user profile:",
-              profileError
-            );
-          }
-
           setAuthView("app");
         } else {
-          setProfileName("");
           setAuthView((current) =>
             current === "login" || current === "signup"
               ? current
               : "welcome"
           );
         }
-
-        setAuthChecked(true);
       }
     );
 
@@ -509,7 +474,6 @@ function App() {
         );
 
         setUser(firebaseUser);
-        setProfileName(displayName);
         setAuthView("app");
       } else {
         const credential = await signInWithEmailAndPassword(
@@ -519,11 +483,6 @@ function App() {
         );
 
         setUser(credential.user);
-        setProfileName(
-          credential.user.displayName ||
-            credential.user.email?.split("@")[0] ||
-            "Student"
-        );
         setAuthView("app");
       }
 
@@ -608,7 +567,6 @@ function App() {
     });
     setText("");
     setFile(null);
-    setFiles([]);
     setMaterialReady(false);
     setResult("");
     setFlashcards([]);
@@ -627,16 +585,29 @@ function App() {
   // ========================================================
 
   const handleGenerateFlashcards = async () => {
-    if (!materialReady) {
-      alert("Please upload or paste study material first.");
-      document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
     setFlashcardsLoading(true);
     setFlashcardFlipped(false);
 
     try {
+      let ready = materialReady;
+
+      // If the user pasted text but has not processed it yet, process it first.
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file) {
+        alert("Please upload or paste study material first.");
+        document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+
       const data = await apiRequest("/api/flashcards", {
         method: "POST",
         body: JSON.stringify({ count: 10 }),
@@ -645,7 +616,7 @@ function App() {
       setFlashcards(data.cards || []);
       setFlashcardIndex(0);
       setTimeout(() => {
-        document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
     } catch (error) {
       alert(error.message || "Could not generate flashcards.");
@@ -665,25 +636,16 @@ function App() {
   };
 
   // ========================================================
-  // PROCESS MULTIPLE FILES
+  // PROCESS FILE
   // ========================================================
 
-  const processFiles = async (selectedFiles) => {
-    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
-
-    if (!validFiles.length) {
-      return;
-    }
-
-    // Keep uploads manageable and match the backend's multi-file flow.
-    if (validFiles.length > 10) {
-      alert("Please select a maximum of 10 files at a time.");
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
       return;
     }
 
     setProcessing(true);
-    setFiles(validFiles);
-    setFile(validFiles[0]);
+    setFile(selectedFile);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -691,7 +653,7 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded.
+    // Reset chat when new material is uploaded
     setChatMessages([]);
     setChatQuestion("");
 
@@ -700,9 +662,10 @@ function App() {
     try {
       const formData = new FormData();
 
-      validFiles.forEach((selectedFile) => {
-        formData.append("files", selectedFile);
-      });
+      formData.append(
+        "file",
+        selectedFile
+      );
 
       const data = await apiRequest(
         "/api/material",
@@ -715,11 +678,12 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-            "Could not process the selected files."
+            "Could not process the file."
         );
       }
 
       setMaterialReady(true);
+
     } catch (error) {
       console.error(
         "File processing error:",
@@ -728,24 +692,15 @@ function App() {
 
       alert(
         error.message ||
-          "Could not process the uploaded files."
+          "Could not process the uploaded document or image."
       );
 
-      setFiles([]);
       setFile(null);
       setMaterialReady(false);
+
     } finally {
       setProcessing(false);
     }
-  };
-
-  // Keep the single-file helper for the camera workflow.
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
-      return;
-    }
-
-    await processFiles([selectedFile]);
   };
 
   // ========================================================
@@ -784,19 +739,16 @@ function App() {
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFiles = Array.from(
-      event.target.files || []
-    );
+    const selectedFile =
+      event.target.files?.[0];
 
-    if (!selectedFiles.length) {
+    if (!selectedFile) {
       return;
     }
 
     setText("");
-    processFiles(selectedFiles);
 
-    // This lets the user select the same file(s) again later.
-    event.target.value = "";
+    processFile(selectedFile);
   };
 
   // ========================================================
@@ -870,6 +822,13 @@ function App() {
   // ========================================================
 
   const handleGenerate = async () => {
+    // Flashcards use their dedicated generation endpoint, but remain
+    // one of the selectable study modes instead of a separate section.
+    if (mode === "flashcards") {
+      await handleGenerateFlashcards();
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
@@ -1414,14 +1373,13 @@ function App() {
         <nav className="app-nav-links">
           <button onClick={() => document.getElementById("heroclass")?.scrollIntoView({ behavior: "smooth" })}>Dashboard</button>
           <button onClick={() => document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" })}>Study Material</button>
-          <button onClick={() => document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth" })}>Flashcards</button>
           <button onClick={() => document.getElementById("action-section")?.scrollIntoView({ behavior: "smooth" })}>Quiz & AI</button>
         </nav>
 
         <div className="app-nav-user">
           <div className="user-pill">
             <span>👤</span>
-            <strong>{profileName || user?.displayName || "Student"}</strong>
+            <strong>{user?.name || "Student"}</strong>
           </div>
           <button className="logout-button" onClick={handleLogout}>Logout</button>
         </div>
@@ -1487,7 +1445,6 @@ function App() {
               );
 
               setFile(null);
-              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1532,9 +1489,10 @@ function App() {
 
             <input
               type="file"
-              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
-              onChange={handleFileChange}
+              onChange={
+                handleFileChange
+              }
               disabled={processing}
             />
 
@@ -1622,29 +1580,17 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {files.length > 0 ? (
+          {file && (
             <div className="selected-file">
-              📎 Selected {files.length} file{files.length === 1 ? "" : "s"}:
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
-                }}
-              >
-                {files.map((selectedFile, index) => (
-                  <div key={`${selectedFile.name}-${index}`}>
-                    <strong>{selectedFile.name}</strong>
-                  </div>
-                ))}
-              </div>
+
+              📎 Selected:{" "}
+
+              <strong>
+                {file.name}
+              </strong>
+
             </div>
-          ) : file ? (
-            <div className="selected-file">
-              📎 Selected: <strong>{file.name}</strong>
-            </div>
-          ) : null}
+          )}
 
         </section>
 
@@ -1695,96 +1641,67 @@ function App() {
           <div className="mode-buttons">
 
             {/* SUMMARY */}
-
             <button
-              className={
-                mode === "summary"
-                  ? "mode active"
-                  : "mode"
-              }
-              onClick={() =>
-                setMode("summary")
-              }
+              type="button"
+              className={mode === "summary" ? "mode active" : "mode"}
+              onClick={() => {
+                setMode("summary");
+                setResult("");
+              }}
             >
-
-              <span>
-                📝
-              </span>
-
+              <span>📝</span>
               <div>
-
-                <strong>
-                  Summary
-                </strong>
-
-                <small>
-                  Key points from your material
-                </small>
-
+                <strong>Summary</strong>
+                <small>Key points from your material</small>
               </div>
-
             </button>
 
-            {/* EXPLAIN */}
-
+            {/* EXPLANATION */}
             <button
-              className={
-                mode === "explain"
-                  ? "mode active"
-                  : "mode"
-              }
-              onClick={() =>
-                setMode("explain")
-              }
+              type="button"
+              className={mode === "explain" ? "mode active" : "mode"}
+              onClick={() => {
+                setMode("explain");
+                setResult("");
+              }}
             >
-
-              <span>
-                💡
-              </span>
-
+              <span>💡</span>
               <div>
-
-                <strong>
-                  Explanation
-                </strong>
-
-                <small>
-                  Understand difficult concepts
-                </small>
-
+                <strong>Explanation</strong>
+                <small>Understand difficult concepts</small>
               </div>
-
             </button>
 
             {/* QUIZ */}
-
             <button
-              className={
-                mode === "quiz"
-                  ? "mode active"
-                  : "mode"
-              }
-              onClick={() =>
-                setMode("quiz")
-              }
+              type="button"
+              className={mode === "quiz" ? "mode active" : "mode"}
+              onClick={() => {
+                setMode("quiz");
+                setResult("");
+              }}
             >
-
-              <span>
-                🧠
-              </span>
-
+              <span>🧠</span>
               <div>
-
-                <strong>
-                  Quiz
-                </strong>
-
-                <small>
-                  Test your knowledge
-                </small>
-
+                <strong>Quiz</strong>
+                <small>Test your knowledge</small>
               </div>
+            </button>
 
+            {/* FLASHCARDS */}
+            <button
+              type="button"
+              className={mode === "flashcards" ? "mode active" : "mode"}
+              onClick={() => {
+                setMode("flashcards");
+                setResult("");
+              }}
+            >
+              <span>🗂️</span>
+              <div>
+                <strong>Flashcards</strong>
+                <small>Active recall from your material</small>
+              </div>
             </button>
 
           </div>
@@ -1796,94 +1713,85 @@ function App() {
             onClick={handleGenerate}
             disabled={
               processing ||
-              generating
+              generating ||
+              flashcardsLoading
             }
           >
 
-            {generating
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "🗂️ Generate Flashcards"
+                : `✨ Generate ${mode}`}
 
           </button>
 
         </section>
 
         {/* =================================================
-            FLASHCARDS
-        ================================================= */}
-
-        <section className="flashcards-section" id="flashcards-section">
-          <div className="flashcards-header">
-            <div>
-              <span className="section-kicker">ACTIVE RECALL</span>
-              <h2>Flashcards</h2>
-              <p>Turn your current study material into quick review cards.</p>
-            </div>
-            <button
-              className="flashcards-generate-button"
-              onClick={handleGenerateFlashcards}
-              disabled={flashcardsLoading || processing}
-            >
-              {flashcardsLoading ? "⏳ Generating..." : flashcards.length ? "🔄 Regenerate" : "🗂️ Generate Flashcards"}
-            </button>
-          </div>
-
-          {!flashcards.length && !flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div>🗂️</div>
-              <h3>Learn with active recall</h3>
-              <p>Upload or paste material, then generate a set of AI-powered flashcards.</p>
-            </div>
-          )}
-
-          {flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div className="flashcard-spinner">✦</div>
-              <h3>Creating your flashcards...</h3>
-              <p>StudyFlow AI is selecting important concepts from your material.</p>
-            </div>
-          )}
-
-          {flashcards.length > 0 && !flashcardsLoading && (
-            <div className="flashcard-study-area">
-              <div className="flashcard-progress">
-                Card {flashcardIndex + 1} of {flashcards.length}
-              </div>
-
-              <button
-                type="button"
-                className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
-                onClick={() => setFlashcardFlipped((value) => !value)}
-                aria-label="Flip flashcard"
-              >
-                <div className="flashcard-inner">
-                  <div className="flashcard-face flashcard-front">
-                    <span>QUESTION</span>
-                    <strong>{flashcards[flashcardIndex]?.front}</strong>
-                    <small>Click to reveal answer</small>
-                  </div>
-                  <div className="flashcard-face flashcard-back">
-                    <span>ANSWER</span>
-                    <strong>{flashcards[flashcardIndex]?.back}</strong>
-                    <small>Click to see the question</small>
-                  </div>
-                </div>
-              </button>
-
-              <div className="flashcard-controls">
-                <button type="button" onClick={previousFlashcard}>← Previous</button>
-                <button type="button" className="flip-button" onClick={() => setFlashcardFlipped((value) => !value)}>↻ Flip</button>
-                <button type="button" onClick={nextFlashcard}>Next →</button>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* =================================================
             GENERATED RESULT
         ================================================= */}
 
-        {result && (
+        {mode === "flashcards" && (flashcards.length > 0 || flashcardsLoading) && (
+          <section
+            className="result-section flashcards-result-section"
+            id="result-section"
+          >
+            <div className="result-header">
+              <div>
+                <span className="result-icon">🗂️</span>
+                <div>
+                  <h2>Flashcards</h2>
+                  <small>Active recall</small>
+                </div>
+              </div>
+            </div>
+
+            {flashcardsLoading && (
+              <div className="flashcards-empty">
+                <div className="flashcard-spinner">✦</div>
+                <h3>Creating your flashcards...</h3>
+                <p>StudyFlow AI is selecting important concepts from your material.</p>
+              </div>
+            )}
+
+            {flashcards.length > 0 && !flashcardsLoading && (
+              <div className="flashcard-study-area">
+                <div className="flashcard-progress">
+                  Card {flashcardIndex + 1} of {flashcards.length}
+                </div>
+
+                <button
+                  type="button"
+                  className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
+                  onClick={() => setFlashcardFlipped((value) => !value)}
+                  aria-label="Flip flashcard"
+                >
+                  <div className="flashcard-inner">
+                    <div className="flashcard-face flashcard-front">
+                      <span>QUESTION</span>
+                      <strong>{flashcards[flashcardIndex]?.front}</strong>
+                      <small>Click to reveal answer</small>
+                    </div>
+                    <div className="flashcard-face flashcard-back">
+                      <span>ANSWER</span>
+                      <strong>{flashcards[flashcardIndex]?.back}</strong>
+                      <small>Click to see the question</small>
+                    </div>
+                  </div>
+                </button>
+
+                <div className="flashcard-controls">
+                  <button type="button" onClick={previousFlashcard}>← Previous</button>
+                  <button type="button" className="flip-button" onClick={() => setFlashcardFlipped((value) => !value)}>↻ Flip</button>
+                  <button type="button" onClick={nextFlashcard}>Next →</button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {mode !== "flashcards" && result && (
           <section
             className="result-section"
             id="result-section"
