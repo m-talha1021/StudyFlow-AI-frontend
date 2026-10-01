@@ -145,7 +145,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
 
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
-          <div className="auth-card-icon"><img src="./assets/favicon.png"></div>
+          <div className="auth-card-icon"><img src="/assets/favicon.png"></div>
           <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
           <p>{isSignup ? "Start your personalized StudyFlow experience." : "Log in to continue learning."}</p>
 
