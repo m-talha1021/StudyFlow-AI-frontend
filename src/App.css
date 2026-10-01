@@ -4409,3 +4409,342 @@ footer h3 {
     height: 40px;
   }
 }
+
+
+/* ============================================================
+   FINAL LAYOUT SAFETY OVERRIDES
+   These rules intentionally come last so older navbar styles
+   cannot conflict with the logged-in navigation.
+============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.app {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: clip;
+}
+
+/* Logged-in navbar */
+.app-navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  min-height: 74px;
+  padding: 10px clamp(14px, 4vw, 56px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background:
+    linear-gradient(180deg, rgba(10, 9, 20, 0.98), rgba(8, 7, 15, 0.94));
+  border-bottom: 1px solid rgba(139, 92, 246, 0.28);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  isolation: isolate;
+}
+
+.app-navbar .brand-mark {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-left: 0;
+  text-decoration: none;
+}
+
+.app-navbar .brand-mark img {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.app-navbar .app-nav-links {
+  position: static;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.app-navbar .app-nav-links > button {
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 11px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 56, 232, 0.2),
+    rgba(37, 99, 235, 0.16)
+  );
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.app-navbar .app-nav-links > button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(216, 180, 254, 0.42);
+  background: linear-gradient(135deg, #6d3df0, #7c3aed);
+}
+
+.app-navbar .desktop-nav-user {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.app-navbar .user-pill {
+  min-width: 0;
+  max-width: 190px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.app-navbar .user-pill strong {
+  min-width: 0;
+}
+
+.app-navbar .logout-button {
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 11px;
+  padding: 10px 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #6d3df0, #c02672);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.app-navbar .navbar-menu-button {
+  display: none;
+}
+
+.mobile-account-block {
+  display: none;
+}
+
+/* Prevent content from hiding behind the sticky navbar. */
+#heroclass,
+#inputcard,
+#action-section,
+#result-section,
+#flashcards-section,
+#test-concepts-section {
+  scroll-margin-top: 95px;
+}
+
+/* Main content remains centered and does not compete with the navbar. */
+.container {
+  width: min(900px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+/* Selected files cannot push the layout wider than the viewport. */
+.selected-files,
+.selected-files-list,
+.selected-file-item {
+  min-width: 0;
+}
+
+.selected-file-item strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Chat stays inside the viewport on small screens. */
+.chatbot-popup {
+  max-width: min(420px, calc(100vw - 24px));
+}
+
+/* ============================================================
+   MOBILE LOGGED-IN NAVBAR
+============================================================ */
+
+@media (max-width: 900px) {
+  .app-navbar {
+    min-height: 68px;
+    padding: 8px 14px;
+  }
+
+  .app-navbar .desktop-nav-user {
+    display: none;
+  }
+
+  .app-navbar .navbar-menu-button {
+    display: flex;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6d3df0, #c02672);
+    cursor: pointer;
+  }
+
+  .app-navbar .navbar-menu-button span {
+    width: 20px;
+    height: 2px;
+    border-radius: 99px;
+    background: #fff;
+  }
+
+  .app-navbar .app-nav-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 10px;
+    right: 10px;
+    width: auto;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 9px;
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    border-radius: 18px;
+    background: linear-gradient(
+      145deg,
+      rgba(19, 14, 35, 0.99),
+      rgba(13, 10, 24, 0.99)
+    );
+    box-shadow: 0 24px 65px rgba(0,0,0,.48);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1001;
+  }
+
+  .app-navbar .app-nav-links.mobile-open {
+    display: flex;
+  }
+
+  .app-navbar .app-nav-links > button {
+    width: 100%;
+    min-height: 46px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .app-navbar .mobile-account-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 5px;
+    padding: 12px 8px 5px;
+    border-top: 1px solid rgba(255,255,255,.09);
+    color: rgba(255,255,255,.78);
+  }
+
+  .app-navbar .mobile-account-block > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .app-navbar .mobile-logout-button {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 13px;
+    background: rgba(255,70,110,.14);
+    color: #ffb1c3;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-navbar {
+    min-height: 62px;
+    padding: 7px 11px;
+  }
+
+  .app-navbar .brand-mark {
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .container {
+    width: min(100% - 20px, 900px);
+  }
+
+  .mode-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .result-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .result-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .result-actions button {
+    flex: 1 1 140px;
+  }
+
+  .flashcard-controls {
+    flex-wrap: wrap;
+  }
+
+  .flashcard-controls button {
+    flex: 1 1 120px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-navbar .brand-mark {
+    font-size: 15px;
+  }
+
+  .app-navbar .brand-mark img {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .app-navbar .navbar-menu-button {
+    width: 40px;
+    flex-basis: 40px;
+  }
+}
