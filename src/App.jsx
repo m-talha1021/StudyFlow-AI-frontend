@@ -87,7 +87,7 @@ function BrandMark() {
   return (
     <div className="brand-mark">
       <img src="/favicon.png" alt="StudyFlow AI" />
-      <span><b></>StudyFlow AI</b></span>
+      <span><b>StudyFlow AI</b></span>
     </div>
   );
 }
