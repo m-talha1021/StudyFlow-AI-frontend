@@ -1393,7 +1393,18 @@ function App() {
       <div className="auth-page">
         <div className="auth-card">
           <div className="auth-brand">
-            <img src="favicon.png" alt="StudyFlow AI" />
+            <img
+              src="/favicon.png"
+              alt="StudyFlow AI"
+              style={{
+                width: "72px",
+                height: "72px",
+                minWidth: "72px",
+                maxWidth: "72px",
+                objectFit: "contain",
+                display: "block",
+              }}
+            />
             <span>StudyFlow AI</span>
           </div>
           <p className="auth-loading">Loading...</p>
@@ -1409,7 +1420,18 @@ function App() {
 
           <header className="public-navbar">
             <div className="public-brand">
-              <img src="favicon.png" alt="StudyFlow AI" />
+              <img
+                src="/favicon.png"
+                alt="StudyFlow AI"
+                style={{
+                  width: "44px",
+                  height: "44px",
+                  minWidth: "44px",
+                  maxWidth: "44px",
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
               <span>StudyFlow AI</span>
             </div>
 
@@ -1505,7 +1527,18 @@ function App() {
               <div className="auth-card">
 
                 <div className="auth-brand auth-brand-large">
-                  <img src="favicon.png" alt="StudyFlow AI" />
+                  <img
+                    src="/favicon.png"
+                    alt="StudyFlow AI"
+                    style={{
+                      width: "92px",
+                      height: "92px",
+                      minWidth: "92px",
+                      maxWidth: "92px",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
                   <span>StudyFlow AI</span>
                 </div>
 
@@ -1676,7 +1709,7 @@ function App() {
         <div className="logo">
 
           <div className="logo-icon">
-            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
+            <a href="#"><img src="/favicon.png" height="65px" width="59px" alt="StudyFlow AI" style={{ objectFit: "contain", display: "block" }} /></a>
           </div>
           <span>
            <a href="#heroclass"> StudyFlow AI</a>
