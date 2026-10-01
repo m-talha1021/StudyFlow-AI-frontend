@@ -153,7 +153,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
           className="nav-link-button"
           onClick={() => onModeChange("welcome")}
         >
-          ← Back
+          ↩ Back
         </button>
       </nav>
 
