@@ -3042,9 +3042,9 @@ footer h3 {
 .nav-signup-button {
   border: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.82);
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  font: inherit;
 }
 
 .nav-link-button,
