@@ -5089,3 +5089,45 @@ body {
     width: 100%;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   MOBILE TAP HIGHLIGHT FIX
+============================================================ */
+
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Prevent browser focus outline from appearing after taps */
+button,
+a,
+input,
+textarea,
+select {
+  outline: none;
+}
+
+button:focus,
+button:active,
+a:focus,
+a:active {
+  -webkit-tap-highlight-color: transparent;
+}
