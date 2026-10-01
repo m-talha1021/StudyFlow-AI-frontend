@@ -5131,3 +5131,131 @@ a:focus,
 a:active {
   -webkit-tap-highlight-color: transparent;
 }
+
+
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+.dashboard-section {
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 0;
+  scroll-margin-top: 90px;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h2 {
+  margin: 6px 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: var(--text-secondary, #8fa3c7);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.dashboard-card {
+  position: relative;
+  min-height: 165px;
+  padding: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  background: rgba(20, 29, 48, 0.9);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.dashboard-card h3 {
+  margin: 0 0 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #a9bce0;
+}
+
+.dashboard-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 36px;
+  line-height: 1;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.dashboard-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #7892bd;
+}
+
+.dashboard-card-icon {
+  position: absolute;
+  top: 23px;
+  right: 23px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: 21px;
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.dashboard-loading {
+  padding: 40px;
+  text-align: center;
+  color: #8fa3c7;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  background: rgba(20, 29, 48, 0.9);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .dashboard-section {
+    padding: 28px 0;
+  }
+
+  .dashboard-header h2 {
+    font-size: 23px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .dashboard-card {
+    min-height: 145px;
+    padding: 23px;
+  }
+
+  .dashboard-card strong {
+    font-size: 32px;
+  }
+
+  .dashboard-card-icon {
+    top: 18px;
+    right: 18px;
+  }
+}
