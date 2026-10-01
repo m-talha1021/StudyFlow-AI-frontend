@@ -426,12 +426,7 @@ function App() {
     if (!testStarted || testFinished) return;
 
     if (testTimeLeft <= 0) {
-      const score = testQuestions.reduce((total, question, index) => {
-        return total + (testAnswers[index] === question.answer ? 1 : 0);
-      }, 0);
-      setTestScore(score);
-      setTestFinished(true);
-      setTestStarted(false);
+      finishTest();
       return;
     }
 
@@ -2540,14 +2535,40 @@ function App() {
                 })}
               </div>
 
-              <button
-                type="button"
-                className="generate-button test-next-button"
-                onClick={nextTestQuestion}
-                disabled={!testAnswers[testIndex]}
-              >
-                {testIndex === testQuestions.length - 1 ? "Submit Test" : "Next Question →"}
-              </button>
+              <div className="test-navigation-buttons">
+                {testIndex < testQuestions.length - 1 && (
+                  <button
+                    type="button"
+                    className="generate-button test-next-button"
+                    onClick={nextTestQuestion}
+                    disabled={!testAnswers[testIndex]}
+                  >
+                    Next Question →
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className="generate-button test-submit-button"
+                  onClick={() => {
+                    const unanswered =
+                      testQuestions.length - Object.keys(testAnswers).length;
+
+                    const message =
+                      unanswered > 0
+                        ? `You have ${unanswered} unanswered question${
+                            unanswered === 1 ? "" : "s"
+                          }. Are you sure you want to submit?`
+                        : "Are you sure you want to submit your test?";
+
+                    if (window.confirm(message)) {
+                      finishTest();
+                    }
+                  }}
+                >
+                  Submit Test
+                </button>
+              </div>
             </div>
           )}
 
