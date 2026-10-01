@@ -17,6 +17,7 @@ import {
 
 import {
   doc,
+  getDoc,
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
@@ -260,6 +261,8 @@ function App() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [profileName, setProfileName] = useState("");
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -332,19 +335,51 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      (firebaseUser) => {
+      async (firebaseUser) => {
         setUser(firebaseUser);
-        setAuthChecked(true);
 
         if (firebaseUser) {
+          // Firebase Auth normally has displayName. Firestore is used
+          // as a fallback because the app stores the user's profile there.
+          setProfileName(
+            firebaseUser.displayName ||
+              firebaseUser.email?.split("@")[0] ||
+              "Student"
+          );
+
+          try {
+            const profileSnapshot = await getDoc(
+              doc(db, "users", firebaseUser.uid)
+            );
+
+            if (profileSnapshot.exists()) {
+              const profile = profileSnapshot.data();
+
+              setProfileName(
+                profile.displayName ||
+                  firebaseUser.displayName ||
+                  firebaseUser.email?.split("@")[0] ||
+                  "Student"
+              );
+            }
+          } catch (profileError) {
+            console.warn(
+              "Could not load Firestore user profile:",
+              profileError
+            );
+          }
+
           setAuthView("app");
         } else {
+          setProfileName("");
           setAuthView((current) =>
             current === "login" || current === "signup"
               ? current
               : "welcome"
           );
         }
+
+        setAuthChecked(true);
       }
     );
 
@@ -474,6 +509,7 @@ function App() {
         );
 
         setUser(firebaseUser);
+        setProfileName(displayName);
         setAuthView("app");
       } else {
         const credential = await signInWithEmailAndPassword(
@@ -483,6 +519,11 @@ function App() {
         );
 
         setUser(credential.user);
+        setProfileName(
+          credential.user.displayName ||
+            credential.user.email?.split("@")[0] ||
+            "Student"
+        );
         setAuthView("app");
       }
 
@@ -567,6 +608,7 @@ function App() {
     });
     setText("");
     setFile(null);
+    setFiles([]);
     setMaterialReady(false);
     setResult("");
     setFlashcards([]);
@@ -623,16 +665,25 @@ function App() {
   };
 
   // ========================================================
-  // PROCESS FILE
+  // PROCESS MULTIPLE FILES
   // ========================================================
 
-  const processFile = async (selectedFile) => {
-    if (!selectedFile) {
+  const processFiles = async (selectedFiles) => {
+    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
+
+    if (!validFiles.length) {
+      return;
+    }
+
+    // Keep uploads manageable and match the backend's multi-file flow.
+    if (validFiles.length > 10) {
+      alert("Please select a maximum of 10 files at a time.");
       return;
     }
 
     setProcessing(true);
-    setFile(selectedFile);
+    setFiles(validFiles);
+    setFile(validFiles[0]);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -640,7 +691,7 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded
+    // Reset chat when new material is uploaded.
     setChatMessages([]);
     setChatQuestion("");
 
@@ -649,10 +700,9 @@ function App() {
     try {
       const formData = new FormData();
 
-      formData.append(
-        "file",
-        selectedFile
-      );
+      validFiles.forEach((selectedFile) => {
+        formData.append("files", selectedFile);
+      });
 
       const data = await apiRequest(
         "/api/material",
@@ -665,12 +715,11 @@ function App() {
       if (!data.success) {
         throw new Error(
           data.error ||
-            "Could not process the file."
+            "Could not process the selected files."
         );
       }
 
       setMaterialReady(true);
-
     } catch (error) {
       console.error(
         "File processing error:",
@@ -679,15 +728,24 @@ function App() {
 
       alert(
         error.message ||
-          "Could not process the uploaded document or image."
+          "Could not process the uploaded files."
       );
 
+      setFiles([]);
       setFile(null);
       setMaterialReady(false);
-
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Keep the single-file helper for the camera workflow.
+  const processFile = async (selectedFile) => {
+    if (!selectedFile) {
+      return;
+    }
+
+    await processFiles([selectedFile]);
   };
 
   // ========================================================
@@ -726,16 +784,19 @@ function App() {
   // ========================================================
 
   const handleFileChange = (event) => {
-    const selectedFile =
-      event.target.files?.[0];
+    const selectedFiles = Array.from(
+      event.target.files || []
+    );
 
-    if (!selectedFile) {
+    if (!selectedFiles.length) {
       return;
     }
 
     setText("");
+    processFiles(selectedFiles);
 
-    processFile(selectedFile);
+    // This lets the user select the same file(s) again later.
+    event.target.value = "";
   };
 
   // ========================================================
@@ -1360,7 +1421,7 @@ function App() {
         <div className="app-nav-user">
           <div className="user-pill">
             <span>👤</span>
-            <strong>{user?.name || "Student"}</strong>
+            <strong>{profileName || user?.displayName || "Student"}</strong>
           </div>
           <button className="logout-button" onClick={handleLogout}>Logout</button>
         </div>
@@ -1426,6 +1487,7 @@ function App() {
               );
 
               setFile(null);
+              setFiles([]);
               setMaterialReady(false);
               setResult("");
               setResultLanguage("");
@@ -1470,10 +1532,9 @@ function App() {
 
             <input
               type="file"
+              multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
-              onChange={
-                handleFileChange
-              }
+              onChange={handleFileChange}
               disabled={processing}
             />
 
@@ -1561,17 +1622,29 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {file && (
+          {files.length > 0 ? (
             <div className="selected-file">
-
-              📎 Selected:{" "}
-
-              <strong>
-                {file.name}
-              </strong>
-
+              📎 Selected {files.length} file{files.length === 1 ? "" : "s"}:
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px",
+                }}
+              >
+                {files.map((selectedFile, index) => (
+                  <div key={`${selectedFile.name}-${index}`}>
+                    <strong>{selectedFile.name}</strong>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          ) : file ? (
+            <div className="selected-file">
+              📎 Selected: <strong>{file.name}</strong>
+            </div>
+          ) : null}
 
         </section>
 
