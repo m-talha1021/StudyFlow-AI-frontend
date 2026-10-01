@@ -40,7 +40,7 @@ body {
   background:
 
     radial-gradient(circle at top left,
-      #5c58bf 0,
+      #413ae8 0,
       transparent 35%),
 
     radial-gradient(circle at top right,
@@ -3621,13 +3621,7 @@ footer h3 {
   z-index: 1000;
 
   /* Gradient navbar background */
-  background: linear-gradient(
-    90deg,
-    #071a3d 0%,
-    #123c88 30%,
-    #4f1db8 65%,
-    #8b1fa9 100%
-  );
+  background: #2b2727;
 
   border-bottom: 1px solid rgba(168, 85, 247, 0.45);
   box-shadow: 0 8px 30px rgba(76, 29, 149, 0.25);
