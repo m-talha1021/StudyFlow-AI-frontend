@@ -40,26 +40,26 @@ body {
   background:
 
     radial-gradient(circle at top left,
-      #312e81 0,
+      #5c58bf 0,
       transparent 35%),
 
     radial-gradient(circle at top right,
-      #581c87 0,
+     #661ba1 0,
       transparent 50%),
 
     radial-gradient(circle at center left,
-      #34342a 0,
+      #787807 0,
       transparent 20%),
 
     radial-gradient(circle at center right,
-      #3d43bf 0,
+     #4e55f2 0,
       transparent 25%),
 
     #09090f;
 
   background-color: #09090f;
 
-  color: #f8fafc;
+  color: #ffffff;
 
 }
 
