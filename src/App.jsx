@@ -6,30 +6,11 @@ import {
 
 import "./App.css";
 
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-} from "firebase/auth";
-
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
-
-import { auth, db } from "./firebase";
-
 // ========================================================
 // BACKEND API
 // ========================================================
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
   "https://study-flow-ai-backend.vercel.app";
 
 // ========================================================
@@ -52,12 +33,6 @@ const apiRequest = async (endpoint, options = {}) => {
               "Content-Type":
                 "application/json",
             }),
-
-        ...(auth.currentUser
-          ? {
-              Authorization: `Bearer ${await auth.currentUser.getIdToken()}`,
-            }
-          : {}),
 
         ...(options.headers || {}),
       },
@@ -86,174 +61,10 @@ const apiRequest = async (endpoint, options = {}) => {
 };
 
 // ========================================================
-// AUTH UI
-// ========================================================
-
-function BrandMark() {
-  return (
-    <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI" />
-      <span>StudyFlow AI</span>
-    </div>
-  );
-}
-
-function WelcomePage({ onLogin, onSignup }) {
-  return (
-    <div className="auth-shell">
-      <nav className="public-navbar">
-        <BrandMark />
-        <div className="public-nav-actions">
-          <button className="nav-link-button" onClick={onLogin}>Login</button>
-          <button className="nav-signup-button" onClick={onSignup}>Sign Up</button>
-        </div>
-      </nav>
-
-      <main className="welcome-page">
-        <section className="welcome-hero">
-          <div className="welcome-badge">✦ AI-powered learning</div>
-          <h1>Study smarter.<br /><span>Understand faster.</span></h1>
-          <p>
-            StudyFlow AI turns your notes, documents and images into summaries,
-            explanations, quizzes, flashcards and an interactive study assistant.
-          </p>
-          <div className="welcome-actions">
-            <button className="primary-auth-button" onClick={onSignup}>Get Started</button>
-            <button className="secondary-auth-button" onClick={onLogin}>I already have an account</button>
-          </div>
-
-          <div className="feature-grid">
-            <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
-            <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
-            <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-}
-
-function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, form, setForm }) {
-  const isSignup = mode === "signup";
-  return (
-    <div className="auth-shell">
-      <nav className="public-navbar">
-        <BrandMark />
-        <button className="nav-link-button" onClick={() => onModeChange("welcome")}>← Back</button>
-      </nav>
-
-      <main className="auth-page">
-        <form className="auth-card" onSubmit={onSubmit}>
-          <div className="auth-card-icon">✦</div>
-          <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
-          <p>{isSignup ? "Start your personalized StudyFlow experience." : "Log in to continue learning."}</p>
-
-          {error && <div className="auth-error">{error}</div>}
-
-          {isSignup && (
-            <label>
-              Full name
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your name"
-                autoComplete="name"
-                required
-              />
-            </label>
-          )}
-
-          <label>
-            Email
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="you@example.com"
-              autoComplete="email"
-              required
-            />
-          </label>
-
-          <label>
-            Password
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="At least 6 characters"
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              minLength={6}
-              required
-            />
-          </label>
-
-          {isSignup && (
-            <label>
-              Confirm password
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                placeholder="Repeat your password"
-                autoComplete="new-password"
-                minLength={6}
-                required
-              />
-            </label>
-          )}
-
-          {!isSignup && (
-            <button
-              type="button"
-              className="auth-forgot-button"
-              onClick={onForgotPassword}
-              disabled={loading}
-            >
-              Forgot password?
-            </button>
-          )}
-
-          <button className="primary-auth-button auth-submit" type="submit" disabled={loading}>
-            {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
-          </button>
-
-          <p className="auth-switch">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button type="button" onClick={() => onModeChange(isSignup ? "login" : "signup")}>
-              {isSignup ? "Login" : "Sign up"}
-            </button>
-          </p>
-        </form>
-      </main>
-    </div>
-  );
-}
-
-// ========================================================
 // APP
 // ========================================================
 
 function App() {
-  // ========================================================
-  // AUTHENTICATION
-  // ========================================================
-
-  const [authChecked, setAuthChecked] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authView, setAuthView] = useState("welcome");
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authError, setAuthError] = useState("");
-  const [authForm, setAuthForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
   // ========================================================
   // STUDY MATERIAL
   // ========================================================
@@ -262,7 +73,6 @@ function App() {
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
-  const [profileName, setProfileName] = useState("");
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -282,9 +92,23 @@ function App() {
   // ========================================================
 
   const [flashcards, setFlashcards] = useState([]);
-  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const [testLoading, setTestLoading] = useState(false);
+  const [testQuestions, setTestQuestions] = useState([]);
+  const [testAnswers, setTestAnswers] = useState({});
+  const [testIndex, setTestIndex] = useState(0);
+  const [testStarted, setTestStarted] = useState(false);
+  const [testFinished, setTestFinished] = useState(false);
+  const [testTimeLeft, setTestTimeLeft] = useState(0);
+  const [testTotalSeconds, setTestTotalSeconds] = useState(0);
+  const [testScore, setTestScore] = useState(0);
 
   // ========================================================
   // CHATBOT
@@ -329,62 +153,28 @@ function App() {
     useState(false);
 
   // ========================================================
-  // FIREBASE AUTH SESSION
+  // TEST TIMER
   // ========================================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (firebaseUser) => {
-        setUser(firebaseUser);
+    if (!testStarted || testFinished) return;
 
-        if (firebaseUser) {
-          // Firebase Auth normally has displayName. Firestore is used
-          // as a fallback because the app stores the user's profile there.
-          setProfileName(
-            firebaseUser.displayName ||
-              firebaseUser.email?.split("@")[0] ||
-              "Student"
-          );
+    if (testTimeLeft <= 0) {
+      const score = testQuestions.reduce((total, question, index) => {
+        return total + (testAnswers[index] === question.answer ? 1 : 0);
+      }, 0);
+      setTestScore(score);
+      setTestFinished(true);
+      setTestStarted(false);
+      return;
+    }
 
-          try {
-            const profileSnapshot = await getDoc(
-              doc(db, "users", firebaseUser.uid)
-            );
+    const timer = window.setInterval(() => {
+      setTestTimeLeft((previous) => Math.max(previous - 1, 0));
+    }, 1000);
 
-            if (profileSnapshot.exists()) {
-              const profile = profileSnapshot.data();
-
-              setProfileName(
-                profile.displayName ||
-                  firebaseUser.displayName ||
-                  firebaseUser.email?.split("@")[0] ||
-                  "Student"
-              );
-            }
-          } catch (profileError) {
-            console.warn(
-              "Could not load Firestore user profile:",
-              profileError
-            );
-          }
-
-          setAuthView("app");
-        } else {
-          setProfileName("");
-          setAuthView((current) =>
-            current === "login" || current === "signup"
-              ? current
-              : "welcome"
-          );
-        }
-
-        setAuthChecked(true);
-      }
-    );
-
-    return () => unsubscribe();
-  }, []);
+    return () => window.clearInterval(timer);
+  }, [testStarted, testFinished, testTimeLeft]);
 
   // ========================================================
   // SCROLL LISTENER
@@ -456,215 +246,6 @@ function App() {
   };
 
   // ========================================================
-  // FIREBASE AUTHENTICATION HANDLERS
-  // ========================================================
-
-  const handleAuthSubmit = async (event) => {
-    event.preventDefault();
-    setAuthError("");
-
-    const isSignup = authView === "signup";
-    const email = authForm.email.trim();
-    const password = authForm.password;
-
-    if (isSignup) {
-      if (!authForm.name.trim()) {
-        setAuthError("Please enter your full name.");
-        return;
-      }
-
-      if (password !== authForm.confirmPassword) {
-        setAuthError("Passwords do not match.");
-        return;
-      }
-    }
-
-    setAuthLoading(true);
-
-    try {
-      if (isSignup) {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        const firebaseUser = credential.user;
-        const displayName = authForm.name.trim();
-
-        await updateProfile(firebaseUser, {
-          displayName,
-        });
-
-        await setDoc(
-          doc(db, "users", firebaseUser.uid),
-          {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        setUser(firebaseUser);
-        setProfileName(displayName);
-        setAuthView("app");
-      } else {
-        const credential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        setUser(credential.user);
-        setProfileName(
-          credential.user.displayName ||
-            credential.user.email?.split("@")[0] ||
-            "Student"
-        );
-        setAuthView("app");
-      }
-
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      console.error("Firebase authentication error:", error);
-
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          setAuthError("This email is already registered.");
-          break;
-        case "auth/invalid-email":
-          setAuthError("Please enter a valid email address.");
-          break;
-        case "auth/weak-password":
-          setAuthError("Password should be at least 6 characters.");
-          break;
-        case "auth/invalid-credential":
-        case "auth/wrong-password":
-        case "auth/user-not-found":
-          setAuthError("Invalid email or password.");
-          break;
-        case "auth/operation-not-allowed":
-          setAuthError(
-            "Email/password sign-in is not enabled in Firebase Authentication."
-          );
-          break;
-        case "auth/network-request-failed":
-          setAuthError(
-            "Could not connect to Firebase. Check your internet connection and Firebase configuration."
-          );
-          break;
-        default:
-          setAuthError(error.message || "Authentication failed.");
-      }
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    setAuthError("");
-    const email = authForm.email.trim();
-
-    if (!email) {
-      setAuthError("Enter your email address first.");
-      return;
-    }
-
-    setAuthLoading(true);
-
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAuthError("Password reset email sent. Check your inbox.");
-    } catch (error) {
-      console.error("Password reset error:", error);
-      setAuthError(error.message || "Could not send the reset email.");
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Firebase logout error:", error);
-    }
-
-    setUser(null);
-    setAuthView("welcome");
-    setAuthForm({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-    setText("");
-    setFile(null);
-    setFiles([]);
-    setMaterialReady(false);
-    setResult("");
-    setFlashcards([]);
-    setChatMessages([]);
-    setChatOpen(false);
-    stopSpeech();
-  };
-
-  const openAuth = (view) => {
-    setAuthError("");
-    setAuthView(view);
-  };
-
-  // ========================================================
-  // FLASHCARD GENERATION
-  // ========================================================
-
-  const handleGenerateFlashcards = async () => {
-    if (!materialReady) {
-      alert("Please upload or paste study material first.");
-      document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    setFlashcardsLoading(true);
-    setFlashcardFlipped(false);
-
-    try {
-      const data = await apiRequest("/api/flashcards", {
-        method: "POST",
-        body: JSON.stringify({ count: 10 }),
-      });
-
-      setFlashcards(data.cards || []);
-      setFlashcardIndex(0);
-      setTimeout(() => {
-        document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } catch (error) {
-      alert(error.message || "Could not generate flashcards.");
-    } finally {
-      setFlashcardsLoading(false);
-    }
-  };
-
-  const nextFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index + 1) % flashcards.length);
-  };
-
-  const previousFlashcard = () => {
-    setFlashcardFlipped(false);
-    setFlashcardIndex((index) => (index - 1 + flashcards.length) % flashcards.length);
-  };
-
-  // ========================================================
   // PROCESS MULTIPLE FILES
   // ========================================================
 
@@ -675,7 +256,6 @@ function App() {
       return;
     }
 
-    // Keep uploads manageable and match the backend's multi-file flow.
     if (validFiles.length > 10) {
       alert("Please select a maximum of 10 files at a time.");
       return;
@@ -691,7 +271,6 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
 
-    // Reset chat when new material is uploaded.
     setChatMessages([]);
     setChatQuestion("");
 
@@ -720,6 +299,7 @@ function App() {
       }
 
       setMaterialReady(true);
+
     } catch (error) {
       console.error(
         "File processing error:",
@@ -734,6 +314,7 @@ function App() {
       setFiles([]);
       setFile(null);
       setMaterialReady(false);
+
     } finally {
       setProcessing(false);
     }
@@ -793,9 +374,10 @@ function App() {
     }
 
     setText("");
+
     processFiles(selectedFiles);
 
-    // This lets the user select the same file(s) again later.
+    // Allow selecting the same files again later.
     event.target.value = "";
   };
 
@@ -866,10 +448,222 @@ function App() {
   };
 
   // ========================================================
+  // GENERATE FLASHCARDS
+  // ========================================================
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setFlashcardsLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload a document/image or paste your study material."
+        );
+
+        setFlashcardsLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/flashcards",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            count: 10,
+          }),
+        }
+      );
+
+      if (!data.success || !Array.isArray(data.cards)) {
+        throw new Error(
+          data.error || "Could not generate flashcards."
+        );
+      }
+
+      setFlashcards(data.cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+
+      setTimeout(() => {
+        document
+          .getElementById("result-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      console.error(
+        "Flashcards error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Could not generate flashcards."
+      );
+
+    } finally {
+      setFlashcardsLoading(false);
+    }
+  };
+
+  const handleNextFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.min(
+        previous + 1,
+        flashcards.length - 1
+      )
+    );
+  };
+
+  const handlePreviousFlashcard = () => {
+    setFlashcardFlipped(false);
+
+    setFlashcardIndex((previous) =>
+      Math.max(previous - 1, 0)
+    );
+  };
+
+  const handleFlipFlashcard = () => {
+    setFlashcardFlipped((previous) => !previous);
+  };
+
+  // ========================================================
+  // TEST CONCEPTS
+  // ========================================================
+
+  const formatTestTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  };
+
+  const calculateTestScore = () => {
+    return testQuestions.reduce((score, question, index) => {
+      return score + (testAnswers[index] === question.answer ? 1 : 0);
+    }, 0);
+  };
+
+  const finishTest = () => {
+    const score = calculateTestScore();
+    setTestScore(score);
+    setTestFinished(true);
+    setTestStarted(false);
+    setTestIndex(0);
+  };
+
+  const handleGenerateTest = async () => {
+    setTestLoading(true);
+    setResult("");
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+        if (!processed) return;
+        ready = true;
+      }
+
+      if (!ready && files.length === 0 && !file && !text.trim()) {
+        alert("Please upload study material or paste your notes first.");
+        return;
+      }
+
+      const data = await apiRequest("/api/test-concepts", {
+        method: "POST",
+        body: JSON.stringify({ count: 30 }),
+      });
+
+      if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
+        throw new Error(data.error || "Could not generate the test.");
+      }
+
+      setTestQuestions(data.questions);
+      setTestAnswers({});
+      setTestIndex(0);
+      setTestScore(0);
+      setTestFinished(false);
+      setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
+      setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
+      setTestStarted(false);
+
+      setTimeout(() => {
+        document.getElementById("test-concepts-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error("Test concepts error:", error);
+      alert(error.message || "Could not generate the test.");
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const startTest = () => {
+    setTestAnswers({});
+    setTestIndex(0);
+    setTestScore(0);
+    setTestFinished(false);
+    setTestTimeLeft(testTotalSeconds);
+    setTestStarted(true);
+  };
+
+  const selectTestAnswer = (option) => {
+    if (testFinished || !testStarted) return;
+    setTestAnswers((previous) => ({
+      ...previous,
+      [testIndex]: option,
+    }));
+  };
+
+  const nextTestQuestion = () => {
+    if (testIndex >= testQuestions.length - 1) {
+      finishTest();
+      return;
+    }
+    setTestIndex((previous) => previous + 1);
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
   const handleGenerate = async () => {
+    if (mode === "flashcards") {
+      await handleGenerateFlashcards();
+      return;
+    }
+
+    if (mode === "test") {
+      await handleGenerateTest();
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
@@ -1371,33 +1165,6 @@ function App() {
     };
 
   // ========================================================
-  // AUTH GATING
-  // ========================================================
-
-  if (!authChecked) {
-    return <div className="auth-loading-screen">Loading StudyFlow AI...</div>;
-  }
-
-  if (!user) {
-    if (authView === "login" || authView === "signup") {
-      return (
-        <AuthPage
-          mode={authView}
-          onModeChange={(view) => setAuthView(view)}
-          onSubmit={handleAuthSubmit}
-          onForgotPassword={handleForgotPassword}
-          loading={authLoading}
-          error={authError}
-          form={authForm}
-          setForm={setAuthForm}
-        />
-      );
-    }
-
-    return <WelcomePage onLogin={() => openAuth("login")} onSignup={() => openAuth("signup")} />;
-  }
-
-  // ========================================================
   // UI
   // ========================================================
 
@@ -1405,26 +1172,34 @@ function App() {
     <div className="app">
 
       {/* ==================================================
-          NAVBAR
+          HEADER
       ================================================== */}
 
-      <header className="app-navbar">
-        <BrandMark />
+      <header className="header">
 
-        <nav className="app-nav-links">
-          <button onClick={() => document.getElementById("heroclass")?.scrollIntoView({ behavior: "smooth" })}>Dashboard</button>
-          <button onClick={() => document.getElementById("inputcard")?.scrollIntoView({ behavior: "smooth" })}>Study Material</button>
-          <button onClick={() => document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth" })}>Flashcards</button>
-          <button onClick={() => document.getElementById("action-section")?.scrollIntoView({ behavior: "smooth" })}>Quiz & AI</button>
-        </nav>
+        <div className="logo">
 
-        <div className="app-nav-user">
-          <div className="user-pill">
-            <span>👤</span>
-            <strong>{profileName || user?.displayName || "Student"}</strong>
+          <div className="logo-icon">
+            <a href="#"><img src="favicon.png" height="65px" width="59px"></img></a>
           </div>
-          <button className="logout-button" onClick={handleLogout}>Logout</button>
+          <span>
+           <a href="#heroclass"> StudyFlow AI</a>
+          </span>
+
         </div>
+
+        <p className="tagline">
+          <b>
+            Your AI-powered study assistant
+          </b>
+        </p>
+
+        <div className="uploadBtn">
+          <a href="#inputcard">
+            Upload
+          </a>
+        </div>
+
       </header>
 
       {/* ==================================================
@@ -1521,20 +1296,22 @@ function App() {
 
             <strong>
               {processing
-                ? "Processing document or image..."
-                : "Upload your document or image"}
+                ? "Processing selected files..."
+                : "Upload your documents or images"}
             </strong>
 
             <small>
-              PDF, DOCX, PPTX,
-              JPG, PNG or WEBP
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
             <input
               type="file"
               multiple
               accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
-              onChange={handleFileChange}
+              onChange={
+                handleFileChange
+              }
               disabled={processing}
             />
 
@@ -1622,29 +1399,29 @@ function App() {
 
           {/* SELECTED FILE */}
 
-          {files.length > 0 ? (
-            <div className="selected-file">
-              📎 Selected {files.length} file{files.length === 1 ? "" : "s"}:
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
-                }}
-              >
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
+
+              <div className="selected-files-header">
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
+              </div>
+
+              <div className="selected-files-list">
                 {files.map((selectedFile, index) => (
-                  <div key={`${selectedFile.name}-${index}`}>
-                    <strong>{selectedFile.name}</strong>
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
                   </div>
                 ))}
               </div>
+
             </div>
-          ) : file ? (
-            <div className="selected-file">
-              📎 Selected: <strong>{file.name}</strong>
-            </div>
-          ) : null}
+          )}
 
         </section>
 
@@ -1652,7 +1429,7 @@ function App() {
             ACTION SECTION
         ================================================= */}
 
-        <section className="action-section" id="action-section">
+        <section className="action-section">
 
           {/* HEADING + CHATBOT ICON */}
 
@@ -1787,6 +1564,54 @@ function App() {
 
             </button>
 
+            {/* FLASHCARDS */}
+
+            <button
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
+            >
+
+              <span>
+                🗂️
+              </span>
+
+              <div>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* TEST CONCEPTS */}
+
+            <button
+              className={
+                mode === "test"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("test")}
+            >
+              <span>⏱️</span>
+              <div>
+                <strong>Test concepts</strong>
+                <small>Timed MCQ exam from your material</small>
+              </div>
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -1796,94 +1621,28 @@ function App() {
             onClick={handleGenerate}
             disabled={
               processing ||
-              generating
+              generating ||
+              flashcardsLoading
             }
           >
 
-            {generating
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : mode === "test"
+                  ? "⏱️ Generate Test"
+                  : `✨ Generate ${mode}`}
 
           </button>
 
         </section>
 
         {/* =================================================
-            FLASHCARDS
-        ================================================= */}
-
-        <section className="flashcards-section" id="flashcards-section">
-          <div className="flashcards-header">
-            <div>
-              <span className="section-kicker">ACTIVE RECALL</span>
-              <h2>Flashcards</h2>
-              <p>Turn your current study material into quick review cards.</p>
-            </div>
-            <button
-              className="flashcards-generate-button"
-              onClick={handleGenerateFlashcards}
-              disabled={flashcardsLoading || processing}
-            >
-              {flashcardsLoading ? "⏳ Generating..." : flashcards.length ? "🔄 Regenerate" : "🗂️ Generate Flashcards"}
-            </button>
-          </div>
-
-          {!flashcards.length && !flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div>🗂️</div>
-              <h3>Learn with active recall</h3>
-              <p>Upload or paste material, then generate a set of AI-powered flashcards.</p>
-            </div>
-          )}
-
-          {flashcardsLoading && (
-            <div className="flashcards-empty">
-              <div className="flashcard-spinner">✦</div>
-              <h3>Creating your flashcards...</h3>
-              <p>StudyFlow AI is selecting important concepts from your material.</p>
-            </div>
-          )}
-
-          {flashcards.length > 0 && !flashcardsLoading && (
-            <div className="flashcard-study-area">
-              <div className="flashcard-progress">
-                Card {flashcardIndex + 1} of {flashcards.length}
-              </div>
-
-              <button
-                type="button"
-                className={`flashcard ${flashcardFlipped ? "is-flipped" : ""}`}
-                onClick={() => setFlashcardFlipped((value) => !value)}
-                aria-label="Flip flashcard"
-              >
-                <div className="flashcard-inner">
-                  <div className="flashcard-face flashcard-front">
-                    <span>QUESTION</span>
-                    <strong>{flashcards[flashcardIndex]?.front}</strong>
-                    <small>Click to reveal answer</small>
-                  </div>
-                  <div className="flashcard-face flashcard-back">
-                    <span>ANSWER</span>
-                    <strong>{flashcards[flashcardIndex]?.back}</strong>
-                    <small>Click to see the question</small>
-                  </div>
-                </div>
-              </button>
-
-              <div className="flashcard-controls">
-                <button type="button" onClick={previousFlashcard}>← Previous</button>
-                <button type="button" className="flip-button" onClick={() => setFlashcardFlipped((value) => !value)}>↻ Flip</button>
-                <button type="button" onClick={nextFlashcard}>Next →</button>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* =================================================
             GENERATED RESULT
         ================================================= */}
 
-        {result && (
+        {(result || flashcards.length > 0) && (
           <section
             className="result-section"
             id="result-section"
@@ -1936,81 +1695,264 @@ function App() {
 
               {/* RESULT ACTIONS */}
 
-              <div className="result-actions">
+              {mode !== "flashcards" && (
+                <div className="result-actions">
 
-                <button
-                  onClick={
-                    handleCopy
-                  }
-                  className="secondary-button"
-                  title="Copy result"
-                >
-                  📋 Copy
-                </button>
+                  <button
+                    onClick={handleCopy}
+                    className="secondary-button"
+                    title="Copy result"
+                  >
+                    📋 Copy
+                  </button>
 
-                <button
-                  onClick={
-                    handleDownloadPDF
-                  }
-                  className="download-button"
-                  title="Download PDF"
-                >
-                  📄 Download PDF
-                </button>
+                  <button
+                    onClick={handleDownloadPDF}
+                    className="download-button"
+                    title="Download PDF"
+                  >
+                    📄 Download PDF
+                  </button>
 
-                <button
-                  onClick={
-                    handleReadAloud
-                  }
-                  className="read-aloud-button"
-                  title={
-                    isSpeaking
-                      ? "Stop reading"
-                      : "Read result aloud"
-                  }
-                >
+                  <button
+                    onClick={handleReadAloud}
+                    className="read-aloud-button"
+                    title={
+                      isSpeaking
+                        ? "Stop reading"
+                        : "Read result aloud"
+                    }
+                  >
+                    {isSpeaking
+                      ? "⏹ Stop"
+                      : "🔊 Read Aloud"}
+                  </button>
 
-                  {isSpeaking
-                    ? "⏹ Stop"
-                    : "🔊 Read Aloud"}
-
-                </button>
-
-              </div>
+                </div>
+              )}
 
             </div>
 
             {/* RESULT CONTENT */}
 
-            <div
-              className="result-content"
-              dir={
-                resultLanguage ===
-                  "arabic" ||
-                resultLanguage ===
-                  "urdu"
-                  ? "rtl"
-                  : "ltr"
-              }
-            >
-
-              {result
-                .split("\n")
-                .map(
-                  (line, index) => (
+            {mode !== "flashcards" && (
+              <div
+                className="result-content"
+                dir={
+                  resultLanguage === "arabic" ||
+                  resultLanguage === "urdu"
+                    ? "rtl"
+                    : "ltr"
+                }
+              >
+                {result
+                  .split("\n")
+                  .map((line, index) => (
                     <p key={index}>
-                      {line ||
-                        "\u00A0"}
+                      {line || "\u00A0"}
                     </p>
-                  )
-                )}
+                  ))}
+              </div>
+            )}
 
-            </div>
+            {/* FLASHCARDS INSIDE THE SAME GENERATED-RESULT AREA */}
+
+            {mode === "flashcards" && flashcards.length > 0 && (
+              <div className="flashcards-section">
+                <div className="flashcards-header">
+                  <div>
+                    <span className="result-icon">🗂️</span>
+                    <div>
+                      <h2>Flashcards</h2>
+                      <small>
+                        Tap the card to reveal the answer
+                      </small>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={handleGenerateFlashcards}
+                    disabled={flashcardsLoading}
+                  >
+                    {flashcardsLoading
+                      ? "⏳ Generating..."
+                      : "🔄 Regenerate"}
+                  </button>
+                </div>
+
+                <div className="flashcard-progress">
+                  Card {flashcardIndex + 1} of {flashcards.length}
+                </div>
+
+                <button
+                  type="button"
+                  className={`flashcard ${flashcardFlipped ? "flipped" : ""}`}
+                  onClick={handleFlipFlashcard}
+                  aria-label="Flip flashcard"
+                >
+                  <div className="flashcard-inner">
+
+                    <div className="flashcard-face flashcard-front">
+                      <span className="flashcard-label">
+                        QUESTION
+                      </span>
+
+                      <p>
+                        {flashcards[flashcardIndex]?.front}
+                      </p>
+
+                      <small>
+                        Click to reveal answer
+                      </small>
+                    </div>
+
+                    <div className="flashcard-face flashcard-back">
+                      <span className="flashcard-label">
+                        ANSWER
+                      </span>
+
+                      <p>
+                        {flashcards[flashcardIndex]?.back}
+                      </p>
+
+                      <small>
+                        Click to see the question
+                      </small>
+                    </div>
+
+                  </div>
+                </button>
+
+                <div className="flashcard-controls">
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={handlePreviousFlashcard}
+                    disabled={flashcardIndex === 0}
+                  >
+                    ← Previous
+                  </button>
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={handleFlipFlashcard}
+                  >
+                    🔄 Flip
+                  </button>
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={handleNextFlashcard}
+                    disabled={
+                      flashcardIndex === flashcards.length - 1
+                    }
+                  >
+                    Next →
+                  </button>
+
+                </div>
+              </div>
+            )}
 
           </section>
         )}
 
       </main>
+
+      {/* ==================================================
+          TEST CONCEPTS
+      ================================================== */}
+
+      {testQuestions.length > 0 && (
+        <section className="test-concepts-section" id="test-concepts-section">
+          <div className="test-concepts-header">
+            <div>
+              <span className="section-kicker">EXAM SIMULATION</span>
+              <h2>Test concepts</h2>
+              <p>Timed multiple-choice questions generated from your study material.</p>
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={handleGenerateTest}
+              disabled={testLoading}
+            >
+              {testLoading ? "Generating..." : "Regenerate test"}
+            </button>
+          </div>
+
+          {!testStarted && !testFinished && (
+            <div className="test-start-card">
+              <div className="test-start-icon">⏱️</div>
+              <h3>{testQuestions.length} MCQs • {Math.round(testTotalSeconds / 60)} minutes</h3>
+              <p>Choose one answer for each question. Your result is shown after you submit or the timer expires.</p>
+              <button type="button" className="generate-button" onClick={startTest}>Start Test</button>
+            </div>
+          )}
+
+          {testStarted && !testFinished && testQuestions[testIndex] && (
+            <div className="test-question-card">
+              <div className="test-progress-row">
+                <span>Question {testIndex + 1} of {testQuestions.length}</span>
+                <strong className={testTimeLeft <= 60 ? "test-timer danger" : "test-timer"}>
+                  ⏱ {formatTestTime(testTimeLeft)}
+                </strong>
+              </div>
+
+              <div className="test-progress-track">
+                <span style={{ width: `${((testIndex + 1) / testQuestions.length) * 100}%` }} />
+              </div>
+
+              <h3>{testQuestions[testIndex].question}</h3>
+
+              <div className="test-options">
+                {testQuestions[testIndex].options.map((option, optionIndex) => {
+                  const selected = testAnswers[testIndex] === option;
+                  return (
+                    <button
+                      type="button"
+                      key={optionIndex}
+                      className={selected ? "test-option selected" : "test-option"}
+                      onClick={() => selectTestAnswer(option)}
+                    >
+                      <span>{String.fromCharCode(65 + optionIndex)}</span>
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                className="generate-button test-next-button"
+                onClick={nextTestQuestion}
+                disabled={!testAnswers[testIndex]}
+              >
+                {testIndex === testQuestions.length - 1 ? "Submit Test" : "Next Question →"}
+              </button>
+            </div>
+          )}
+
+          {testFinished && (
+            <div className="test-result-card">
+              <div className="test-result-icon">🏆</div>
+              <span className="section-kicker">TEST COMPLETE</span>
+              <h3>{testScore} / {testQuestions.length}</h3>
+              <p className="test-percentage">{Math.round((testScore / testQuestions.length) * 100)}%</p>
+              <p>You completed the Test concepts exam.</p>
+              <div className="test-result-actions">
+                <button type="button" className="generate-button" onClick={startTest}>Retake Test</button>
+                <button type="button" className="secondary-button" onClick={handleGenerateTest}>Generate New Test</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ==================================================
           CHAT POPUP
