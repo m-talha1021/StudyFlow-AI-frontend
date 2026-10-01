@@ -3618,6 +3618,18 @@ footer h3 {
   padding: 0 5vw;
   box-sizing: border-box;
   z-index: 1000;
+
+  /* Gradient navbar background */
+  background: linear-gradient(
+    90deg,
+    #071a3d 0%,
+    #123c88 30%,
+    #4f1db8 65%,
+    #8b1fa9 100%
+  );
+
+  border-bottom: 1px solid rgba(168, 85, 247, 0.45);
+  box-shadow: 0 8px 30px rgba(76, 29, 149, 0.25);
 }
 
 .app-nav-links {
@@ -3629,21 +3641,46 @@ footer h3 {
 }
 
 .app-nav-links > button {
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 10px 15px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.78);
+
+  /* Button gradient */
+  background: linear-gradient(
+    135deg,
+    #2563eb 0%,
+    #6d28d9 55%,
+    #9333ea 100%
+  );
+
+  color: #ffffff;
   cursor: pointer;
   font: inherit;
   font-weight: 650;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  box-shadow: 0 4px 12px rgba(76, 29, 149, 0.25);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .app-nav-links > button:hover {
   color: #ffffff;
-  background: #612fc4;
-  transform: translateY(-1px);
+
+  background: linear-gradient(
+    135deg,
+    #38bdf8 0%,
+    #6366f1 50%,
+    #c026d3 100%
+  );
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(139, 92, 246, 0.4);
 }
 
 .app-nav-user {
