@@ -34,17 +34,28 @@ body {
 ============================================================ */
 
 .app {
-
   min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  background: #09090f;
+  color: #ffffff;
+}
+
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 
   background:
-
     radial-gradient(circle at top left,
       #413ae8 0,
       transparent 35%),
 
     radial-gradient(circle at top right,
-     #661ba1 0,
+      #661ba1 0,
       transparent 50%),
 
     radial-gradient(circle at center left,
@@ -52,15 +63,12 @@ body {
       transparent 20%),
 
     radial-gradient(circle at center right,
-     #4e55f2 0,
+      #4e55f2 0,
       transparent 25%),
 
     #09090f;
 
-  background-color: #09090f;
-
-  color: #ffffff;
-
+  background-repeat: no-repeat;
 }
 
 
