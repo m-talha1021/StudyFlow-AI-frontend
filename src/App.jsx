@@ -86,7 +86,7 @@ const apiRequest = async (endpoint, options = {}) => {
 function BrandMark() {
   return (
     <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI" />
+      <img src="/favicon.png" alt="StudyFlow AI" height="40px" width="40px" />
       <span>StudyFlow AI</span>
     </div>
   );
