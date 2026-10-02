@@ -5939,3 +5939,60 @@ a:active {
     font-size: 12px;
   }
 }
+
+
+/* ============================================================
+   AUTH FORM - PREVENT ERROR MESSAGE OVERLAP
+============================================================ */
+
+.auth-container,
+.auth-card,
+.auth-form,
+.signup-form {
+  height: auto !important;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+
+/* Allow the form to expand when an error appears */
+.auth-card {
+  overflow: visible !important;
+}
+
+
+/* Error message should remain inside normal document flow */
+.auth-error {
+  position: static !important;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 22px;
+}
+
+
+/* Make sure the form has enough bottom spacing */
+.auth-form {
+  padding-bottom: 30px;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 700px) {
+
+  .auth-card,
+  .auth-container {
+    height: auto !important;
+    min-height: 0;
+  }
+
+  .auth-form {
+    padding-bottom: 35px;
+  }
+
+  .auth-error {
+    margin-bottom: 20px;
+  }
+}
