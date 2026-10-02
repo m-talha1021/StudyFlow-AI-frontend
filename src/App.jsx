@@ -686,7 +686,7 @@ function App() {
       }
 
       if (password !== authForm.confirmPassword) {
-        setAuthError("Passwords do not match.");
+        setAuthError("Password does not match.");
         return;
       }
     }
@@ -760,14 +760,16 @@ function App() {
           break;
         case "auth/invalid-credential":
         setAuthError("Invalid email or password.");
+          break;
         case "auth/wrong-password":
         setAuthError("Password is incorrect.");
+          break;
         case "auth/user-not-found":
           setAuthError("User does not exist.");
           break;
         case "auth/network-request-failed":
           setAuthError(
-            "Failed: Check your Firebase configuration and internet connection."
+            "⚠️Failed: Check your internet connection"
           );
           break;
         case "auth/operation-not-allowed":
