@@ -5144,10 +5144,10 @@ a:active {
 ============================================================ */
 
 .dashboard-stats-grid {
-  margin-left: 200px;
+  margin-left: 500px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 8px;
   width: 550px;
   max-width: 550px;
   box-sizing: border-box;
@@ -5165,7 +5165,6 @@ a:active {
   min-height: 150px;
   padding: 15px;
   box-sizing: border-box;
-
   border-radius: 16px;
   border: 1px solid rgba(153, 104, 237, 0.65);
 
@@ -5293,12 +5292,12 @@ a:active {
 @media (max-width: 700px) {
 
   .dashboard-stats-grid {
-    margin-left: 50px;
+    margin-left: 42px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 7px;
     height: 250px;
     width: 350px;
-    margin-bottom: 10px;
+    padding-bottom: 8px;
   }
    
   .dashboard-stat-card {
