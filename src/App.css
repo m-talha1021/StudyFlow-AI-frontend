@@ -5415,7 +5415,7 @@ a:active {
 
   .dashboard-heading h2 {
     font-size: 23px;
-    color: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+    
     line-height: 1.25;
   }
 
@@ -5451,8 +5451,8 @@ a:active {
     width: 100%;
 
     min-width: 0;
-
-    min-height: 155px;
+    height: 100px;
+    min-height: 100px;
 
     padding: 15px;
 
