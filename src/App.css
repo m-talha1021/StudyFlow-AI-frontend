@@ -5147,8 +5147,8 @@ a:active {
   margin-left: 500px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  width: 550px;
+  column-gap: 8px;
+  width: 650px;
   max-width: 550px;
   box-sizing: border-box;
 }
@@ -5294,10 +5294,9 @@ a:active {
   .dashboard-stats-grid {
     margin-left: 42px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
-    height: 250px;
-    width: 350px;
-    padding-bottom: 8px;
+    colimn-gap: 7px;
+    height: 220px;
+    width: 320px;
   }
    
   .dashboard-stat-card {
