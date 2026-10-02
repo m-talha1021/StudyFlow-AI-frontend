@@ -5213,6 +5213,7 @@ a:active {
     padding: 22px 0 8px;
     overflow: hidden;
      margin-left: 10px;
+    margin-left: 5px; 
   }
 
   .dashboard-heading {
@@ -5265,10 +5266,11 @@ a:active {
 ============================================================ */
 
 .dashboard-stats-grid {
-  margin-left: 500px;
+  margin-left: 150px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 8px;
+   gap: 8px;
   width: 650px;
   max-width: 550px;
   box-sizing: border-box;
@@ -5415,6 +5417,10 @@ a:active {
 
 @media (max-width: 700px) {
 
+.dashboard-section{
+   height: 300px;
+}
+   
   .dashboard-stats-grid {
     margin-left: 42px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
