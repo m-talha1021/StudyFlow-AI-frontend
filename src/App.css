@@ -5137,20 +5137,145 @@ a:active {
 
 
 
+/* ============================================================
+   DASHBOARD SECTION
+============================================================ */
 
+.dashboard-section {
+  width: 600px;
+  max-width: 600px;
+  box-sizing: border-box;
+  padding: 28px 0 8px;
+  scroll-margin-top: 90px;
+  overflow: hidden;
+  margin-left: 450px;
+}
+
+
+/* ============================================================
+   DASHBOARD HEADING
+============================================================ */
+
+.dashboard-heading {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 22px;
+}
+
+.dashboard-heading .section-kicker {
+  display: inline-block;
+}
+
+.dashboard-heading h2 {
+  margin: 6px 0 4px;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.dashboard-heading p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+
+/* ============================================================
+   DASHBOARD LOADING
+============================================================ */
+
+.dashboard-section > div:not(.dashboard-heading):not(.dashboard-stats-grid) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px;
+  text-align: center;
+
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+
+  background: rgba(15, 23, 42, 0.55);
+
+  color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 700px) {
+
+  .dashboard-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px 0 8px;
+    overflow: hidden;
+     margin-left: 10px;
+  }
+
+  .dashboard-heading {
+    margin-bottom: 16px;
+  }
+
+  .dashboard-heading h2 {
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .dashboard-heading p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .dashboard-section > div:not(.dashboard-heading):not(.dashboard-stats-grid) {
+    padding: 20px 14px;
+    border-radius: 15px;
+    font-size: 13px;
+  }
+}
+
+
+/* ============================================================
+   SMALL PHONES
+============================================================ */
+
+@media (max-width: 380px) {
+
+  .dashboard-section {
+    padding-top: 18px;
+  }
+
+  .dashboard-heading h2 {
+    font-size: 19px;
+  }
+
+  .dashboard-heading p {
+    font-size: 11px;
+  }
+
+  .dashboard-heading {
+    margin-bottom: 13px;
+  }
+}
 
 /* ============================================================
    DASHBOARD GRID
 ============================================================ */
 
 .dashboard-stats-grid {
+  margin-left: 500px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  width: 550px;
+  column-gap: 8px;
+  width: 650px;
   max-width: 550px;
   box-sizing: border-box;
 }
+
+
+
 
 
 /* ============================================================
@@ -5164,7 +5289,6 @@ a:active {
   min-height: 150px;
   padding: 15px;
   box-sizing: border-box;
-
   border-radius: 16px;
   border: 1px solid rgba(153, 104, 237, 0.65);
 
@@ -5292,10 +5416,11 @@ a:active {
 @media (max-width: 700px) {
 
   .dashboard-stats-grid {
+    margin-left: 42px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    height: 250px;
-    width: 350px;
+    colimn-gap: 7px;
+    height: 220px;
+    width: 320px;
   }
    
   .dashboard-stat-card {
@@ -5373,4 +5498,3 @@ a:active {
     font-size: 9px;
   }
 }
-
