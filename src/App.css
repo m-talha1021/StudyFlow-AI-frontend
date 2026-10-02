@@ -5605,7 +5605,7 @@ a:active {
 /* History panel shown below the dashboard cards */
 .dashboard-history-panel {
   width: 100%;
-  max-width: 760px;
+  max-width: 860px;
   margin: 16px auto 0;
   padding: 20px;
   box-sizing: border-box;
@@ -5763,6 +5763,7 @@ a:active {
     margin-top: 10px;
     padding: 14px;
     border-radius: 14px;
+    background-color: black;
   }
 
   .dashboard-history-header {
