@@ -1974,220 +1974,112 @@ function App() {
         </button>
       </header>
 
-      {/* ==================================================
-          MAIN
-      ================================================== */}
+     <section
+  id="dashboard-section"
+  className="dashboard-section"
+  style={{
+    padding: "28px 0 8px",
+    scrollMarginTop: "90px",
+  }}
+>
+  <div
+    className="dashboard-heading"
+    style={{
+      marginBottom: "22px",
+    }}
+  >
+    <span className="section-kicker">YOUR DASHBOARD</span>
 
-      <style>{`
-        .dashboard-stats-grid {
-          display: "grid";
-          grid-template-columns: "repeat(2, minmax(0, 1fr))";
-          gap: "20px";
-        }
+    <h2 style={{ margin: "6px 0 4px" }}>
+      {user?.displayName
+        ? `Welcome back, ${user.displayName}`
+        : "Your learning dashboard"}
+    </h2>
 
-        @media (max-width: 700px) {
-          .dashboard-stats-grid {
-            grid-template-columns: "1fr";
-          }
-        }
-      `}</style>
+    <p style={{ margin: 0 }}>
+      Your personal StudyFlow AI progress and activity.
+    </p>
+  </div>
+
+  {dashboardLoading ? (
+    <div
+      style={{
+        padding: "28px",
+        textAlign: "center",
+        borderRadius: "18px",
+        border: "1px solid rgba(148, 163, 184, 0.2)",
+        background: "rgba(15, 23, 42, 0.55)",
+      }}
+    >
+      Loading your dashboard...
+    </div>
+  ) : (
+    <div className="dashboard-stats-grid">
+      {[
+        {
+          title: "Total Materials",
+          value: dashboardStats.totalMaterials,
+          text: "Files uploaded",
+          icon: "📄",
+        },
+        {
+          title: "Study Sessions",
+          value: dashboardStats.studySessions,
+          text: "Learning features",
+          icon: "📚",
+        },
+        {
+          title: "Completed Quizzes",
+          value: dashboardStats.completedQuizzes,
+          text: "Quizzes completed",
+          icon: "📝",
+        },
+        {
+          title: "Average Quiz Score",
+          value: `${dashboardStats.averageQuizScore}%`,
+          text: "Across all quizzes",
+          icon: "📈",
+        },
+        {
+          title: "Flashcards Created",
+          value: dashboardStats.flashcardsCreated,
+          text: "Concepts to remember",
+          icon: "🗂️",
+        },
+      ].map((stat) => (
+        <div
+          key={stat.title}
+          className="dashboard-stat-card"
+        >
+          <div className="dashboard-stat-top">
+            <h3>
+              {stat.title}
+            </h3>
+
+            <span
+              aria-hidden="true"
+              className="dashboard-stat-icon"
+            >
+              {stat.icon}
+            </span>
+          </div>
+
+          <strong>
+            {stat.value}
+          </strong>
+
+          <p>
+            {stat.text}
+          </p>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
 
       <main className="container">
 
-        {/* =================================================
-            USER DASHBOARD
-        ================================================= */}
-
        
-<style>{`
-  /* ============================================================
-     DASHBOARD GRID
-  ============================================================ */
-
-  .dashboard-stats-grid {
-    display: "grid";
-    grid-template-columns: "repeat(2, minmax(0, 1fr))";
-    gap: "16px";
-    width: "100%";
-    max-width: "100%";
-    box-sizing: "border-box";
-  }
-
-  /* ============================================================
-     DASHBOARD CARD
-  ============================================================ */
-
-  .dashboard-stat-card {
-    position: "relative";
-    width: "100%";
-    min-width: "0";
-    min-height: "150px";
-    padding: "20px";
-    box-sizing: "border-box";
-
-    border-radius: "16px";
-    border: "1px solid rgba(153, 104, 237, 0.65)";
-
-    background: "rgba(52, 62, 69, 0.92)";
-
-    overflow: hidden;
-
-    transition:
-      transform 0.22s ease,
-      border-color 0.22s ease,
-      box-shadow 0.22s ease,
-      background 0.22s ease;
-  }
-
-  /* ============================================================
-     HOVER EFFECT
-  ============================================================ */
-
-  .dashboard-stat-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(174, 126, 255, 0.95);
-    background: rgba(58, 69, 78, 0.98);
-
-    box-shadow:
-      0 10px 28px rgba(0, 0, 0, 0.28),
-      0 0 18px rgba(153, 104, 237, 0.18);
-  }
-
-  .dashboard-stat-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .dashboard-stat-top h3 {
-    margin: 0;
-    padding-right: 4px;
-    font-size: 14px;
-    line-height: 1.25;
-    font-weight: 650;
-    color: #ffffff;
-  }
-
-  .dashboard-stat-icon {
-    flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 12px;
-    background: rgba(99, 102, 241, 0.18);
-    font-size: 21px;
-
-    transition:
-      transform 0.22s ease,
-      background 0.22s ease;
-  }
-
-  .dashboard-stat-card:hover .dashboard-stat-icon {
-    transform: scale(1.08);
-    background: rgba(99, 102, 241, 0.28);
-  }
-
-  .dashboard-stat-card strong {
-    display: block;
-    margin-top: 14px;
-    font-size: 32px;
-    line-height: 1.05;
-    font-weight: 700;
-    color: #ffffff;
-  }
-
-  .dashboard-stat-card p {
-    margin: 8px 0 0;
-    font-size: 12px;
-    line-height: 1.35;
-    color: rgba(255, 255, 255, 0.72);
-  }
-
-  /* ============================================================
-     MOBILE - 2 CARDS PER ROW
-  ============================================================ */
-
-  @media (max-width: 700px) {
-
-    .dashboard-stats-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .dashboard-stat-card {
-      min-height: 145px;
-      padding: 15px;
-      border-radius: 15px;
-    }
-
-    .dashboard-stat-top {
-      gap: 6px;
-    }
-
-    .dashboard-stat-top h3 {
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    .dashboard-stat-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      font-size: 17px;
-    }
-
-    .dashboard-stat-card strong {
-      margin-top: 12px;
-      font-size: 27px;
-    }
-
-    .dashboard-stat-card p {
-      margin-top: 6px;
-      font-size: 10px;
-    }
-  }
-
-  /* ============================================================
-     SMALL PHONES
-  ============================================================ */
-
-  @media (max-width: 380px) {
-
-    .dashboard-stats-grid {
-      gap: 8px;
-    }
-
-    .dashboard-stat-card {
-      min-height: 132px;
-      padding: 12px;
-      border-radius: 13px;
-    }
-
-    .dashboard-stat-top h3 {
-      font-size: 11px;
-    }
-
-    .dashboard-stat-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      font-size: 15px;
-    }
-
-    .dashboard-stat-card strong {
-      margin-top: 10px;
-      font-size: 24px;
-    }
-
-    .dashboard-stat-card p {
-      font-size: 9px;
-    }
-  }
-`}</style>
         {/* =================================================
             HERO
         ================================================= */}
