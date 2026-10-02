@@ -1980,14 +1980,14 @@ function App() {
 
       <style>{`
         .dashboard-stats-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 20px;
+          display: "grid";
+          grid-template-columns: "repeat(2, minmax(0, 1fr))";
+          gap: "20px";
         }
 
         @media (max-width: 700px) {
           .dashboard-stats-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: "1fr";
           }
         }
       `}</style>
@@ -2005,12 +2005,12 @@ function App() {
   ============================================================ */
 
   .dashboard-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+    display: "grid";
+    grid-template-columns: "repeat(2, minmax(0, 1fr))";
+    gap: "16px";
+    width: "100%";
+    max-width: "100%";
+    box-sizing: "border-box";
   }
 
   /* ============================================================
@@ -2018,17 +2018,17 @@ function App() {
   ============================================================ */
 
   .dashboard-stat-card {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-    min-height: 150px;
-    padding: 20px;
-    box-sizing: border-box;
+    position: "relative";
+    width: "100%";
+    min-width: "0";
+    min-height: "150px";
+    padding: "20px";
+    box-sizing: "border-box";
 
-    border-radius: 16px;
-    border: 1px solid rgba(153, 104, 237, 0.65);
+    border-radius: "16px";
+    border: "1px solid rgba(153, 104, 237, 0.65)";
 
-    background: rgba(52, 62, 69, 0.92);
+    background: "rgba(52, 62, 69, 0.92)";
 
     overflow: hidden;
 
