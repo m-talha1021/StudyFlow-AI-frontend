@@ -1976,41 +1976,24 @@ function App() {
 
      <section
   id="dashboard-section"
-  className="dashboard-section"
-  style={{
-    padding: "28px 0 8px",
-    scrollMarginTop: "90px",
-  }}
->
+  className="dashboard-section">
   <div
-    className="dashboard-heading"
-    style={{
-      marginBottom: "22px",
-    }}
-  >
+    className="dashboard-heading">
     <span className="section-kicker">YOUR DASHBOARD</span>
 
-    <h2 style={{ margin: "6px 0 4px" }}>
+    <h2>
       {user?.displayName
         ? `Welcome back, ${user.displayName}`
         : "Your learning dashboard"}
     </h2>
 
-    <p style={{ margin: 0 }}>
+    <p>
       Your personal StudyFlow AI progress and activity.
     </p>
   </div>
 
   {dashboardLoading ? (
-    <div
-      style={{
-        padding: "28px",
-        textAlign: "center",
-        borderRadius: "18px",
-        border: "1px solid rgba(148, 163, 184, 0.2)",
-        background: "rgba(15, 23, 42, 0.55)",
-      }}
-    >
+    <div>
       Loading your dashboard...
     </div>
   ) : (
