@@ -226,7 +226,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               }
               placeholder="At least 8 characters"
               autoComplete={isSignup ? "new-password" : "current-password"}
-              minLength={6}
+              minLength={8}
               required
             />
           </label>
@@ -759,9 +759,11 @@ function App() {
           setAuthError("Password should be at least 8 characters.");
           break;
         case "auth/invalid-credential":
+        setAuthError("Invalid email or password.");
         case "auth/wrong-password":
+        setAuthError("Password is incorrect.");
         case "auth/user-not-found":
-          setAuthError("Invalid email or password.");
+          setAuthError("User does not exist.");
           break;
         case "auth/network-request-failed":
           setAuthError(
