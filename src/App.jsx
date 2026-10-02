@@ -226,7 +226,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               }
               placeholder="At least 8 characters"
               autoComplete={isSignup ? "new-password" : "current-password"}
-              minLength={8}
               required
             />
           </label>
@@ -245,7 +244,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 }
                 placeholder="Repeat your password"
                 autoComplete="new-password"
-                minLength={8}
                 required
               />
             </label>
