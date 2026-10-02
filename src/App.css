@@ -5149,6 +5149,8 @@ a:active {
   scroll-margin-top: 90px;
   overflow: visible;
   background-image: url("assets/background.png");
+  background-size: 900px;
+  opacity: 0.11;
 }
 
 
