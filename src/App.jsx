@@ -168,7 +168,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             <span>StudyFlow AI</span>
           </div>
 
-          <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
+          <h1>{isSignup ? "Create your account" : "Welcome"}</h1>
           <p>
             {isSignup
               ? "Start your personalized StudyFlow experience."
@@ -245,7 +245,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 }
                 placeholder="Repeat your password"
                 autoComplete="new-password"
-                minLength={6}
+                minLength={8}
                 required
               />
             </label>
@@ -774,7 +774,7 @@ function App() {
           break;
         case "auth/operation-not-allowed":
           setAuthError(
-            "Email/password sign-in is not enabled in Firebase Authentication."
+            "Email/password sign-in is not enabled."
           );
           break;
         default:
