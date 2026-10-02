@@ -2040,13 +2040,13 @@ function App() {
                 {
                   title: "Total Materials",
                   value: dashboardStats.totalMaterials,
-                  text: "Files in your library",
+                  text: "Files uploaded",
                   icon: "📄",
                 },
                 {
                   title: "Study Sessions",
                   value: dashboardStats.studySessions,
-                  text: "Learning moments",
+                  text: "Learning features",
                   icon: "📚",
                 },
                 {
@@ -2072,11 +2072,12 @@ function App() {
                   key={stat.title}
                   className="dashboard-stat-card"
                   style={{
-                    minHeight: "105px",
+                    Height: "105px",
+                    width: "130px",
                     padding: "19px 21px",
                     borderRadius: "14px",
-                    border: "1px solid rgba(148, 163, 184, 0.22)",
-                    background: "rgba(50, 141, 168)",
+                    border: "1px solid rgba(153, 104, 237)",
+                    background: "rgba(52, 62, 69)",
                     boxSizing: "border-box",
                   }}
                 >
