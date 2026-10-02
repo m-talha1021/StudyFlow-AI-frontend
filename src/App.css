@@ -5147,8 +5147,8 @@ a:active {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  width: 100%;
-  max-width: 100%;
+  width: 550px;
+  max-width: 550px;
   box-sizing: border-box;
 }
 
@@ -5159,10 +5159,10 @@ a:active {
 
 .dashboard-stat-card {
   position: relative;
-  width: 100%;
+  width: 160px;
   min-width: 0;
   min-height: 150px;
-  padding: 20px;
+  padding: 15px;
   box-sizing: border-box;
 
   border-radius: 16px;
@@ -5294,12 +5294,14 @@ a:active {
   .dashboard-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+    height: 250px;
+    width: 350px;
   }
-
+   
   .dashboard-stat-card {
-    min-height: 145px;
-    padding: 15px;
-
+    min-height: 120px;
+    padding: 12px;
+    width: 140px;
     border-radius: 15px;
   }
 
@@ -5308,7 +5310,7 @@ a:active {
   }
 
   .dashboard-stat-top h3 {
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.2;
   }
 
@@ -5344,13 +5346,13 @@ a:active {
   }
 
   .dashboard-stat-card {
-    min-height: 132px;
-    padding: 12px;
+    min-height: 100px;
+    padding: 11px;
     border-radius: 13px;
   }
 
   .dashboard-stat-top h3 {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .dashboard-stat-icon {
@@ -5359,12 +5361,12 @@ a:active {
 
     border-radius: 8px;
 
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .dashboard-stat-card strong {
     margin-top: 10px;
-    font-size: 24px;
+    font-size: 23px;
   }
 
   .dashboard-stat-card p {
