@@ -5395,7 +5395,7 @@ a:active {
 
   .dashboard-section {
     width: 100%;
-
+    background-image: url("assets/background.png");
     max-width: 100%;
 
     margin: 0;
