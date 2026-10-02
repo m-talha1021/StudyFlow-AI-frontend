@@ -5135,20 +5135,18 @@ a:active {
 
 
 
-
-
 /* ============================================================
    DASHBOARD SECTION
 ============================================================ */
 
 .dashboard-section {
-  width: 600px;
-  max-width: 600px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 30px;
   box-sizing: border-box;
-  padding: 28px 0 8px;
   scroll-margin-top: 90px;
-  overflow: hidden;
-  margin-left: 450px;
+  overflow: visible;
 }
 
 
@@ -5158,9 +5156,8 @@ a:active {
 
 .dashboard-heading {
   width: 100%;
-  max-width: 100%;
+  margin: 0 0 22px;
   box-sizing: border-box;
-  margin-bottom: 22px;
 }
 
 .dashboard-heading .section-kicker {
@@ -5169,14 +5166,14 @@ a:active {
 
 .dashboard-heading h2 {
   margin: 6px 0 4px;
-  font-size: 26px;
+  font-size: 28px;
   line-height: 1.2;
   font-weight: 700;
 }
 
 .dashboard-heading p {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.68);
 }
@@ -5191,91 +5188,32 @@ a:active {
   box-sizing: border-box;
   padding: 28px;
   text-align: center;
-
   border-radius: 18px;
   border: 1px solid rgba(148, 163, 184, 0.2);
-
   background: rgba(15, 23, 42, 0.55);
-
   color: rgba(255, 255, 255, 0.75);
 }
 
 
 /* ============================================================
-   MOBILE
-============================================================ */
-
-@media (max-width: 700px) {
-
-  .dashboard-section {
-    width: 100%;
-    max-width: 100%;
-    padding: 22px 0 8px;
-    overflow: hidden;
-     margin-left: 10px;
-  }
-
-  .dashboard-heading {
-    margin-bottom: 16px;
-  }
-
-  .dashboard-heading h2 {
-    font-size: 21px;
-    line-height: 1.25;
-  }
-
-  .dashboard-heading p {
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
-  .dashboard-section > div:not(.dashboard-heading):not(.dashboard-stats-grid) {
-    padding: 20px 14px;
-    border-radius: 15px;
-    font-size: 13px;
-  }
-}
-
-
-/* ============================================================
-   SMALL PHONES
-============================================================ */
-
-@media (max-width: 380px) {
-
-  .dashboard-section {
-    padding-top: 18px;
-  }
-
-  .dashboard-heading h2 {
-    font-size: 19px;
-  }
-
-  .dashboard-heading p {
-    font-size: 11px;
-  }
-
-  .dashboard-heading {
-    margin-bottom: 13px;
-  }
-}
-
-/* ============================================================
    DASHBOARD GRID
+   2 CARDS PER ROW
 ============================================================ */
 
 .dashboard-stats-grid {
-  margin-left: 500px;
   display: grid;
+
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 8px;
-  width: 650px;
-  max-width: 550px;
+
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+
+  gap: 14px;
+
   box-sizing: border-box;
 }
-
-
-
 
 
 /* ============================================================
@@ -5284,12 +5222,17 @@ a:active {
 
 .dashboard-stat-card {
   position: relative;
-  width: 160px;
+
+  width: 100%;
   min-width: 0;
-  min-height: 150px;
-  padding: 15px;
+  min-height: 170px;
+
+  padding: 20px;
+
   box-sizing: border-box;
-  border-radius: 16px;
+
+  border-radius: 17px;
+
   border: 1px solid rgba(153, 104, 237, 0.65);
 
   background: rgba(52, 62, 69, 0.92);
@@ -5305,7 +5248,7 @@ a:active {
 
 
 /* ============================================================
-   HOVER EFFECT
+   CARD HOVER
 ============================================================ */
 
 .dashboard-stat-card:hover {
@@ -5317,7 +5260,7 @@ a:active {
 
   box-shadow:
     0 10px 28px rgba(0, 0, 0, 0.28),
-    0 0 18px rgba(153, 104, 237, 0.18);
+    0 0 18px rgba(153, 104, 237, 0.20);
 }
 
 
@@ -5327,18 +5270,28 @@ a:active {
 
 .dashboard-stat-top {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
 
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  width: 100%;
+  min-width: 0;
+}
 
 .dashboard-stat-top h3 {
   margin: 0;
+
+  min-width: 0;
+
   padding-right: 4px;
 
-  font-size: 14px;
+  font-size: 15px;
+
   line-height: 1.25;
+
   font-weight: 650;
 
   color: #ffffff;
@@ -5346,7 +5299,7 @@ a:active {
 
 
 /* ============================================================
-   ICON
+   CARD ICON
 ============================================================ */
 
 .dashboard-stat-icon {
@@ -5356,6 +5309,7 @@ a:active {
   height: 42px;
 
   display: grid;
+
   place-items: center;
 
   border-radius: 12px;
@@ -5369,7 +5323,6 @@ a:active {
     background 0.22s ease;
 }
 
-
 .dashboard-stat-card:hover .dashboard-stat-icon {
   transform: scale(1.08);
 
@@ -5378,16 +5331,18 @@ a:active {
 
 
 /* ============================================================
-   VALUE
+   CARD VALUE
 ============================================================ */
 
 .dashboard-stat-card strong {
   display: block;
 
-  margin-top: 14px;
+  margin-top: 18px;
 
-  font-size: 32px;
+  font-size: 34px;
+
   line-height: 1.05;
+
   font-weight: 700;
 
   color: #ffffff;
@@ -5395,16 +5350,38 @@ a:active {
 
 
 /* ============================================================
-   DESCRIPTION
+   CARD DESCRIPTION
 ============================================================ */
 
 .dashboard-stat-card p {
-  margin: 8px 0 0;
+  margin: 9px 0 0;
 
-  font-size: 12px;
+  font-size: 13px;
+
   line-height: 1.35;
 
   color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (max-width: 900px) {
+
+  .dashboard-section {
+    max-width: 760px;
+
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .dashboard-stats-grid {
+    max-width: 700px;
+
+    gap: 12px;
+  }
 }
 
 
@@ -5415,47 +5392,117 @@ a:active {
 
 @media (max-width: 700px) {
 
-  .dashboard-stats-grid {
-    margin-left: 42px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    colimn-gap: 7px;
-    height: 220px;
-    width: 320px;
+  .dashboard-section {
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 0;
+
+    padding: 22px 12px 30px;
+
+    box-sizing: border-box;
+
+    overflow: visible;
   }
-   
+
+
+  /* Heading */
+
+  .dashboard-heading {
+    margin-bottom: 18px;
+  }
+
+  .dashboard-heading h2 {
+    font-size: 23px;
+
+    line-height: 1.25;
+  }
+
+  .dashboard-heading p {
+    font-size: 13px;
+
+    line-height: 1.4;
+  }
+
+
+  /* Grid */
+
+  .dashboard-stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 0;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+  }
+
+
+  /* Cards */
+
   .dashboard-stat-card {
-    min-height: 120px;
-    padding: 12px;
-    width: 140px;
+    width: 100%;
+
+    min-width: 0;
+
+    min-height: 155px;
+
+    padding: 15px;
+
     border-radius: 15px;
   }
+
+
+  /* Card title */
 
   .dashboard-stat-top {
     gap: 6px;
   }
 
   .dashboard-stat-top h3 {
-    font-size: 11px;
+    font-size: 12px;
+
     line-height: 1.2;
   }
 
+
+  /* Icon */
+
   .dashboard-stat-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+
+    height: 36px;
 
     border-radius: 10px;
 
-    font-size: 17px;
+    font-size: 18px;
   }
+
+
+  /* Number */
 
   .dashboard-stat-card strong {
-    margin-top: 12px;
-    font-size: 27px;
+    margin-top: 14px;
+
+    font-size: 28px;
   }
 
+
+  /* Description */
+
   .dashboard-stat-card p {
-    margin-top: 6px;
+    margin-top: 7px;
+
     font-size: 10px;
+
+    line-height: 1.3;
   }
 }
 
@@ -5466,35 +5513,64 @@ a:active {
 
 @media (max-width: 380px) {
 
+  .dashboard-section {
+    padding: 18px 8px 25px;
+  }
+
+
+  .dashboard-heading {
+    margin-bottom: 14px;
+  }
+
+  .dashboard-heading h2 {
+    font-size: 20px;
+  }
+
+  .dashboard-heading p {
+    font-size: 11px;
+  }
+
+
   .dashboard-stats-grid {
     gap: 8px;
   }
 
+
   .dashboard-stat-card {
-    min-height: 100px;
-    padding: 11px;
+    min-height: 140px;
+
+    padding: 12px;
+
     border-radius: 13px;
   }
 
+
   .dashboard-stat-top h3 {
-    font-size: 10px;
+    font-size: 11px;
   }
 
+
   .dashboard-stat-icon {
-    width: 30px;
-    height: 30px;
+    width: 31px;
+
+    height: 31px;
 
     border-radius: 8px;
 
-    font-size: 14px;
+    font-size: 15px;
   }
+
 
   .dashboard-stat-card strong {
-    margin-top: 10px;
-    font-size: 23px;
+    margin-top: 11px;
+
+    font-size: 24px;
   }
 
+
   .dashboard-stat-card p {
+    margin-top: 5px;
+
     font-size: 9px;
   }
 }
