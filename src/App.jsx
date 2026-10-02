@@ -224,7 +224,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                   password: event.target.value,
                 }))
               }
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               autoComplete={isSignup ? "new-password" : "current-password"}
               minLength={6}
               required
@@ -756,7 +756,7 @@ function App() {
           setAuthError("Please enter a valid email address.");
           break;
         case "auth/weak-password":
-          setAuthError("Password should be at least 6 characters.");
+          setAuthError("Password should be at least 8 characters.");
           break;
         case "auth/invalid-credential":
         case "auth/wrong-password":
