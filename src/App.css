@@ -2983,6 +2983,7 @@ footer h3 {
 
 .public-navbar,
 .app-navbar {
+  position: relative;
   min-height: 82px;
   padding: 0 clamp(20px, 5vw, 72px);
   box-sizing: border-box;
