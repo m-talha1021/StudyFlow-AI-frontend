@@ -5829,3 +5829,113 @@ a:active {
     padding: 9px;
   }
 }
+
+
+
+
+/* ============================================================
+   INITIAL LOADING SCREEN
+============================================================ */
+
+.auth-loading-screen {
+  position: fixed;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background: #080812;
+
+  z-index: 99999;
+}
+
+
+/* Loading logo */
+
+.auth-loading-screen img {
+  display: block;
+
+  width: 120px;
+  height: 120px;
+
+  max-width: 30vw;
+  max-height: 30vw;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+}
+
+
+/* Loading text */
+
+.auth-loading-screen span {
+  display: block;
+
+  margin-top: 18px;
+
+  font-size: 16px;
+  line-height: 1.4;
+
+  text-align: center;
+
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ============================================================
+   MOBILE LOADING SCREEN
+============================================================ */
+
+@media (max-width: 700px) {
+
+  .auth-loading-screen {
+    width: 100vw;
+    height: 100dvh;
+
+    overflow: hidden;
+  }
+
+  .auth-loading-screen img {
+    width: 90px;
+    height: 90px;
+
+    max-width: 25vw;
+    max-height: 25vw;
+  }
+
+  .auth-loading-screen span {
+    margin-top: 14px;
+
+    font-size: 13px;
+  }
+}
+
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 380px) {
+
+  .auth-loading-screen img {
+    width: 75px;
+    height: 75px;
+
+    max-width: 24vw;
+    max-height: 24vw;
+  }
+
+  .auth-loading-screen span {
+    font-size: 12px;
+  }
+}
