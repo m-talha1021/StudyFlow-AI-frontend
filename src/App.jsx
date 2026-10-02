@@ -19,6 +19,9 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
+  addDoc,
+  collection,
   increment,
   serverTimestamp,
 } from "firebase/firestore";
@@ -331,6 +334,12 @@ function App() {
 
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
+  // Dashboard history: only records belonging to the logged-in user.
+  const [dashboardMaterials, setDashboardMaterials] = useState([]);
+  const [dashboardFlashcardSets, setDashboardFlashcardSets] = useState([]);
+  const [dashboardPanel, setDashboardPanel] = useState(null);
+  const [dashboardHistoryLoading, setDashboardHistoryLoading] = useState(false);
+
   // Prevent the same quiz from being counted twice.
   const testSubmissionRecordedRef = useRef(false);
 
@@ -439,7 +448,7 @@ function App() {
   }, []);
 
   // ========================================================
-  // LOAD CURRENT USER DASHBOARD
+  // LOAD CURRENT USER DASHBOARD + HISTORY
   // ========================================================
 
   useEffect(() => {
@@ -452,23 +461,30 @@ function App() {
         averageQuizScore: 0,
         flashcardsCreated: 0,
       });
+      setDashboardMaterials([]);
+      setDashboardFlashcardSets([]);
+      setDashboardPanel(null);
       return;
     }
 
     let cancelled = false;
 
-    const loadDashboardStats = async () => {
+    const loadDashboardData = async () => {
       setDashboardLoading(true);
+      setDashboardHistoryLoading(true);
 
       try {
-        const snapshot = await getDoc(
-          doc(db, "users", user.uid)
-        );
+        const [userSnapshot, materialsSnapshot, flashcardsSnapshot] =
+          await Promise.all([
+            getDoc(doc(db, "users", user.uid)),
+            getDocs(collection(db, "users", user.uid, "materials")),
+            getDocs(collection(db, "users", user.uid, "flashcardSets")),
+          ]);
 
         if (cancelled) return;
 
-        const data = snapshot.exists()
-          ? snapshot.data()
+        const data = userSnapshot.exists()
+          ? userSnapshot.data()
           : {};
 
         const totalMaterials = Number(data.totalMaterials || 0);
@@ -488,21 +504,80 @@ function App() {
               : 0,
           flashcardsCreated,
         });
+
+        const materials = materialsSnapshot.docs
+          .map((item) => ({
+            id: item.id,
+            ...item.data(),
+          }))
+          .sort((a, b) =>
+            (b.uploadedAt?.toMillis?.() || 0) -
+            (a.uploadedAt?.toMillis?.() || 0)
+          );
+
+        const savedFlashcardSets = flashcardsSnapshot.docs
+          .map((item) => ({
+            id: item.id,
+            ...item.data(),
+          }))
+          .sort((a, b) =>
+            (b.createdAt?.toMillis?.() || 0) -
+            (a.createdAt?.toMillis?.() || 0)
+          );
+
+        setDashboardMaterials(materials);
+        setDashboardFlashcardSets(savedFlashcardSets);
       } catch (error) {
         console.error("Dashboard loading error:", error);
+
+        if (!cancelled) {
+          setDashboardMaterials([]);
+          setDashboardFlashcardSets([]);
+        }
       } finally {
         if (!cancelled) {
           setDashboardLoading(false);
+          setDashboardHistoryLoading(false);
         }
       }
     };
 
-    loadDashboardStats();
+    loadDashboardData();
 
     return () => {
       cancelled = true;
     };
   }, [user?.uid]);
+
+  // ========================================================
+  // DASHBOARD CARD ACTIONS
+  // ========================================================
+
+  const handleDashboardCardClick = (panel) => {
+    setDashboardPanel((previous) =>
+      previous === panel ? null : panel
+    );
+  };
+
+  const openSavedFlashcardSet = (savedSet) => {
+    if (!Array.isArray(savedSet?.cards) || !savedSet.cards.length) {
+      return;
+    }
+
+    setFlashcards(savedSet.cards);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setDashboardPanel(null);
+
+    setTimeout(() => {
+      document
+        .getElementById("flashcards-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+    }, 100);
+  };
 
   // ========================================================
   // TEST TIMER
@@ -785,6 +860,9 @@ function App() {
       averageQuizScore: 0,
       flashcardsCreated: 0,
     });
+    setDashboardMaterials([]);
+    setDashboardFlashcardSets([]);
+    setDashboardPanel(null);
     testSubmissionRecordedRef.current = false;
     stopSpeech();
   };
@@ -857,6 +935,28 @@ function App() {
           },
           { merge: true }
         );
+
+        // Store every uploaded filename under this user's account.
+        const savedMaterials = await Promise.all(
+          validFiles.map((selectedFile) =>
+            addDoc(
+              collection(db, "users", user.uid, "materials"),
+              {
+                fileName: selectedFile.name,
+                uploadedAt: serverTimestamp(),
+              }
+            )
+          )
+        );
+
+        setDashboardMaterials((previous) => [
+          ...validFiles.map((selectedFile, index) => ({
+            id: savedMaterials[index].id,
+            fileName: selectedFile.name,
+            uploadedAt: new Date(),
+          })),
+          ...previous,
+        ]);
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -1079,6 +1179,36 @@ function App() {
           },
           { merge: true }
         );
+
+        // Save this complete flashcard set so the user can reopen it later.
+        const sourceFileNames = files.length
+          ? files.map((selectedFile) => selectedFile.name)
+          : file?.name
+            ? [file.name]
+            : text.trim()
+              ? ["Pasted study material"]
+              : ["Study material"];
+
+        const savedSet = await addDoc(
+          collection(db, "users", user.uid, "flashcardSets"),
+          {
+            cards: data.cards,
+            sourceFileNames,
+            cardCount: createdCount,
+            createdAt: serverTimestamp(),
+          }
+        );
+
+        setDashboardFlashcardSets((previous) => [
+          {
+            id: savedSet.id,
+            cards: data.cards,
+            sourceFileNames,
+            cardCount: createdCount,
+            createdAt: new Date(),
+          },
+          ...previous,
+        ]);
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -1975,90 +2105,204 @@ function App() {
       </header>
 
      <section
-  id="dashboard-section"
-  className="dashboard-section">
-  <div
-    className="dashboard-heading">
-    <span className="section-kicker">YOUR DASHBOARD</span>
+        id="dashboard-section"
+        className="dashboard-section"
+      >
+        <div className="dashboard-heading">
+          <span className="section-kicker">YOUR DASHBOARD</span>
 
-    <h2>
-      {user?.displayName
-        ? `Welcome back, ${user.displayName}`
-        : "Your learning dashboard"}
-    </h2>
-
-    <p>
-      Your personal StudyFlow AI progress and activity.
-    </p>
-  </div>
-
-  {dashboardLoading ? (
-    <div>
-      Loading your dashboard...
-    </div>
-  ) : (
-    <div className="dashboard-stats-grid">
-      {[
-        {
-          title: "Total Materials",
-          value: dashboardStats.totalMaterials,
-          text: "Files uploaded",
-          icon: "📄",
-        },
-        {
-          title: "Study Sessions",
-          value: dashboardStats.studySessions,
-          text: "Learning features",
-          icon: "📚",
-        },
-        {
-          title: "Completed Quizzes",
-          value: dashboardStats.completedQuizzes,
-          text: "Quizzes completed",
-          icon: "📝",
-        },
-        {
-          title: "Average Quiz Score",
-          value: `${dashboardStats.averageQuizScore}%`,
-          text: "Across all quizzes",
-          icon: "📈",
-        },
-        {
-          title: "Flashcards Created",
-          value: dashboardStats.flashcardsCreated,
-          text: "Concepts to remember",
-          icon: "🗂️",
-        },
-      ].map((stat) => (
-        <div
-          key={stat.title}
-          className="dashboard-stat-card"
-        >
-          <div className="dashboard-stat-top">
-            <h3>
-              {stat.title}
-            </h3>
-
-            <span
-              aria-hidden="true"
-              className="dashboard-stat-icon"
-            >
-              {stat.icon}
-            </span>
-          </div>
-
-          <strong>
-            {stat.value}
-          </strong>
+          <h2>
+            {user?.displayName
+              ? `Welcome back, ${user.displayName}`
+              : "Your learning dashboard"}
+          </h2>
 
           <p>
-            {stat.text}
+            Your personal StudyFlow AI progress and activity.
           </p>
         </div>
-      ))}
-    </div>
-  )}
-</section>
+
+        {dashboardLoading ? (
+          <div>
+            Loading your dashboard...
+          </div>
+        ) : (
+          <>
+            <div className="dashboard-stats-grid">
+              {[
+                {
+                  title: "Total Materials",
+                  value: dashboardStats.totalMaterials,
+                  text: "Files uploaded",
+                  icon: "📄",
+                  panel: "materials",
+                },
+                {
+                  title: "Study Sessions",
+                  value: dashboardStats.studySessions,
+                  text: "Learning features",
+                  icon: "📚",
+                },
+                {
+                  title: "Completed Quizzes",
+                  value: dashboardStats.completedQuizzes,
+                  text: "Quizzes completed",
+                  icon: "📝",
+                },
+                {
+                  title: "Average Quiz Score",
+                  value: `${dashboardStats.averageQuizScore}%`,
+                  text: "Across all quizzes",
+                  icon: "📈",
+                },
+                {
+                  title: "Flashcards Created",
+                  value: dashboardStats.flashcardsCreated,
+                  text: "Concepts to remember",
+                  icon: "🗂️",
+                  panel: "flashcards",
+                },
+              ].map((stat) => (
+                <div
+                  key={stat.title}
+                  className={`dashboard-stat-card ${
+                    stat.panel ? "dashboard-stat-card-clickable" : ""
+                  }`}
+                  role={stat.panel ? "button" : undefined}
+                  tabIndex={stat.panel ? 0 : undefined}
+                  onClick={
+                    stat.panel
+                      ? () => handleDashboardCardClick(stat.panel)
+                      : undefined
+                  }
+                  onKeyDown={
+                    stat.panel
+                      ? (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            handleDashboardCardClick(stat.panel);
+                          }
+                        }
+                      : undefined
+                  }
+                >
+                  <div className="dashboard-stat-top">
+                    <h3>{stat.title}</h3>
+
+                    <span
+                      aria-hidden="true"
+                      className="dashboard-stat-icon"
+                    >
+                      {stat.icon}
+                    </span>
+                  </div>
+
+                  <strong>{stat.value}</strong>
+
+                  <p>{stat.text}</p>
+
+                  {stat.panel && (
+                    <span className="dashboard-card-hint">
+                      Click to view history
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {dashboardPanel === "materials" && (
+              <div className="dashboard-history-panel">
+                <div className="dashboard-history-header">
+                  <div>
+                    <h3>Uploaded Materials</h3>
+                    <p>All files uploaded by this account.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="dashboard-history-close"
+                    onClick={() => setDashboardPanel(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {dashboardHistoryLoading ? (
+                  <p>Loading your uploaded files...</p>
+                ) : dashboardMaterials.length === 0 ? (
+                  <p>No uploaded files yet.</p>
+                ) : (
+                  <ul className="dashboard-material-list">
+                    {dashboardMaterials.map((material) => (
+                      <li key={material.id}>
+                        <span>📄</span>
+                        <span>{material.fileName}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {dashboardPanel === "flashcards" && (
+              <div className="dashboard-history-panel">
+                <div className="dashboard-history-header">
+                  <div>
+                    <h3>Previous Flashcards</h3>
+                    <p>Reopen any flashcard set generated by this account.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="dashboard-history-close"
+                    onClick={() => setDashboardPanel(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {dashboardHistoryLoading ? (
+                  <p>Loading your flashcard history...</p>
+                ) : dashboardFlashcardSets.length === 0 ? (
+                  <p>No previous flashcard sets yet.</p>
+                ) : (
+                  <div className="dashboard-flashcard-history">
+                    {dashboardFlashcardSets.map((savedSet, index) => (
+                      <div
+                        className="dashboard-flashcard-history-item"
+                        key={savedSet.id}
+                      >
+                        <div className="dashboard-flashcard-history-info">
+                          <strong>
+                            Flashcard Set {dashboardFlashcardSets.length - index}
+                          </strong>
+                          <span>
+                            {savedSet.cardCount || savedSet.cards?.length || 0} cards
+                          </span>
+                          <small>
+                            Files used: {
+                              Array.isArray(savedSet.sourceFileNames) &&
+                              savedSet.sourceFileNames.length
+                                ? savedSet.sourceFileNames.join(", ")
+                                : "Study material"
+                            }
+                          </small>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="dashboard-history-open"
+                          onClick={() => openSavedFlashcardSet(savedSet)}
+                        >
+                          Open
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
       <main className="container">
 
