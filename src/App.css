@@ -233,7 +233,7 @@ body {
 
   background-position: right top;
 
-  opacity: 0.11;
+  opacity: 0.13;
 
   top: 70%;
 
@@ -5184,7 +5184,7 @@ a:active {
 ============================================================ */
 
 .dashboard-section > div:not(.dashboard-heading):not(.dashboard-stats-grid) {
-  width: 100%;
+  width: 300px;
   box-sizing: border-box;
   padding: 28px;
   text-align: center;
@@ -5415,7 +5415,7 @@ a:active {
 
   .dashboard-heading h2 {
     font-size: 23px;
-
+    color: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
     line-height: 1.25;
   }
 
