@@ -5148,9 +5148,6 @@ a:active {
   box-sizing: border-box;
   scroll-margin-top: 90px;
   overflow: visible;
-  background-image: url("assets/background.png");
-  background-size: 900px;
-  opacity: 0.11;
 }
 
 
@@ -5173,6 +5170,7 @@ a:active {
   font-size: 28px;
   line-height: 1.2;
   font-weight: 700;
+  color: rgb(38,125,224,100);
 }
 
 .dashboard-heading p {
@@ -5398,7 +5396,6 @@ a:active {
 
   .dashboard-section {
     width: 100%;
-    background-image: url("assets/background.png");
     max-width: 100%;
 
     margin: 0;
@@ -5419,7 +5416,7 @@ a:active {
 
   .dashboard-heading h2 {
     font-size: 23px;
-
+    color: rgb(38, 148, 224, 100);
     line-height: 1.25;
   }
 
@@ -5443,7 +5440,7 @@ a:active {
     height: 100px;
     margin: 0;
 
-    gap: 10px;
+    gap: 9px;
 
     box-sizing: border-box;
   }
@@ -5456,7 +5453,7 @@ a:active {
 
     min-width: 0;
 
-    min-height: 155px;
+    min-height: 140px;
 
     padding: 15px;
 
