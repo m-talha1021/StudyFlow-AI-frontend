@@ -1,6 +1,44 @@
 /* ============================================================
    GLOBAL PAGE BACKGROUND
 ============================================================ */
+/* Forgot Password Button */
+.forgot-password-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: #a855f7;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.forgot-password-btn:hover {
+  color: #c084fc;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+
+.forgot-password-btn:active {
+  transform: translateY(0);
+}
+
+.forgot-password-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+
 
 html,
 body,
