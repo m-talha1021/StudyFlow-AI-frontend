@@ -6197,8 +6197,8 @@ a:active {
   position: absolute;
   z-index: 4;
   top: -48px;
-  width: 37px;
-  height: 45px;
+  width: 35px;
+  height: 43px;
   padding: 0;
   border: 0;
   border-radius: 50% 50% 48% 48%;
@@ -6294,8 +6294,8 @@ a:active {
   }
 
   .falling-balloon {
-    width: 34px;
-    height: 41px;
+    width: 32px;
+    height: 39px;
     font-size: 13px;
   }
 
