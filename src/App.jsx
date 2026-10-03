@@ -637,7 +637,7 @@ function App() {
       alphabet[Math.floor(Math.random() * alphabet.length)];
 
     const wrongLetters = [];
-    while (wrongLetters.length < 5) {
+    while (wrongLetters.length < 9) {
       const letter =
         alphabet[Math.floor(Math.random() * alphabet.length)];
 
@@ -648,7 +648,11 @@ function App() {
 
     const roundLetters = [target, ...wrongLetters];
 
-    // Shuffle the balloons so the correct one is not predictable.
+    // Create well-spaced horizontal positions so balloons do not
+    // appear too close together.
+    const positions = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95];
+
+    // Shuffle the balloon letters so the correct one is not predictable.
     for (let i = roundLetters.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [roundLetters[i], roundLetters[j]] = [
@@ -662,8 +666,8 @@ function App() {
       roundLetters.map((letter, index) => ({
         id: `${Date.now()}-${index}-${Math.random()}`,
         letter,
-        left: 8 + Math.random() * 84,
-        delay: Math.random() * 1.2,
+        left: positions[index],
+        delay: Math.random() * 0.45,
         duration: 5 + Math.random() * 2,
         status: "falling",
       }))
