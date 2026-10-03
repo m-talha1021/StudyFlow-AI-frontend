@@ -11675,7 +11675,7 @@ a:active {
 
 .dashboard-stats-grid {
   display: grid;
-  padding-left: 10px;
+  padding-left: 1px;
   /* Smaller fixed columns so cards do not stretch too wide */
   grid-template-columns: repeat(2, 135px);
 
@@ -11696,9 +11696,9 @@ a:active {
 .dashboard-stat-card {
   position: relative;
 
-  width: 210px;
-  min-width: 210px;
-  min-height: 125px;
+  width: 220px;
+  min-width: 220px;
+  min-height: 130px;
 
   padding: 13px;
 
