@@ -315,6 +315,7 @@ function App() {
   // ========================================================
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [gamesOpen, setGamesOpen] = useState(false);
 
   // ========================================================
   // DASHBOARD
@@ -350,6 +351,16 @@ function App() {
   const [guessGameStarted, setGuessGameStarted] = useState(false);
   const [guessGameStatus, setGuessGameStatus] = useState("idle");
   const [guessMessage, setGuessMessage] = useState("");
+
+  // ========================================================
+  // BALLOON LETTER GAME
+  // ========================================================
+
+  const [balloonTargetLetter, setBalloonTargetLetter] = useState("");
+  const [balloons, setBalloons] = useState([]);
+  const [balloonScore, setBalloonScore] = useState(0);
+  const [balloonGameStarted, setBalloonGameStarted] = useState(false);
+  const [balloonGameMessage, setBalloonGameMessage] = useState("");
 
   // Prevent the same quiz from being counted twice.
   const testSubmissionRecordedRef = useRef(false);
@@ -603,6 +614,118 @@ function App() {
     setGuessGameStarted(true);
     setGuessGameStatus("playing");
     setGuessMessage("");
+  };
+
+  const handleRevealGuessWord = () => {
+    if (!guessGameStarted || guessGameStatus !== "playing") return;
+
+    setGuessTries(0);
+    setGuessGameStatus("revealed");
+    setGuessMessage(`👀 The secret word was "${guessWord}".`);
+    setGuessedLetters([...new Set(guessWord.split(""))]);
+    setGuessInput("");
+  };
+
+
+  // ========================================================
+  // BALLOON LETTER GAME HANDLERS
+  // ========================================================
+
+  const createBalloonRound = () => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    const target =
+      alphabet[Math.floor(Math.random() * alphabet.length)];
+
+    const wrongLetters = [];
+    while (wrongLetters.length < 5) {
+      const letter =
+        alphabet[Math.floor(Math.random() * alphabet.length)];
+
+      if (letter !== target && !wrongLetters.includes(letter)) {
+        wrongLetters.push(letter);
+      }
+    }
+
+    const roundLetters = [target, ...wrongLetters];
+
+    // Shuffle the balloons so the correct one is not predictable.
+    for (let i = roundLetters.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [roundLetters[i], roundLetters[j]] = [
+        roundLetters[j],
+        roundLetters[i],
+      ];
+    }
+
+    setBalloonTargetLetter(target);
+    setBalloons(
+      roundLetters.map((letter, index) => ({
+        id: `${Date.now()}-${index}-${Math.random()}`,
+        letter,
+        left: 8 + Math.random() * 84,
+        delay: Math.random() * 1.2,
+        duration: 5 + Math.random() * 2,
+        status: "falling",
+      }))
+    );
+    setBalloonGameMessage("");
+  };
+
+  const startBalloonGame = () => {
+    setBalloonScore(0);
+    setBalloonGameStarted(true);
+    setBalloonGameMessage("");
+    createBalloonRound();
+  };
+
+  const closeBalloonGame = () => {
+    setBalloonGameStarted(false);
+    setBalloons([]);
+    setBalloonTargetLetter("");
+    setBalloonGameMessage("");
+    setBalloonScore(0);
+  };
+
+  const handleBalloonClick = (balloon) => {
+    if (!balloonGameStarted || balloon.status !== "falling") {
+      return;
+    }
+
+    if (balloon.letter === balloonTargetLetter) {
+      setBalloonScore((score) => score + 1);
+      setBalloonGameMessage("🎉 Correct! +1");
+
+      // Immediately begin the next round.
+      setTimeout(() => {
+        if (balloonGameStarted) {
+          createBalloonRound();
+        }
+      }, 250);
+    } else {
+      setBalloons((current) =>
+        current.map((item) =>
+          item.id === balloon.id
+            ? { ...item, status: "wrong" }
+            : item
+        )
+      );
+      setBalloonGameMessage("✕ Wrong balloon!");
+    }
+  };
+
+  const handleBalloonRoundEnd = () => {
+    if (!balloonGameStarted) {
+      return;
+    }
+
+    setBalloonGameMessage("💨 The balloons reached the bottom!");
+
+    // Generate a new target/round after the current round finishes.
+    setTimeout(() => {
+      if (balloonGameStarted) {
+        createBalloonRound();
+      }
+    }, 350);
   };
 
   const handleGuessLetter = () => {
@@ -2011,10 +2134,7 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              document.getElementById("guess-word-game")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+              setGamesOpen(true);
             }}
           >
             🎮 Games
@@ -2953,11 +3073,53 @@ function App() {
       </div>
 
       {/* ==================================================
-          GUESS THE WORD GAME
+          GAMES PANEL
       ================================================== */}
 
-      <section className="guess-word-game" id="guess-word-game">
-        <div className="guess-word-game-header">
+      {gamesOpen && (
+        <div className="games-overlay" role="dialog" aria-modal="true" aria-label="StudyFlow games">
+          <div className="games-panel">
+            <button
+              type="button"
+              className="games-panel-close"
+              onClick={() => {
+                setGamesOpen(false);
+                setGuessGameStarted(false);
+                setBalloonGameStarted(false);
+                setBalloons([]);
+              }}
+              aria-label="Close games"
+              title="Close games"
+            >
+              ×
+            </button>
+
+            <div className="games-panel-heading">
+              <span className="section-kicker">FUN ZONE</span>
+              <h2>🎮 StudyFlow Games</h2>
+              <p>Take a quick break and have some fun while learning.</p>
+            </div>
+
+            <div className="games-grid">
+
+        <section className="guess-word-game" id="guess-word-game">
+          <button
+            type="button"
+            className="guess-word-close-button"
+            onClick={() => {
+              setGuessGameStarted(false);
+              setGuessGameStatus("idle");
+              setGuessMessage("");
+              setGuessInput("");
+              setGuessedLetters([]);
+            }}
+            aria-label="Close Guess the Word game"
+            title="Close game"
+          >
+            ×
+          </button>
+
+          <div className="guess-word-game-header">
           <span className="section-kicker">FUN ZONE</span>
           <h2>🎯 Guess the Word</h2>
           <p>Guess the hidden word one character at a time.</p>
@@ -2981,6 +3143,16 @@ function App() {
           </button>
 
           {guessGameStarted && guessGameStatus === "playing" && (
+            <button
+              type="button"
+              className="guess-word-reveal-button"
+              onClick={handleRevealGuessWord}
+            >
+              👀 Reveal Word
+            </button>
+          )}
+
+          {guessGameStarted && guessGameStatus === "playing" && (
             <>
               <label className="guess-word-input-label" htmlFor="guess-word-input">Enter a character</label>
               <div className="guess-word-input-row">
@@ -2997,8 +3169,100 @@ function App() {
           {(guessGameStatus === "won" || guessGameStatus === "lost") && (
             <button type="button" className="guess-word-play-again" onClick={startGuessWordGame}>🎮 Play Again</button>
           )}
+          </div>
+        </section>
+
+
+      {/* ==================================================
+          BALLOON LETTER GAME
+      ================================================== */}
+
+      <section
+        className="balloon-letter-game"
+        id="balloon-letter-game"
+      >
+        <div className="balloon-game-header">
+          <span className="section-kicker">FUN ZONE</span>
+          <h2>🎈 Catch the Letter</h2>
+          <p>Click the balloon that matches the target letter.</p>
         </div>
+
+        {!balloonGameStarted ? (
+          <div className="balloon-game-start-panel">
+            <div className="balloon-preview">🎈 🎈 🎈</div>
+
+            <button
+              type="button"
+              className="balloon-start-button"
+              onClick={startBalloonGame}
+            >
+              ▶ Start Game
+            </button>
+          </div>
+        ) : (
+          <div className="balloon-game-board">
+            <button
+              type="button"
+              className="balloon-close-button"
+              onClick={closeBalloonGame}
+              aria-label="Close Catch the Letter game"
+              title="Close game"
+            >
+              ×
+            </button>
+
+            <div className="balloon-game-top">
+              <div>
+                <span className="balloon-target-label">TARGET</span>
+                <strong className="balloon-target-letter">
+                  {balloonTargetLetter.toUpperCase()}
+                </strong>
+              </div>
+
+              <div className="balloon-score">
+                ⭐ {balloonScore}
+              </div>
+            </div>
+
+            <div
+              className="balloon-falling-area"
+              onAnimationEnd={handleBalloonRoundEnd}
+            >
+              <div className="balloon-bottom-line" />
+
+              {balloons.map((balloon) => (
+                <button
+                  key={balloon.id}
+                  type="button"
+                  className={`falling-balloon ${balloon.status}`}
+                  style={{
+                    left: `${balloon.left}%`,
+                    animationDelay: `${balloon.delay}s`,
+                    animationDuration: `${balloon.duration}s`,
+                  }}
+                  onClick={() => handleBalloonClick(balloon)}
+                  disabled={balloon.status !== "falling"}
+                  aria-label={`Balloon letter ${balloon.letter}`}
+                >
+                  {balloon.status === "wrong"
+                    ? "×"
+                    : balloon.letter.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            <div className="balloon-game-message">
+              {balloonGameMessage ||
+                `Find the ${balloonTargetLetter.toUpperCase()} balloon!`}
+            </div>
+          </div>
+        )}
       </section>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ==================================================
           CHAT POPUP
