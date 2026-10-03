@@ -11683,8 +11683,8 @@ a:active {
   max-width: 100%;
   margin: 0 auto;
 
-  gap: 60px;
-
+  column-gap: 90px;
+  row-gap: 12px;
   box-sizing: border-box;
 }
 
