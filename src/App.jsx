@@ -19,9 +19,6 @@ import {
   doc,
   setDoc,
   getDoc,
-  getDocs,
-  addDoc,
-  collection,
   increment,
   serverTimestamp,
 } from "firebase/firestore";
@@ -168,7 +165,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             <span>StudyFlow AI</span>
           </div>
 
-          <h1>{isSignup ? "Create your account" : "Welcome"}</h1>
+          <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
           <p>
             {isSignup
               ? "Start your personalized StudyFlow experience."
@@ -224,8 +221,9 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                   password: event.target.value,
                 }))
               }
-              placeholder="At least 8 characters"
+              placeholder="At least 6 characters"
               autoComplete={isSignup ? "new-password" : "current-password"}
+              minLength={6}
               required
             />
           </label>
@@ -244,6 +242,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 }
                 placeholder="Repeat your password"
                 autoComplete="new-password"
+                minLength={6}
                 required
               />
             </label>
@@ -332,11 +331,25 @@ function App() {
 
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
-  // Dashboard history: only records belonging to the logged-in user.
-  const [dashboardMaterials, setDashboardMaterials] = useState([]);
-  const [dashboardFlashcardSets, setDashboardFlashcardSets] = useState([]);
-  const [dashboardPanel, setDashboardPanel] = useState(null);
-  const [dashboardHistoryLoading, setDashboardHistoryLoading] = useState(false);
+  // ========================================================
+  // GUESS THE WORD GAME
+  // ========================================================
+
+  const guessWordBank = [
+    "apple", "planet", "school", "science", "computer", "student",
+    "teacher", "library", "network", "database", "program", "project",
+    "learning", "memory", "concept", "chapter", "subject", "language",
+    "history", "physics", "biology", "formula", "process", "function",
+    "variable", "internet", "keyboard", "software", "hardware", "storage",
+  ];
+
+  const [guessWord, setGuessWord] = useState("");
+  const [guessedLetters, setGuessedLetters] = useState([]);
+  const [guessInput, setGuessInput] = useState("");
+  const [guessTries, setGuessTries] = useState(0);
+  const [guessGameStarted, setGuessGameStarted] = useState(false);
+  const [guessGameStatus, setGuessGameStatus] = useState("idle");
+  const [guessMessage, setGuessMessage] = useState("");
 
   // Prevent the same quiz from being counted twice.
   const testSubmissionRecordedRef = useRef(false);
@@ -446,7 +459,7 @@ function App() {
   }, []);
 
   // ========================================================
-  // LOAD CURRENT USER DASHBOARD + HISTORY
+  // LOAD CURRENT USER DASHBOARD
   // ========================================================
 
   useEffect(() => {
@@ -459,30 +472,23 @@ function App() {
         averageQuizScore: 0,
         flashcardsCreated: 0,
       });
-      setDashboardMaterials([]);
-      setDashboardFlashcardSets([]);
-      setDashboardPanel(null);
       return;
     }
 
     let cancelled = false;
 
-    const loadDashboardData = async () => {
+    const loadDashboardStats = async () => {
       setDashboardLoading(true);
-      setDashboardHistoryLoading(true);
 
       try {
-        const [userSnapshot, materialsSnapshot, flashcardsSnapshot] =
-          await Promise.all([
-            getDoc(doc(db, "users", user.uid)),
-            getDocs(collection(db, "users", user.uid, "materials")),
-            getDocs(collection(db, "users", user.uid, "flashcardSets")),
-          ]);
+        const snapshot = await getDoc(
+          doc(db, "users", user.uid)
+        );
 
         if (cancelled) return;
 
-        const data = userSnapshot.exists()
-          ? userSnapshot.data()
+        const data = snapshot.exists()
+          ? snapshot.data()
           : {};
 
         const totalMaterials = Number(data.totalMaterials || 0);
@@ -502,80 +508,21 @@ function App() {
               : 0,
           flashcardsCreated,
         });
-
-        const materials = materialsSnapshot.docs
-          .map((item) => ({
-            id: item.id,
-            ...item.data(),
-          }))
-          .sort((a, b) =>
-            (b.uploadedAt?.toMillis?.() || 0) -
-            (a.uploadedAt?.toMillis?.() || 0)
-          );
-
-        const savedFlashcardSets = flashcardsSnapshot.docs
-          .map((item) => ({
-            id: item.id,
-            ...item.data(),
-          }))
-          .sort((a, b) =>
-            (b.createdAt?.toMillis?.() || 0) -
-            (a.createdAt?.toMillis?.() || 0)
-          );
-
-        setDashboardMaterials(materials);
-        setDashboardFlashcardSets(savedFlashcardSets);
       } catch (error) {
         console.error("Dashboard loading error:", error);
-
-        if (!cancelled) {
-          setDashboardMaterials([]);
-          setDashboardFlashcardSets([]);
-        }
       } finally {
         if (!cancelled) {
           setDashboardLoading(false);
-          setDashboardHistoryLoading(false);
         }
       }
     };
 
-    loadDashboardData();
+    loadDashboardStats();
 
     return () => {
       cancelled = true;
     };
   }, [user?.uid]);
-
-  // ========================================================
-  // DASHBOARD CARD ACTIONS
-  // ========================================================
-
-  const handleDashboardCardClick = (panel) => {
-    setDashboardPanel((previous) =>
-      previous === panel ? null : panel
-    );
-  };
-
-  const openSavedFlashcardSet = (savedSet) => {
-    if (!Array.isArray(savedSet?.cards) || !savedSet.cards.length) {
-      return;
-    }
-
-    setFlashcards(savedSet.cards);
-    setFlashcardIndex(0);
-    setFlashcardFlipped(false);
-    setDashboardPanel(null);
-
-    setTimeout(() => {
-      document
-        .getElementById("flashcards-section")
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-    }, 100);
-  };
 
   // ========================================================
   // TEST TIMER
@@ -644,6 +591,64 @@ function App() {
   }, []);
 
   // ========================================================
+  // GUESS THE WORD GAME HANDLERS
+  // ========================================================
+
+  const startGuessWordGame = () => {
+    const randomWord = guessWordBank[Math.floor(Math.random() * guessWordBank.length)];
+    setGuessWord(randomWord);
+    setGuessedLetters([]);
+    setGuessInput("");
+    setGuessTries(randomWord.length * 2);
+    setGuessGameStarted(true);
+    setGuessGameStatus("playing");
+    setGuessMessage("");
+  };
+
+  const handleGuessLetter = () => {
+    const letter = guessInput.trim().toLowerCase();
+    if (!guessGameStarted || guessGameStatus !== "playing") return;
+    if (!/^[a-z]$/.test(letter)) {
+      setGuessMessage("Enter one English letter (a-z).");
+      setGuessInput("");
+      return;
+    }
+    if (guessedLetters.includes(letter)) {
+      setGuessMessage("You already tried that letter.");
+      setGuessInput("");
+      return;
+    }
+    const nextGuessedLetters = [...guessedLetters, letter];
+    const nextTries = Math.max(guessTries - 1, 0);
+    setGuessedLetters(nextGuessedLetters);
+    setGuessTries(nextTries);
+    setGuessInput("");
+    if (guessWord.includes(letter)) {
+      const solved = guessWord.split("").every((character) => nextGuessedLetters.includes(character));
+      if (solved) {
+        setGuessGameStatus("won");
+        setGuessMessage("🎉 Success! You guessed the word!");
+      } else {
+        setGuessMessage("✓ Correct character!");
+      }
+      return;
+    }
+    if (nextTries <= 0) {
+      setGuessGameStatus("lost");
+      setGuessMessage(`😔 Game over! The word was "${guessWord}".`);
+    } else {
+      setGuessMessage(`✕ Wrong character. ${nextTries} tries left.`);
+    }
+  };
+
+  const handleGuessInputKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleGuessLetter();
+    }
+  };
+
+  // ========================================================
   // SCROLL TOP
   // ========================================================
 
@@ -684,7 +689,7 @@ function App() {
       }
 
       if (password !== authForm.confirmPassword) {
-        setAuthError("Password does not match.");
+        setAuthError("Passwords do not match.");
         return;
       }
     }
@@ -754,25 +759,21 @@ function App() {
           setAuthError("Please enter a valid email address.");
           break;
         case "auth/weak-password":
-          setAuthError("Password should be at least 8 characters.");
+          setAuthError("Password should be at least 6 characters.");
           break;
         case "auth/invalid-credential":
-        setAuthError("Invalid email or password.");
-          break;
         case "auth/wrong-password":
-        setAuthError("Password is incorrect.");
-          break;
         case "auth/user-not-found":
-          setAuthError("User does not exist.");
+          setAuthError("Invalid email or password.");
           break;
         case "auth/network-request-failed":
           setAuthError(
-            "⚠️Failed: Check your internet connection"
+            "Failed: Check your Firebase configuration and internet connection."
           );
           break;
         case "auth/operation-not-allowed":
           setAuthError(
-            "Email/password sign-in is not enabled."
+            "Email/password sign-in is not enabled in Firebase Authentication."
           );
           break;
         default:
@@ -862,9 +863,6 @@ function App() {
       averageQuizScore: 0,
       flashcardsCreated: 0,
     });
-    setDashboardMaterials([]);
-    setDashboardFlashcardSets([]);
-    setDashboardPanel(null);
     testSubmissionRecordedRef.current = false;
     stopSpeech();
   };
@@ -937,28 +935,6 @@ function App() {
           },
           { merge: true }
         );
-
-        // Store every uploaded filename under this user's account.
-        const savedMaterials = await Promise.all(
-          validFiles.map((selectedFile) =>
-            addDoc(
-              collection(db, "users", user.uid, "materials"),
-              {
-                fileName: selectedFile.name,
-                uploadedAt: serverTimestamp(),
-              }
-            )
-          )
-        );
-
-        setDashboardMaterials((previous) => [
-          ...validFiles.map((selectedFile, index) => ({
-            id: savedMaterials[index].id,
-            fileName: selectedFile.name,
-            uploadedAt: new Date(),
-          })),
-          ...previous,
-        ]);
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -1181,36 +1157,6 @@ function App() {
           },
           { merge: true }
         );
-
-        // Save this complete flashcard set so the user can reopen it later.
-        const sourceFileNames = files.length
-          ? files.map((selectedFile) => selectedFile.name)
-          : file?.name
-            ? [file.name]
-            : text.trim()
-              ? ["Pasted study material"]
-              : ["Study material"];
-
-        const savedSet = await addDoc(
-          collection(db, "users", user.uid, "flashcardSets"),
-          {
-            cards: data.cards,
-            sourceFileNames,
-            cardCount: createdCount,
-            createdAt: serverTimestamp(),
-          }
-        );
-
-        setDashboardFlashcardSets((previous) => [
-          {
-            id: savedSet.id,
-            cards: data.cards,
-            sourceFileNames,
-            cardCount: createdCount,
-            createdAt: new Date(),
-          },
-          ...previous,
-        ]);
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -2061,6 +2007,19 @@ function App() {
             Test Concepts
           </button>
 
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("guess-word-game")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            🎮 Games
+          </button>
+
           <div className="mobile-account-block">
             <span>
               👤 {user.displayName || user.email || "Account"}
@@ -2107,204 +2066,90 @@ function App() {
       </header>
 
      <section
-        id="dashboard-section"
-        className="dashboard-section"
-      >
-        <div className="dashboard-heading">
-          <span className="section-kicker">YOUR DASHBOARD</span>
+  id="dashboard-section"
+  className="dashboard-section">
+  <div
+    className="dashboard-heading">
+    <span className="section-kicker">YOUR DASHBOARD</span>
 
-          <h2>
-            {user?.displayName
-              ? `Welcome back, ${user.displayName}`
-              : "Your learning dashboard"}
-          </h2>
+    <h2>
+      {user?.displayName
+        ? `Welcome back, ${user.displayName}`
+        : "Your learning dashboard"}
+    </h2>
+
+    <p>
+      Your personal StudyFlow AI progress and activity.
+    </p>
+  </div>
+
+  {dashboardLoading ? (
+    <div>
+      Loading your dashboard...
+    </div>
+  ) : (
+    <div className="dashboard-stats-grid">
+      {[
+        {
+          title: "Total Materials",
+          value: dashboardStats.totalMaterials,
+          text: "Files uploaded",
+          icon: "📄",
+        },
+        {
+          title: "Study Sessions",
+          value: dashboardStats.studySessions,
+          text: "Learning features",
+          icon: "📚",
+        },
+        {
+          title: "Completed Quizzes",
+          value: dashboardStats.completedQuizzes,
+          text: "Quizzes completed",
+          icon: "📝",
+        },
+        {
+          title: "Average Quiz Score",
+          value: `${dashboardStats.averageQuizScore}%`,
+          text: "Across all quizzes",
+          icon: "📈",
+        },
+        {
+          title: "Flashcards Created",
+          value: dashboardStats.flashcardsCreated,
+          text: "Concepts to remember",
+          icon: "🗂️",
+        },
+      ].map((stat) => (
+        <div
+          key={stat.title}
+          className="dashboard-stat-card"
+        >
+          <div className="dashboard-stat-top">
+            <h3>
+              {stat.title}
+            </h3>
+
+            <span
+              aria-hidden="true"
+              className="dashboard-stat-icon"
+            >
+              {stat.icon}
+            </span>
+          </div>
+
+          <strong>
+            {stat.value}
+          </strong>
 
           <p>
-            Your personal StudyFlow AI progress and activity.
+            {stat.text}
           </p>
         </div>
-
-        {dashboardLoading ? (
-          <div>
-            Loading your dashboard...
-          </div>
-        ) : (
-          <>
-            <div className="dashboard-stats-grid">
-              {[
-                {
-                  title: "Total Materials",
-                  value: dashboardStats.totalMaterials,
-                  text: "Files uploaded",
-                  icon: "📄",
-                  panel: "materials",
-                },
-                {
-                  title: "Study Sessions",
-                  value: dashboardStats.studySessions,
-                  text: "Learning features",
-                  icon: "📚",
-                },
-                {
-                  title: "Completed Quizzes",
-                  value: dashboardStats.completedQuizzes,
-                  text: "Quizzes completed",
-                  icon: "📝",
-                },
-                {
-                  title: "Average Quiz Score",
-                  value: `${dashboardStats.averageQuizScore}%`,
-                  text: "Across all quizzes",
-                  icon: "📈",
-                },
-                {
-                  title: "Flashcards Created",
-                  value: dashboardStats.flashcardsCreated,
-                  text: "Concepts to remember",
-                  icon: "🗂️",
-                  panel: "flashcards",
-                },
-              ].map((stat) => (
-                <div
-                  key={stat.title}
-                  className={`dashboard-stat-card ${
-                    stat.panel ? "dashboard-stat-card-clickable" : ""
-                  }`}
-                  role={stat.panel ? "button" : undefined}
-                  tabIndex={stat.panel ? 0 : undefined}
-                  onClick={
-                    stat.panel
-                      ? () => handleDashboardCardClick(stat.panel)
-                      : undefined
-                  }
-                  onKeyDown={
-                    stat.panel
-                      ? (event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            handleDashboardCardClick(stat.panel);
-                          }
-                        }
-                      : undefined
-                  }
-                >
-                  <div className="dashboard-stat-top">
-                    <h3>{stat.title}</h3>
-
-                    <span
-                      aria-hidden="true"
-                      className="dashboard-stat-icon"
-                    >
-                      {stat.icon}
-                    </span>
-                  </div>
-
-                  <strong>{stat.value}</strong>
-
-                  <p>{stat.text}</p>
-
-                  {stat.panel && (
-                    <span className="dashboard-card-hint">
-                      Click to view history
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {dashboardPanel === "materials" && (
-              <div className="dashboard-history-panel">
-                <div className="dashboard-history-header">
-                  <div>
-                    <h3>Uploaded Materials</h3>
-                    <p>All files uploaded by this account.</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="dashboard-history-close"
-                    onClick={() => setDashboardPanel(null)}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {dashboardHistoryLoading ? (
-                  <p>Loading your uploaded files...</p>
-                ) : dashboardMaterials.length === 0 ? (
-                  <p>No uploaded files yet.</p>
-                ) : (
-                  <ul className="dashboard-material-list">
-                    {dashboardMaterials.map((material) => (
-                      <li key={material.id}>
-                        <span>📄</span>
-                        <span>{material.fileName}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            {dashboardPanel === "flashcards" && (
-              <div className="dashboard-history-panel">
-                <div className="dashboard-history-header">
-                  <div>
-                    <h3>Previous Flashcards</h3>
-                    <p>Reopen any flashcard set generated by this account.</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="dashboard-history-close"
-                    onClick={() => setDashboardPanel(null)}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {dashboardHistoryLoading ? (
-                  <p>Loading your flashcard history...</p>
-                ) : dashboardFlashcardSets.length === 0 ? (
-                  <p>No previous flashcard sets yet.</p>
-                ) : (
-                  <div className="dashboard-flashcard-history">
-                    {dashboardFlashcardSets.map((savedSet, index) => (
-                      <div
-                        className="dashboard-flashcard-history-item"
-                        key={savedSet.id}
-                      >
-                        <div className="dashboard-flashcard-history-info">
-                          <strong>
-                            Flashcard Set {dashboardFlashcardSets.length - index}
-                          </strong>
-                          <span>
-                            {savedSet.cardCount || savedSet.cards?.length || 0} cards
-                          </span>
-                          <small>
-                            Files used: {
-                              Array.isArray(savedSet.sourceFileNames) &&
-                              savedSet.sourceFileNames.length
-                                ? savedSet.sourceFileNames.join(", ")
-                                : "Study material"
-                            }
-                          </small>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="dashboard-history-open"
-                          onClick={() => openSavedFlashcardSet(savedSet)}
-                        >
-                          Open
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </section>
+      ))}
+    </div>
+  )}
+</section>
 
       <main className="container">
 
@@ -3106,6 +2951,54 @@ function App() {
       )}
 
       </div>
+
+      {/* ==================================================
+          GUESS THE WORD GAME
+      ================================================== */}
+
+      <section className="guess-word-game" id="guess-word-game">
+        <div className="guess-word-game-header">
+          <span className="section-kicker">FUN ZONE</span>
+          <h2>🎯 Guess the Word</h2>
+          <p>Guess the hidden word one character at a time.</p>
+        </div>
+
+        <div className="guess-word-board">
+          <div className="guess-word-blanks" aria-label="Hidden word">
+            {guessGameStarted ? guessWord.split("").map((character, index) => (
+              <span key={`${character}-${index}`} className="guess-word-letter">
+                {guessedLetters.includes(character) ? character : "_"}
+              </span>
+            )) : "_ _ _ _ _"}
+          </div>
+
+          <div className="guess-word-tries">
+            {guessGameStarted ? `Tries: ${guessTries}` : "Start a game to begin"}
+          </div>
+
+          <button type="button" className="guess-word-start-button" onClick={startGuessWordGame}>
+            {guessGameStarted ? "🔄 New Word" : "▶ Start Game"}
+          </button>
+
+          {guessGameStarted && guessGameStatus === "playing" && (
+            <>
+              <label className="guess-word-input-label" htmlFor="guess-word-input">Enter a character</label>
+              <div className="guess-word-input-row">
+                <input id="guess-word-input" type="text" inputMode="lowercase" autoComplete="off" maxLength={1} value={guessInput}
+                  onChange={(event) => setGuessInput(event.target.value.toLowerCase().replace(/[^a-z]/g, ""))}
+                  onKeyDown={handleGuessInputKeyDown} placeholder="a" aria-label="Enter one lowercase English character" />
+                <button type="button" className="guess-word-submit-button" onClick={handleGuessLetter} disabled={!guessInput}>Guess</button>
+              </div>
+            </>
+          )}
+
+          {guessMessage && <div className={`guess-word-message ${guessGameStatus}`} role="status">{guessMessage}</div>}
+
+          {(guessGameStatus === "won" || guessGameStatus === "lost") && (
+            <button type="button" className="guess-word-play-again" onClick={startGuessWordGame}>🎮 Play Again</button>
+          )}
+        </div>
+      </section>
 
       {/* ==================================================
           CHAT POPUP
