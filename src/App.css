@@ -11681,7 +11681,7 @@ a:active {
 
   width: fit-content;
   max-width: 100%;
-
+  width: 100%;
   margin: 0 auto;
 
   gap: 18px;
@@ -11697,8 +11697,8 @@ a:active {
 .dashboard-stat-card {
   position: relative;
 
-  width: 170px;
-  min-width: 170px;
+  width: 210px;
+  min-width: 210px;
   min-height: 125px;
 
   padding: 13px;
