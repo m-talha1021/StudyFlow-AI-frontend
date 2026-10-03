@@ -3115,6 +3115,12 @@ footer h3 {
   align-items: center;
   padding: 70px 24px 100px;
   box-sizing: border-box;
+   background: linear-gradient(
+    135deg,
+    #080714 0%,
+    #11102b 45%,
+    #24104a 100%
+  );
 }
 
 .welcome-hero {
