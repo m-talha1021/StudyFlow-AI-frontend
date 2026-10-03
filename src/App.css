@@ -11675,7 +11675,7 @@ a:active {
 
 .dashboard-stats-grid {
   display: grid;
-  padding-left: 20px;
+  padding-left: 10px;
   /* Smaller fixed columns so cards do not stretch too wide */
   grid-template-columns: repeat(2, 135px);
 
@@ -11683,7 +11683,7 @@ a:active {
   max-width: 100%;
   margin: 0 auto;
 
-  gap: 18px;
+  gap: 30px;
 
   box-sizing: border-box;
 }
@@ -11703,7 +11703,6 @@ a:active {
   padding: 13px;
 
   box-sizing: border-box;
-  gap: 13px;
   border-radius: 16px;
 
   border: 1px solid rgba(153, 104, 237, 0.65);
