@@ -411,6 +411,27 @@ function App() {
   const [testScore, setTestScore] = useState(0);
 
   // ========================================================
+  // AI ORAL EXAM
+  // ========================================================
+
+  const [oralExam, setOralExam] = useState({
+    active: false,
+    sessionId: "",
+    question: "",
+    questionNumber: 0,
+    totalQuestions: 0,
+    language: "english",
+    status: "idle",
+    feedback: "",
+    score: 0,
+    listening: false,
+    supported: true,
+  });
+
+  const oralRecognitionRef = useRef(null);
+  const oralRecognitionActiveRef = useRef(false);
+
+  // ========================================================
   // CHATBOT
   // ========================================================
 
@@ -597,6 +618,10 @@ function App() {
     return () => {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
+      }
+      oralRecognitionActiveRef.current = false;
+      if (oralRecognitionRef.current) {
+        try { oralRecognitionRef.current.abort(); } catch {}
       }
     };
   }, []);
@@ -1487,6 +1512,146 @@ function App() {
   };
 
   // ========================================================
+  // AI ORAL EXAM
+  // ========================================================
+
+  const oralSpeechLang = (language) =>
+    language === "urdu" ? "ur-PK" :
+    language === "arabic" ? "ar-SA" : "en-US";
+
+  const speakOralText = (value, language, onDone) => {
+    if (!("speechSynthesis" in window)) {
+      onDone?.();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(value);
+    utterance.lang = oralSpeechLang(language);
+    utterance.rate = 0.92;
+    utterance.onend = () => onDone?.();
+    utterance.onerror = () => onDone?.();
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const startOralListening = () => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+      setOralExam(p => ({ ...p, supported: false, status: "unsupported" }));
+      alert("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      return;
+    }
+    if (!oralExam.active || !oralExam.sessionId || oralRecognitionActiveRef.current) return;
+    try {
+      const recognition = new Recognition();
+      recognition.lang = oralSpeechLang(oralExam.language);
+      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.maxAlternatives = 1;
+      oralRecognitionRef.current = recognition;
+      oralRecognitionActiveRef.current = true;
+      setOralExam(p => ({ ...p, listening: true, status: "listening", feedback: "" }));
+
+      recognition.onresult = async (event) => {
+        const answer = event.results?.[0]?.[0]?.transcript?.trim();
+        oralRecognitionActiveRef.current = false;
+        if (!answer) {
+          setOralExam(p => ({ ...p, listening: false, status: "waiting" }));
+          return;
+        }
+        setOralExam(p => ({ ...p, listening: false, status: "evaluating" }));
+        try {
+          const data = await apiRequest("/api/oral-exam", {
+            method: "POST",
+            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer })
+          });
+          if (!data.success) throw new Error(data.error || "Could not evaluate your answer.");
+          setOralExam(p => ({
+            ...p,
+            question: data.next_question || "",
+            questionNumber: data.question_number || p.questionNumber,
+            totalQuestions: data.total_questions || p.totalQuestions,
+            score: typeof data.score === "number" ? data.score : p.score,
+            feedback: data.feedback || "",
+            status: data.completed ? "completed" : "feedback",
+            active: !data.completed
+          }));
+          if (data.completed) {
+            speakOralText(data.final_message || `Oral test complete. Your score is ${data.score} out of ${data.total_questions}.`, oralExam.language);
+            return;
+          }
+          speakOralText(data.feedback || "Your answer has been evaluated.", oralExam.language, () => {
+            setTimeout(() => speakOralText(data.next_question, oralExam.language, () => setTimeout(startOralListening, 350)), 500);
+          });
+        } catch (error) {
+          console.error("Oral exam evaluation error:", error);
+          setOralExam(p => ({ ...p, listening: false, status: "error" }));
+          alert(error.message || "Could not evaluate your spoken answer.");
+        }
+      };
+      recognition.onerror = (event) => {
+        oralRecognitionActiveRef.current = false;
+        if (["aborted", "no-speech"].includes(event.error)) {
+          setOralExam(p => ({ ...p, listening: false, status: "waiting" }));
+          return;
+        }
+        setOralExam(p => ({ ...p, listening: false, status: "error" }));
+      };
+      recognition.onend = () => {
+        oralRecognitionActiveRef.current = false;
+        setOralExam(p => ({ ...p, listening: false }));
+      };
+      recognition.start();
+    } catch (error) {
+      oralRecognitionActiveRef.current = false;
+      setOralExam(p => ({ ...p, listening: false, status: "error" }));
+    }
+  };
+
+  const handleStartOralExam = async () => {
+    setGenerating(true);
+    setResult("");
+    stopSpeech();
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+      setGenerating(false);
+      alert("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      return;
+    }
+    try {
+      let ready = materialReady;
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+        if (!processed) return;
+        ready = true;
+      }
+      if (!ready && files.length === 0 && !file && !text.trim()) {
+        alert("Please upload study material or paste your content first.");
+        return;
+      }
+      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start" }) });
+      if (!data.success) throw new Error(data.error || "Could not start the oral test.");
+      setOralExam({ active:true, sessionId:data.session_id, question:data.question, questionNumber:data.question_number||1, totalQuestions:data.total_questions||10, language:data.language||"english", status:"asking", feedback:"", score:0, listening:false, supported:true });
+      setTimeout(() => document.getElementById("oral-exam-section")?.scrollIntoView({ behavior:"smooth", block:"start" }), 100);
+      speakOralText(data.question, data.language || "english", () => setTimeout(startOralListening, 450));
+    } catch (error) {
+      console.error("Oral exam start error:", error);
+      alert(error.message || "Could not start the oral test.");
+    } finally { setGenerating(false); }
+  };
+
+  const handleRepeatOralQuestion = () => {
+    if (!oralExam.active || !oralExam.question || oralExam.listening) return;
+    speakOralText(oralExam.question, oralExam.language, () => setTimeout(startOralListening, 350));
+  };
+
+  const handleStopOralExam = () => {
+    oralRecognitionActiveRef.current = false;
+    try { oralRecognitionRef.current?.abort(); } catch {}
+    window.speechSynthesis?.cancel();
+    setOralExam(p => ({ ...p, active:false, listening:false, status:"idle" }));
+  };
+
+  // ========================================================
   // GENERATE RESULT
   // ========================================================
 
@@ -1498,6 +1663,11 @@ function App() {
 
     if (mode === "test") {
       await handleGenerateTest();
+      return;
+    }
+
+    if (mode === "oral") {
+      await handleStartOralExam();
       return;
     }
 
@@ -2682,6 +2852,23 @@ function App() {
               </div>
             </button>
 
+            {/* ORAL TEST */}
+
+            <button type="button"
+              className={
+                mode === "oral"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("oral")}
+            >
+              <span>🎙️</span>
+              <div>
+                <strong>Oral Test</strong>
+                <small>Answer questions by speaking</small>
+              </div>
+            </button>
+
           </div>
 
           {/* GENERATE */}
@@ -2692,7 +2879,8 @@ function App() {
             disabled={
               processing ||
               generating ||
-              flashcardsLoading
+              flashcardsLoading ||
+              oralExam.listening
             }
           >
 
@@ -2700,7 +2888,8 @@ function App() {
               ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
-                
+                : mode === "oral"
+                  ? "🎙️ Start Oral Test"
                   : `✨ Generate ${mode}`}
 
           </button>
@@ -3266,6 +3455,54 @@ function App() {
             </div>
           </div>
         </div>
+      )}
+
+      </div>
+
+      {/* ==================================================
+          AI ORAL EXAM
+      ================================================== */}
+
+      {oralExam.active && (
+        <section className="oral-exam-section" id="oral-exam-section">
+          <div className="oral-exam-header">
+            <div>
+              <span className="section-kicker">AI ORAL TEST</span>
+              <h2>🎙️ Oral Exam</h2>
+              <p>Listen to the question, then answer naturally using your voice. There is no text answer box.</p>
+            </div>
+            <button type="button" className="oral-close-button" onClick={handleStopOralExam} aria-label="Close oral exam">✕</button>
+          </div>
+
+          <div className="oral-exam-card">
+            <div className="oral-exam-progress">
+              <span>Question {oralExam.questionNumber} of {oralExam.totalQuestions}</span>
+              <strong>Score: {oralExam.score}</strong>
+            </div>
+
+            <div className="oral-question-box">
+              <span className="oral-ai-icon">🤖</span>
+              <p dir={oralExam.language === "arabic" || oralExam.language === "urdu" ? "rtl" : "ltr"}>{oralExam.question}</p>
+            </div>
+
+            <div className="oral-status">
+              {oralExam.status === "listening" && <><span className="oral-mic-pulse">🎙️</span><strong>Listening to your answer...</strong></>}
+              {oralExam.status === "evaluating" && <><span>🧠</span><strong>AI is checking your answer...</strong></>}
+              {oralExam.status === "feedback" && <><span>💬</span><strong>{oralExam.feedback}</strong></>}
+              {oralExam.status === "waiting" && <><span>🎙️</span><strong>Your turn — speak your answer.</strong></>}
+              {oralExam.status === "error" && <><span>⚠️</span><strong>Microphone recognition stopped. Try again.</strong></>}
+            </div>
+
+            <div className="oral-exam-controls">
+              <button type="button" className={oralExam.listening ? "oral-mic-button listening" : "oral-mic-button"} onClick={startOralListening} disabled={oralExam.listening || oralExam.status === "evaluating"}>
+                {oralExam.listening ? "🎙️ Listening..." : "🎙️ Speak Answer"}
+              </button>
+              <button type="button" className="secondary-button" onClick={handleRepeatOralQuestion} disabled={oralExam.listening || oralExam.status === "evaluating"}>🔊 Repeat Question</button>
+            </div>
+
+            <small className="oral-exam-language">Language: {oralExam.language === "urdu" ? "Urdu" : oralExam.language === "arabic" ? "Arabic" : oralExam.language === "mixed" ? "Mixed" : "English"}</small>
+          </div>
+        </section>
       )}
 
       {/* ==================================================
