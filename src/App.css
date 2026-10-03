@@ -11697,8 +11697,8 @@ a:active {
 .dashboard-stat-card {
   position: relative;
 
-  width: 135px;
-  min-width: 135px;
+  width: 170px;
+  min-width: 170px;
   min-height: 125px;
 
   padding: 13px;
@@ -13171,3 +13171,34 @@ a:active {
         width: 100%
     }
 }   
+
+
+
+/* ============================================================
+   RESTORE GRADIENT LINE ON PUBLIC NAVBAR
+============================================================ */
+
+.public-navbar {
+  position: relative;
+  isolation: isolate;
+}
+
+.public-navbar::after {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: -1px;
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.85) 35%,
+    rgba(236, 72, 153, 0.75) 65%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+  z-index: 5;
+}
