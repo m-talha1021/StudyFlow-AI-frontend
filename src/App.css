@@ -1,44 +1,6 @@
 /* ============================================================
    GLOBAL PAGE BACKGROUND
 ============================================================ */
-/* Forgot Password Button */
-.forgot-password-btn {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-
-  color: #a855f7;
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-  text-decoration: none;
-
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.forgot-password-btn:hover {
-  color: #c084fc;
-  text-decoration: underline;
-  transform: translateY(-1px);
-}
-
-.forgot-password-btn:active {
-  transform: translateY(0);
-}
-
-.forgot-password-btn:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-
-
 
 html,
 body,
@@ -1781,20 +1743,31 @@ textarea::placeholder {
 ============================================================ */
 
 footer {
-
+  position: relative;
   text-align: center;
-
   min-height: 120px;
-
   padding: 8px;
-
   color: #52525b;
-
-  background-color:
-    #230d32;
-
+  background-color: #230d32;
   font-size: 12px;
+}
 
+/* Thin gradient line at the top of the footer */
+footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.75),
+    rgba(236, 72, 153, 0.6),
+    transparent
+  );
+  pointer-events: none;
 }
 
 
@@ -3038,15 +3011,20 @@ footer h3 {
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
 }
 
-.public-navbar::after,
-.app-navbar::after {
+.public-navbar::after {
   content: "";
   position: absolute;
   left: 5%;
   right: 5%;
   bottom: -1px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.75), rgba(236, 72, 153, 0.6), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.75),
+    rgba(236, 72, 153, 0.6),
+    transparent
+  );
   pointer-events: none;
 }
 
