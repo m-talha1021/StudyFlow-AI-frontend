@@ -2994,6 +2994,7 @@ footer h3 {
 
 .public-navbar,
 .app-navbar {
+  position: relative;
   min-height: 82px;
   padding: 0 clamp(20px, 5vw, 72px);
   box-sizing: border-box;
@@ -3011,21 +3012,22 @@ footer h3 {
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
 }
 
-.public-navbar::after {
+.public-navbar::after,
+.app-navbar::after {
   content: "";
   position: absolute;
-  left: 5%;
-  right: 5%;
+  left: 0;
+  right: 0;
   bottom: -1px;
   height: 1px;
   background: linear-gradient(
     90deg,
-    transparent,
-    rgba(139, 92, 246, 0.75),
-    rgba(236, 72, 153, 0.6),
-    transparent
+    #243cff 0%,
+    #8b5cf6 50%,
+    #c026d3 100%
   );
   pointer-events: none;
+  z-index: 2;
 }
 
 .brand-mark {
