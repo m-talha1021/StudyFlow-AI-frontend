@@ -2983,7 +2983,6 @@ footer h3 {
 
 .public-navbar,
 .app-navbar {
-  position: relative;
   min-height: 82px;
   padding: 0 clamp(20px, 5vw, 72px);
   box-sizing: border-box;
@@ -5942,3 +5941,14 @@ a:active {
 }
 
 
+
+
+/* ============================================================
+   GUESS THE WORD GAME
+============================================================ */
+.guess-word-game{width:min(100% - 32px,360px);margin:34px auto 42px;padding:18px;box-sizing:border-box;border:1px solid rgba(153,104,237,.55);border-radius:18px;background:linear-gradient(145deg,rgba(42,35,65,.96),rgba(25,29,38,.96));box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.guess-word-game-header{text-align:center}.guess-word-game-header .section-kicker{display:inline-block;margin-bottom:4px}.guess-word-game-header h2{margin:4px 0 5px;font-size:20px;line-height:1.2}.guess-word-game-header p{margin:0;font-size:11px;line-height:1.4;color:rgba(255,255,255,.68)}
+.guess-word-board{margin-top:14px;padding:14px;border-radius:14px;background:rgba(8,9,16,.55);border:1px solid rgba(255,255,255,.08);text-align:center}.guess-word-blanks{min-height:42px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;font-size:25px;font-weight:700;letter-spacing:2px}.guess-word-letter{width:22px;min-width:22px;padding-bottom:4px;border-bottom:2px solid rgba(174,126,255,.8);line-height:1}.guess-word-tries{margin-bottom:11px;font-size:11px;color:rgba(255,255,255,.68)}
+.guess-word-start-button,.guess-word-submit-button,.guess-word-play-again{border:1px solid rgba(174,126,255,.55);border-radius:9px;padding:8px 13px;background:rgba(99,102,241,.2);color:#fff;font-size:11px;font-weight:650;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}.guess-word-start-button:hover,.guess-word-submit-button:hover:not(:disabled),.guess-word-play-again:hover{transform:translateY(-2px);background:rgba(99,102,241,.32);border-color:rgba(174,126,255,.9)}
+.guess-word-input-label{display:block;margin:13px 0 6px;font-size:10px;color:rgba(255,255,255,.68)}.guess-word-input-row{display:flex;justify-content:center;gap:7px}.guess-word-input-row input{width:42px;height:36px;padding:0;box-sizing:border-box;border:1px solid rgba(174,126,255,.5);border-radius:8px;outline:none;background:rgba(255,255,255,.07);color:#fff;text-align:center;font-size:18px;font-weight:700;text-transform:lowercase}.guess-word-input-row input:focus{border-color:rgba(174,126,255,.95);box-shadow:0 0 0 2px rgba(153,104,237,.12)}.guess-word-submit-button:disabled{opacity:.45;cursor:not-allowed;transform:none}.guess-word-message{min-height:18px;margin-top:11px;font-size:11px;line-height:1.35;font-weight:600}.guess-word-message.won{color:#8df0b5}.guess-word-message.lost{color:#ff9c9c}.guess-word-play-again{margin-top:9px}
+@media(max-width:700px){.guess-word-game{width:min(280px,calc(100% - 24px));margin:24px auto 32px;padding:14px;border-radius:15px}.guess-word-game-header h2{font-size:17px}.guess-word-game-header p{font-size:10px}.guess-word-board{margin-top:11px;padding:11px;border-radius:12px}.guess-word-blanks{gap:4px;min-height:36px;font-size:20px;letter-spacing:1px}.guess-word-letter{width:18px;min-width:18px}.guess-word-tries{font-size:10px}.guess-word-start-button,.guess-word-submit-button,.guess-word-play-again{padding:7px 10px;font-size:10px}.guess-word-input-row input{width:38px;height:33px;font-size:16px}}@media(max-width:380px){.guess-word-game{width:270px}}
