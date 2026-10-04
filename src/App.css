@@ -11615,7 +11615,7 @@ a:active {
 .dashboard-section {
   width: 100%;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0;
   padding: 28px 20px 30px;
   box-sizing: border-box;
   scroll-margin-top: 90px;
