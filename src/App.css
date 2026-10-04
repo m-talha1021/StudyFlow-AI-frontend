@@ -666,7 +666,7 @@ textarea::placeholder {
 
   border-radius: 20px;
 
-  background: #ffffff;
+  background-color: #ffffff;
 
   color: black;
 
@@ -738,7 +738,7 @@ textarea::placeholder {
 
   fill: none;
 
-  stroke: #fffcfc;
+  stroke: black;
 
   stroke-width: 3;
 
@@ -760,7 +760,7 @@ textarea::placeholder {
 
   fill: none;
 
-  stroke: #767676;
+  stroke: #;
 
   stroke-width: 3;
 
