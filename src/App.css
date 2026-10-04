@@ -13238,7 +13238,7 @@ a:active {
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
-
+  padding-top: 3px;
   width: 32px;
   height: 32px;
 
@@ -13252,7 +13252,7 @@ a:active {
   border: none;
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: white;
 
   cursor: pointer;
 
@@ -13263,7 +13263,7 @@ a:active {
 }
 
 .password-eye-button:hover {
-  color: #ffffff;
+  color: black;
   background: transparent;
 }
 
