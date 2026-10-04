@@ -2162,7 +2162,25 @@ function App() {
   // ========================================================
   // CHAT SUBMIT
   // ========================================================
+const trackFeatureUsage = async (featureName) => {
+  if (!user?.uid) return;
 
+  try {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        [`featureUsage.${featureName}`]: increment(1),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error(
+      `Could not save ${featureName} usage:`,
+      error
+    );
+  }
+};
   const handleChatSubmit =
     async (event) => {
       event.preventDefault();
