@@ -13252,7 +13252,7 @@ a:active {
   border: none;
   background: transparent;
 
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 
@@ -13261,11 +13261,10 @@ a:active {
 
   z-index: 5;
 }
-
-.password-eye-button:hover {
-  color: black;
-  background: transparent;
+.password-eye-button svg {
+  stroke: currentColor;
 }
+
 
 .password-eye-button:focus {
   outline: none;
