@@ -11648,7 +11648,7 @@ a:active {
   padding-left: 1px;
   /* Smaller fixed columns so cards do not stretch too wide */
   grid-template-columns: repeat(3, 135px);
-
+  padding-left: 500px;
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
