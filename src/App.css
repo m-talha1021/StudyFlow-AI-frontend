@@ -11585,7 +11585,7 @@ a:active {
 .dashboard-section {
   width: 100%;
   max-width: 900px;
-  margin: 0;
+  margin: 0 auto;
   padding: 28px 20px 30px;
   box-sizing: border-box;
   scroll-margin-top: 90px;
@@ -11648,7 +11648,6 @@ a:active {
   padding-left: 1px;
   /* Smaller fixed columns so cards do not stretch too wide */
   grid-template-columns: repeat(3, 135px);
-  padding-left: 500px;
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
