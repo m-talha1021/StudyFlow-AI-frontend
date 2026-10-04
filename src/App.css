@@ -190,44 +190,63 @@ body {
 ============================================================ */
 
 .hero {
+
   position: relative;
+
   text-align: center;
+
   min-height: 380px;
 
   display: flex;
+
   flex-direction: column;
+
   justify-content: center;
+
   align-items: center;
 
-  overflow: visible;
+  overflow: hidden;
 
   margin-top: 0;
+
   padding-top: 0;
+
 }
 
+
 .hero::before {
+
   content: "";
 
   position: absolute;
 
   width: 880px;
+
   height: 880px;
 
-  background-image: url("./assets/background.png");
+  background-image:
+    url("./assets/background.png");
 
   background-size: 400px auto;
+
   background-repeat: no-repeat;
+
   background-position: right top;
 
   opacity: 0.2;
 
   top: 70%;
+
   left: 70%;
 
-  transform: translate(-70%, -70%);
+  transform:
+    translate(-70%,
+      -32%);
 
   z-index: 0;
+
   pointer-events: none;
+
 }
 
 
