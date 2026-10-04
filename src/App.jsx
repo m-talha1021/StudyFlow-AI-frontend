@@ -227,7 +227,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                     password: event.target.value,
                   }))
                 }
-                placeholder="At least 8 characters"
+                placeholder="your password"
                 autoComplete={isSignup ? "new-password" : "current-password"}
                 required
               />
