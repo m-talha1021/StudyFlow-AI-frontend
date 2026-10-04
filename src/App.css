@@ -13215,3 +13215,59 @@ a:active {
   text-align: center;
   font-size: 12px;
 }
+
+
+
+/* ============================================================
+   PASSWORD SHOW / HIDE BUTTON
+============================================================ */
+
+.password-field-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-field-wrapper input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 48px;
+}
+
+.password-eye-button {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.7);
+
+  cursor: pointer;
+
+  font-size: 18px;
+  line-height: 1;
+
+  z-index: 5;
+}
+
+.password-eye-button:hover {
+  color: #ffffff;
+  background: transparent;
+}
+
+.password-eye-button:focus {
+  outline: none;
+  box-shadow: none;
+}
