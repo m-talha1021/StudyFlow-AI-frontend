@@ -11677,13 +11677,13 @@ a:active {
   display: grid;
   padding-left: 1px;
   /* Smaller fixed columns so cards do not stretch too wide */
-  grid-template-columns: repeat(2, 135px);
+  grid-template-columns: repeat(3, 135px);
 
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
 
-  column-gap: 110px;
+  column-gap: 105px;
   row-gap: 12px;
   box-sizing: border-box;
 }
