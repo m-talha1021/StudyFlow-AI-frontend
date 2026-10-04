@@ -13200,3 +13200,18 @@ a:active {
   pointer-events: none;
   z-index: 5;
 }
+
+/* ============================================================
+   DASHBOARD HISTORY EMPTY STATE
+============================================================ */
+
+.dashboard-history-empty {
+  margin: 8px 0 0;
+  padding: 18px;
+  border: 1px dashed rgba(148, 163, 184, 0.22);
+  border-radius: 11px;
+  background: rgba(30, 41, 59, 0.35);
+  color: rgba(255, 255, 255, 0.62);
+  text-align: center;
+  font-size: 12px;
+}
