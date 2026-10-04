@@ -227,9 +227,8 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                     password: event.target.value,
                   }))
                 }
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters"
                 autoComplete={isSignup ? "new-password" : "current-password"}
-                minLength={6}
                 required
               />
               <button
@@ -258,42 +257,19 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
           {isSignup && (
             <label>
               Confirm password
-              <div className="password-field-wrapper">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={form.confirmPassword}
-                  onChange={(event) =>
-                    setForm((previous) => ({
-                      ...previous,
-                      confirmPassword: event.target.value,
-                    }))
-                  }
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                  minLength={6}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-eye-button"
-                  onClick={() => setShowConfirmPassword((previous) => !previous)}
-                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                >
-                  {showConfirmPassword ? (
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M3 3l18 18" />
-                      <path d="M10.6 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18.8 18.8 0 0 1-3.2 4.1" />
-                      <path d="M6.2 6.3C3.7 8.1 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1" />
-                      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
-                    </svg>
-                  )}
-                </button>
-              </div>
+              <input
+                type="password"
+                value={form.confirmPassword}
+                onChange={(event) =>
+                  setForm((previous) => ({
+                    ...previous,
+                    confirmPassword: event.target.value,
+                  }))
+                }
+                placeholder="Repeat your password"
+                autoComplete="new-password"
+                required
+              />
             </label>
           )}
 
