@@ -13297,6 +13297,12 @@ a:active {
   color: rgba(255, 255, 255, 0.62);
 }
 
+
+.dashboard-close-button button{
+   background-color: #953fe0;
+   cursor: pointer;
+}
+
 /* Desktop: 3 cards per row */
 @media (min-width: 701px) {
   .dashboard-stats-grid {
