@@ -33,50 +33,47 @@ body {
    APP
 ============================================================ */
 
+/* ============================================================
+   APP BACKGROUND
+============================================================ */
+
 .app {
   min-height: 100vh;
   position: relative;
-  isolation: isolate;
   overflow-x: clip;
-  background: #09090f;
-  color: #ffffff;
-}
 
-.app::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+  color: #ffffff;
 
   background:
     radial-gradient(
-      circle 70% at top left,
+      circle 70% at 0% 0%,
       #413ae8 0%,
       transparent 100%
     ),
 
     radial-gradient(
-      circle 80% at top right,
+      circle 80% at 100% 0%,
       #661ba1 0%,
       transparent 100%
     ),
 
     radial-gradient(
-      circle 55% at center left,
+      circle 55% at 0% 55%,
       #787807 0%,
       transparent 100%
     ),
 
     radial-gradient(
-      circle 60% at center right,
+      circle 65% at 100% 55%,
       #4e55f2 0%,
       transparent 100%
     ),
 
     #09090f;
 
+  background-attachment: fixed;
   background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 @media (max-width: 700px) {
