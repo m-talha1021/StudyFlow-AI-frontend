@@ -11390,3 +11390,28 @@ main .ai-badge,
 main .hero-badge {
     margin-top: 15px !important;
 }
+
+/* ============================================================
+   FINAL OVERRIDE — SPACE BELOW NAVBAR LINE
+   ============================================================ */
+
+/* Give the entire hero section some top breathing room */
+.hero,
+.hero-section,
+.landing-hero,
+.public-hero,
+.home-hero {
+    padding-top: 35px !important;
+    margin-top: 0 !important;
+}
+
+/* AI-powered learning badge */
+.ai-powered-learning,
+.ai-powered-badge,
+.ai-learning-badge,
+.hero-badge,
+.badge {
+    margin-top: 20px !important;
+    position: relative !important;
+    top: 20px !important;
+}
