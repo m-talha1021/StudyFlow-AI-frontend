@@ -10440,3 +10440,319 @@ select:focus {
   z-index: -1;
 }
 
+
+
+/* =========================================================
+   STUDYFLOW LOGGED-IN NAVBAR + FOOTER
+   BLUE / INDIGO / CYAN GRADIENT SYSTEM
+   ========================================================= */
+
+
+/* =========================================================
+   LOGGED-IN NAVBAR
+   ========================================================= */
+
+.app-navbar {
+  position: relative;
+
+  background:
+    linear-gradient(
+      110deg,
+      #050B18 0%,
+      #0A1730 40%,
+      #101F46 72%,
+      #132B55 100%
+    ) !important;
+
+  border-bottom: 1px solid rgba(96, 165, 250, 0.20);
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+
+/* Gradient accent line under navbar */
+
+.app-navbar::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2563EB 0%,
+      #3B82F6 35%,
+      #38BDF8 65%,
+      #6366F1 100%
+    );
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   NAVBAR BUTTONS
+   ========================================================= */
+
+.app-navbar button {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Navigation items */
+
+.app-navbar .nav-link {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(18, 39, 70, 0.80),
+      rgba(8, 23, 45, 0.90)
+    );
+
+  border: 1px solid rgba(96, 165, 250, 0.15);
+
+  color: #E2E8F0;
+}
+
+
+.app-navbar .nav-link:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.25),
+      rgba(56, 189, 248, 0.12)
+    );
+
+  border-color:
+    rgba(96, 165, 250, 0.40);
+
+  color: #FFFFFF;
+
+  transform: translateY(-1px);
+}
+
+
+/* Active navigation item */
+
+.app-navbar .nav-link.active {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.30),
+      rgba(56, 189, 248, 0.14)
+    );
+
+  border-color:
+    rgba(59, 130, 246, 0.55);
+
+  color: #FFFFFF;
+
+  box-shadow:
+    0 6px 20px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   USER PROFILE
+   ========================================================= */
+
+.user-profile,
+.user-pill {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(20, 43, 76, 0.90),
+      rgba(8, 23, 44, 0.95)
+    ) !important;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.18) !important;
+
+  color: #F8FAFC;
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.logout-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #4F46E5 48%,
+      #38BDF8 100%
+    ) !important;
+
+  border:
+    1px solid rgba(147, 197, 253, 0.25);
+
+  color: #FFFFFF;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.25);
+}
+
+
+.logout-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #4338CA,
+      #0EA5E9
+    ) !important;
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(37, 99, 235, 0.35);
+}
+
+
+/* =========================================================
+   FOOTER / BOTTOM BAR
+   ========================================================= */
+
+.app-footer,
+.footer {
+  position: relative;
+
+  background:
+    linear-gradient(
+      110deg,
+      #070D1D 0%,
+      #0B1630 35%,
+      #111C43 68%,
+      #172653 100%
+    ) !important;
+
+  border-top:
+    1px solid rgba(96, 165, 250, 0.16);
+
+  color:
+    #CBD5E1;
+
+  box-shadow:
+    0 -12px 35px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Gradient line on top of footer */
+
+.app-footer::before,
+.footer::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: -1px;
+
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #2563EB 25%,
+      #38BDF8 50%,
+      #6366F1 75%,
+      transparent 100%
+    );
+
+  opacity: 0.55;
+}
+
+
+/* Footer text */
+
+.app-footer p,
+.footer p {
+  color:
+    #94A3B8;
+}
+
+
+/* Footer brand */
+
+.app-footer strong,
+.footer strong {
+  color:
+    #F8FAFC;
+}
+
+
+/* Footer links */
+
+.app-footer a,
+.footer a {
+  color:
+    #94A3B8;
+
+  transition:
+    color 0.2s ease;
+}
+
+
+.app-footer a:hover,
+.footer a:hover {
+  color:
+    #60A5FA;
+}
+
+
+/* =========================================================
+   FLOATING HOME / BACK TO TOP BUTTON
+   ========================================================= */
+
+.back-to-top,
+.scroll-top,
+.home-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #4F46E5 50%,
+      #38BDF8 100%
+    ) !important;
+
+  border:
+    1px solid rgba(147, 197, 253, 0.30);
+
+  color:
+    #FFFFFF;
+
+  box-shadow:
+    0 10px 30px rgba(37, 99, 235, 0.32);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.back-to-top:hover,
+.scroll-top:hover,
+.home-button:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 15px 35px rgba(37, 99, 235, 0.42);
+}
