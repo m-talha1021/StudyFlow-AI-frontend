@@ -356,7 +356,7 @@ function App() {
   });
 
   const [dashboardLoading, setDashboardLoading] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   // Dashboard history
   const [dashboardHistoryType, setDashboardHistoryType] = useState(null);
@@ -2449,7 +2449,7 @@ const trackFeatureUsage = async (featureName) => {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              setDashboardOpen(true);
+              setShowDashboard(true);
               document.getElementById("dashboard-section")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -2573,23 +2573,23 @@ const trackFeatureUsage = async (featureName) => {
   className="dashboard-section">
   <div
     className="dashboard-heading">
+    <span className="section-kicker">YOUR DASHBOARD</span>
+
     <h2>
       {user?.displayName
         ? `Welcome back, ${user.displayName}`
         : "Welcome back"}
     </h2>
-
   </div>
 
-  {dashboardOpen && (
+  {showDashboard && (
     <div className="dashboard-panel">
-      <button type="button" className="dashboard-close-button" onClick={() => { setDashboardOpen(false); setDashboardHistoryType(null); }} aria-label="Close dashboard">×</button>
-
-  {dashboardLoading ? (
-    <div>
-      Loading your dashboard...
-    </div>
-  ) : (
+      {dashboardLoading ? (
+        <div className="dashboard-loading">
+          Loading your dashboard...
+        </div>
+      ) : (
+        <>
       <div className="dashboard-stats-grid">
         {[
           {
@@ -2784,7 +2784,21 @@ const trackFeatureUsage = async (featureName) => {
             </p>
           )}
         </div>
+          )}
+        </>
       )}
+
+      <button
+        type="button"
+        className="dashboard-close-btn"
+        onClick={() => {
+          setShowDashboard(false);
+          closeDashboardHistory();
+        }}
+        aria-label="Close dashboard"
+      >
+        ×
+      </button>
     </div>
   )}
 </section>
