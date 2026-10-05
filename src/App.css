@@ -11232,3 +11232,213 @@ body * {
     pointer-events: none;
     z-index: -1;
 }
+
+/* ============================================================
+   RESULT SCREEN — LIGHT MODE
+   Put this at the VERY END of your CSS
+   ============================================================ */
+
+/* Main result page */
+html body .result-page,
+html body .result-screen,
+html body .summary-page,
+html body .result-container {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+}
+
+
+/* Generic result content */
+html body .result-page *,
+html body .result-screen *,
+html body .summary-page *,
+html body .result-container * {
+    color: #111827;
+}
+
+
+/* Main result card / document */
+html body .result-page,
+html body .result-screen,
+html body .summary-page,
+html body .result-container {
+    background-color: #FFFFFF !important;
+}
+
+
+/* ============================================================
+   HEADINGS
+   ============================================================ */
+
+html body .result-page h1,
+html body .result-page h2,
+html body .result-page h3,
+html body .result-page h4,
+html body .result-screen h1,
+html body .result-screen h2,
+html body .result-screen h3,
+html body .summary-page h1,
+html body .summary-page h2,
+html body .summary-page h3 {
+    color: #111827 !important;
+}
+
+
+/* ============================================================
+   NORMAL TEXT
+   ============================================================ */
+
+html body .result-page p,
+html body .result-page li,
+html body .result-page span,
+html body .result-screen p,
+html body .result-screen li,
+html body .result-screen span {
+    color: #374151 !important;
+}
+
+
+/* ============================================================
+   HEADER / SUMMARY TITLE
+   ============================================================ */
+
+html body .result-page .result-header,
+html body .result-screen .result-header,
+html body .summary-header {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+
+    border-bottom:
+        1px solid #E5E7EB !important;
+}
+
+
+/* Title */
+html body .result-page .result-header h1,
+html body .result-screen .result-header h1,
+html body .summary-header h1 {
+    color: #111827 !important;
+}
+
+
+/* Language / subtitle */
+html body .result-page .result-header p,
+html body .result-screen .result-header p,
+html body .summary-header p {
+    color: #6B7280 !important;
+}
+
+
+/* ============================================================
+   CONTENT AREA
+   ============================================================ */
+
+html body .result-content,
+html body .summary-content,
+html body .result-body {
+    background: #FFFFFF !important;
+    color: #374151 !important;
+}
+
+
+/* ============================================================
+   DIVIDERS
+   ============================================================ */
+
+html body .result-page hr,
+html body .result-screen hr,
+html body .summary-page hr {
+    border-color: #E5E7EB !important;
+    background: #E5E7EB !important;
+}
+
+
+/* ============================================================
+   COPY BUTTON
+   ============================================================ */
+
+html body .result-page .copy-btn,
+html body .result-screen .copy-btn,
+html body button.copy-btn {
+    background: #F8FAFC !important;
+    color: #111827 !important;
+
+    border: 1px solid #D1D5DB !important;
+}
+
+html body .result-page .copy-btn:hover,
+html body .result-screen .copy-btn:hover,
+html body button.copy-btn:hover {
+    background: #F1F5F9 !important;
+}
+
+
+/* ============================================================
+   DOWNLOAD PDF
+   ============================================================ */
+
+html body .result-page .download-btn,
+html body .result-screen .download-btn,
+html body button.download-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #7C3AED,
+            #9333EA
+        ) !important;
+
+    color: #FFFFFF !important;
+
+    border: none !important;
+}
+
+
+/* ============================================================
+   READ ALOUD
+   ============================================================ */
+
+html body .result-page .read-aloud-btn,
+html body .result-screen .read-aloud-btn,
+html body button.read-aloud-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #2563EB,
+            #3B82F6
+        ) !important;
+
+    color: #FFFFFF !important;
+
+    border: none !important;
+}
+
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+html body .result-page a,
+html body .result-screen a {
+    color: #2563EB !important;
+}
+
+
+/* ============================================================
+   FORCE WHITE ON COMMON CARD/WRAPPER BACKGROUNDS
+   ============================================================ */
+
+html body .result-page .card,
+html body .result-page .content-card,
+html body .result-page .summary-card,
+html body .result-screen .card,
+html body .result-screen .content-card,
+html body .summary-page .card {
+    background: #FFFFFF !important;
+
+    color: #111827 !important;
+
+    border-color: #E5E7EB !important;
+
+    box-shadow:
+        0 4px 16px rgba(15, 23, 42, 0.06) !important;
+}
