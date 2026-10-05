@@ -2335,6 +2335,49 @@ const trackFeatureUsage = async (featureName) => {
       }
     };
 
+
+  // ========================================================
+  // USER RANK / LEVEL
+  // ========================================================
+
+  const RANK_LEVELS = [
+    { level: 0, name: "Beginner", icon: "🌱", sessions: 0, materials: 0 },
+    { level: 1, name: "Learner", icon: "📚", sessions: 50, materials: 50 },
+    { level: 2, name: "Scholar", icon: "🧠", sessions: 150, materials: 100 },
+    { level: 3, name: "Dedicated", icon: "🎯", sessions: 300, materials: 200 },
+    { level: 4, name: "Expert", icon: "🔥", sessions: 500, materials: 350 },
+    { level: 5, name: "Master", icon: "🏆", sessions: 750, materials: 500 },
+    { level: 6, name: "Grand Master", icon: "👑", sessions: 1000, materials: 750 },
+    { level: 7, name: "Elite", icon: "💎", sessions: 1500, materials: 1000 },
+    { level: 8, name: "Legend", icon: "⚡", sessions: 2500, materials: 1500 },
+  ];
+
+  const currentRank =
+    [...RANK_LEVELS].reverse().find(
+      (rank) =>
+        dashboardStats.studySessions >= rank.sessions &&
+        dashboardStats.totalMaterials >= rank.materials
+    ) || RANK_LEVELS[0];
+
+  const nextRank = RANK_LEVELS.find(
+    (rank) => rank.level === currentRank.level + 1
+  ) || null;
+
+  const rankProgress = nextRank
+    ? Math.max(
+        0,
+        Math.min(
+          100,
+          Math.round(
+            Math.min(
+              dashboardStats.studySessions / nextRank.sessions,
+              dashboardStats.totalMaterials / nextRank.materials
+            ) * 100
+          )
+        )
+      )
+    : 100;
+
   // ========================================================
   // AUTH GATE
   // ========================================================
@@ -2581,13 +2624,24 @@ const trackFeatureUsage = async (featureName) => {
             icon: "🗂️",
             historyType: "flashcards",
           },
+          {
+            title: `Level ${currentRank.level} • ${currentRank.name}`,
+            value: currentRank.icon,
+            text: nextRank
+              ? `${rankProgress}% to Level ${nextRank.level}`
+              : "Maximum rank reached",
+            icon: "🏅",
+            rankCard: true,
+          },
         ].map((stat) => (
           <div
             key={stat.title}
             className={
-              stat.historyType
-                ? "dashboard-stat-card dashboard-stat-card-clickable"
-                : "dashboard-stat-card"
+              stat.rankCard
+                ? "dashboard-stat-card dashboard-rank-card"
+                : stat.historyType
+                  ? "dashboard-stat-card dashboard-stat-card-clickable"
+                  : "dashboard-stat-card"
             }
             role={stat.historyType ? "button" : undefined}
             tabIndex={stat.historyType ? 0 : undefined}
@@ -2621,6 +2675,17 @@ const trackFeatureUsage = async (featureName) => {
             <strong>{stat.value}</strong>
 
             <p>{stat.text}</p>
+
+            {stat.rankCard && nextRank && (
+              <div className="dashboard-rank-progress">
+                <div className="dashboard-rank-progress-track">
+                  <span style={{ width: `${rankProgress}%` }} />
+                </div>
+                <small>
+                  {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
+                </small>
+              </div>
+            )}
 
             {stat.historyType && (
               <small className="dashboard-card-hint">
