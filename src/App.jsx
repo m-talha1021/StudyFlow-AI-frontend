@@ -2341,12 +2341,12 @@ const trackFeatureUsage = async (featureName) => {
   // ========================================================
 
   const RANK_LEVELS = [
-    { level: 0, name: "Beginner", icon: "🌱", sessions: 0, materials: 0 },
+    { level: 0, name: "Beginner", icon: "🔰", sessions: 0, materials: 0 },
     { level: 1, name: "Learner", icon: "📚", sessions: 50, materials: 50 },
     { level: 2, name: "Scholar", icon: "🧠", sessions: 150, materials: 100 },
     { level: 3, name: "Dedicated", icon: "🎯", sessions: 300, materials: 200 },
     { level: 4, name: "Expert", icon: "🔥", sessions: 500, materials: 350 },
-    { level: 5, name: "Master", icon: "🏆", sessions: 750, materials: 500 },
+    { level: 5, name: "Master", icon: "✨", sessions: 750, materials: 500 },
     { level: 6, name: "Grand Master", icon: "👑", sessions: 1000, materials: 750 },
     { level: 7, name: "Elite", icon: "💎", sessions: 1500, materials: 1000 },
     { level: 8, name: "Legend", icon: "⚡", sessions: 2500, materials: 1500 },
@@ -2467,7 +2467,7 @@ const trackFeatureUsage = async (featureName) => {
               });
             }}
           >
-            Study Material
+            Upload material
           </button>
 
           <button
@@ -2518,7 +2518,7 @@ const trackFeatureUsage = async (featureName) => {
               setGamesOpen(true);
             }}
           >
-            🎮 Games
+            Games Fun
           </button>
 
           <div className="mobile-account-block">
@@ -2630,7 +2630,7 @@ const trackFeatureUsage = async (featureName) => {
             text: nextRank
               ? `${rankProgress}% to Level ${nextRank.level}`
               : "Maximum rank reached",
-            icon: "🏅",
+            icon: "🏆",
             rankCard: true,
           },
         ].map((stat) => (
