@@ -1513,6 +1513,13 @@ function App() {
     setFlashcardFlipped((previous) => !previous);
   };
 
+  const handleCloseFlashcards = () => {
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setDashboardHistoryType(null);
+  };
+
   // ========================================================
   // TEST CONCEPTS
   // ========================================================
@@ -3429,16 +3436,28 @@ const trackFeatureUsage = async (featureName) => {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={handleGenerateFlashcards}
-              disabled={flashcardsLoading}
-            >
-              {flashcardsLoading
-                ? "⏳ Generating..."
-                : "🔄 Regenerate"}
-            </button>
+            <div className="flashcards-header-actions">
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={handleGenerateFlashcards}
+                disabled={flashcardsLoading}
+              >
+                {flashcardsLoading
+                  ? "⏳ Generating..."
+                  : "🔄 Regenerate"}
+              </button>
+
+              <button
+                type="button"
+                className="flashcards-close-btn"
+                onClick={handleCloseFlashcards}
+                aria-label="Close flashcards"
+                title="Close flashcards"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <div className="flashcard-progress">
