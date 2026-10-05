@@ -11325,3 +11325,57 @@ main > div {
     margin-top: 10px !important;
     margin-bottom: 10px !important;
 }
+/* ============================================================
+   REDUCE SPACE ABOVE FOOTER
+   ============================================================ */
+
+/* Main content before footer */
+main {
+    padding-bottom: 20px !important;
+    margin-bottom: 0 !important;
+}
+
+
+/* Main page/container */
+main > div {
+    margin-bottom: 0 !important;
+    padding-bottom: 20px !important;
+}
+
+
+/* Generate summary section */
+.generate-summary-section,
+.summary-generation,
+.generate-section {
+    margin-bottom: 20px !important;
+    padding-bottom: 20px !important;
+}
+
+
+/* Generate Summary button */
+.generate-summary-btn,
+.generate-button,
+button {
+    margin-bottom: 10px !important;
+}
+
+
+/* Footer */
+footer,
+.footer,
+.app-footer {
+    margin-top: 0 !important;
+    padding-top: 25px !important;
+}
+
+
+/* Remove excessive minimum height */
+main {
+    min-height: auto !important;
+}
+
+
+/* If a large flex spacer is creating the gap */
+main > div {
+    min-height: 0 !important;
+}
