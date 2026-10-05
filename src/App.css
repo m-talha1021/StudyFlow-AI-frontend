@@ -49,22 +49,30 @@ body {
   z-index: -1;
   pointer-events: none;
 
-  background:
-    radial-gradient(circle at top left,
-      #413ae8 0,
-      transparent 35%),
+ background:
+  radial-gradient(
+    circle at top left,
+    #413ae8 0,
+    transparent 65%
+  ),
 
-    radial-gradient(circle at top right,
-      #661ba1 0,
-      transparent 120%),
+  radial-gradient(
+    circle at top right,
+    #661ba1 0,
+    transparent 120%
+  ),
 
-    radial-gradient(circle at center left,
-      #787807 0,
-      transparent 20%),
+  radial-gradient(
+    circle at center left,
+    #787807 0,
+    transparent 45%
+  ),
 
-    radial-gradient(circle at center right,
-      #4e55f2 0,
-      transparent 65%),
+  radial-gradient(
+    circle at center right,
+    #4e55f2 0,
+    transparent 55%
+  );
 
     #09090f;
 
