@@ -356,6 +356,7 @@ function App() {
   });
 
   const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
 
   // Dashboard history
   const [dashboardHistoryType, setDashboardHistoryType] = useState(null);
@@ -2448,6 +2449,7 @@ const trackFeatureUsage = async (featureName) => {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
+              setDashboardOpen(true);
               document.getElementById("dashboard-section")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -2571,25 +2573,23 @@ const trackFeatureUsage = async (featureName) => {
   className="dashboard-section">
   <div
     className="dashboard-heading">
-    <span className="section-kicker">YOUR DASHBOARD</span>
-
     <h2>
       {user?.displayName
         ? `Welcome back, ${user.displayName}`
-        : "Your learning dashboard"}
+        : "Welcome back"}
     </h2>
 
-    <p>
-      Your personal StudyFlow AI progress and activity.
-    </p>
   </div>
+
+  {dashboardOpen && (
+    <div className="dashboard-panel">
+      <button type="button" className="dashboard-close-button" onClick={() => { setDashboardOpen(false); setDashboardHistoryType(null); }} aria-label="Close dashboard">×</button>
 
   {dashboardLoading ? (
     <div>
       Loading your dashboard...
     </div>
   ) : (
-    <>
       <div className="dashboard-stats-grid">
         {[
           {
@@ -2785,7 +2785,7 @@ const trackFeatureUsage = async (featureName) => {
           )}
         </div>
       )}
-    </>
+    </div>
   )}
 </section>
 
