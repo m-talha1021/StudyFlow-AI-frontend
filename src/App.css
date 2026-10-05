@@ -13483,3 +13483,15 @@ a:active {
     row-gap: 8px !important;
   }
 }
+
+
+/* Reduce gap between upper and lower sections */
+.hero {
+  min-height: 380px;
+  padding-bottom: 0;
+}
+
+.dashboard-section {
+  margin-top: 0;
+  padding-top: 10px;
+}
