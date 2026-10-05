@@ -11234,211 +11234,71 @@ body * {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ============================================================
-   LOGGED-IN PAGE — REDUCE HERO VERTICAL GAP
+   PUBLIC PAGE — LOGIN / SIGN UP HOVER
    ============================================================ */
 
-/* Reduce space around Welcome heading */
-.welcome-section,
-.welcome-header,
-.dashboard-welcome {
-    margin-bottom: 20px !important;
-    padding-bottom: 0 !important;
+/* LOGIN */
+.login-btn,
+.login-button {
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease !important;
+}
+
+.login-btn:hover,
+.login-button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #2563EB 0%,
+            #7C3AED 100%
+        ) !important;
+
+    border-color:
+        #60A5FA !important;
+
+    color:
+        #FFFFFF !important;
+
+    box-shadow:
+        0 8px 24px rgba(59, 130, 246, 0.30) !important;
+
+    transform:
+        translateY(-2px) !important;
 }
 
 
-/* Reduce the large empty area before the main hero */
-.hero,
-.dashboard-hero,
-.study-hero {
-    padding-top: 30px !important;
-    margin-top: 0 !important;
+/* SIGN UP */
+.signup-btn,
+.signup-button {
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease !important;
 }
 
+.signup-btn:hover,
+.signup-button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #2563EB 0%,
+            #38BDF8 100%
+        ) !important;
 
-/* If the welcome heading has a large bottom margin */
-h1 {
-    margin-bottom: 15px !important;
-}
+    border-color:
+        #60A5FA !important;
 
+    color:
+        #FFFFFF !important;
 
-/* Reduce spacing before the study content */
-.study-material,
-.study-material-card,
-.material-card {
-    margin-top: 20px !important;
-}
+    box-shadow:
+        0 8px 24px rgba(37, 99, 235, 0.35) !important;
 
-
-/* ============================================================
-   MORE AGGRESSIVE OVERRIDE
-   ============================================================ */
-
-main {
-    padding-top: 0 !important;
-}
-
-main > div {
-    margin-top: 0 !important;
-}
-
-
-/* Remove excessive vertical spacing from common containers */
-.dashboard,
-.dashboard-page,
-.logged-in-page,
-.page-content {
-    padding-top: 10px !important;
-}
-
-
-/* Hero heading spacing */
-.dashboard h1,
-.dashboard-page h1 {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-}
-/* ============================================================
-   REDUCE SPACE ABOVE FOOTER
-   ============================================================ */
-
-/* Main content before footer */
-main {
-    padding-bottom: 20px !important;
-    margin-bottom: 0 !important;
-}
-
-
-/* Main page/container */
-main > div {
-    margin-bottom: 0 !important;
-    padding-bottom: 20px !important;
-}
-
-
-/* Generate summary section */
-.generate-summary-section,
-.summary-generation,
-.generate-section {
-    margin-bottom: 20px !important;
-    padding-bottom: 20px !important;
-}
-
-
-/* Generate Summary button */
-.generate-summary-btn,
-.generate-button,
-button {
-    margin-bottom: 10px !important;
-}
-
-
-/* Footer */
-footer,
-.footer,
-.app-footer {
-    margin-top: 0 !important;
-    padding-top: 25px !important;
-}
-
-
-/* Remove excessive minimum height */
-main {
-    min-height: auto !important;
-}
-
-
-/* If a large flex spacer is creating the gap */
-main > div {
-    min-height: 0 !important;
-}
-/* Add breathing room below the navbar/border */
-header + main {
-    padding-top: 25px !important;
-}
-
-/* Badge spacing */
-main .badge,
-main .ai-badge,
-main .hero-badge {
-    margin-top: 15px !important;
-}
-
-/* ============================================================
-   FINAL OVERRIDE — SPACE BELOW NAVBAR LINE
-   ============================================================ */
-
-/* Give the entire hero section some top breathing room */
-.hero,
-.hero-section,
-.landing-hero,
-.public-hero,
-.home-hero {
-    padding-top: 35px !important;
-    margin-top: 0 !important;
-}
-
-/* AI-powered learning badge */
-.ai-powered-learning,
-.ai-powered-badge,
-.ai-learning-badge,
-.hero-badge,
-.badge {
-    margin-top: 20px !important;
-    position: relative !important;
-    top: 20px !important;
-}
-/* =========================================================
-   FORCE SPACE BETWEEN TOP BORDER AND AI BADGE
-   ========================================================= */
-
-body {
-    overflow-x: hidden;
-}
-
-/* Find the first visible content after the top navigation */
-body > *:first-child + * {
-    padding-top: 30px !important;
-}
-
-/* Any element containing the AI-powered learning text */
-*:has(> *:first-child) {
-    box-sizing: border-box;
-}
-
-/* Move the badge visually */
-*:where(
-    [class*="badge"],
-    [class*="Badge"],
-    [class*="ai"],
-    [class*="AI"]
-) {
-    box-sizing: border-box;
+    transform:
+        translateY(-2px) !important;
 }
