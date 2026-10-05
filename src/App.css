@@ -11137,3 +11137,98 @@ html body .app-footer {
   border-top:
     1px solid rgba(59, 130, 246, 0.20) !important;
 }
+
+
+/* ============================================================
+   FINAL BACKGROUND OVERRIDE
+   KEEP ALL PREVIOUS CSS — THIS GOES AT THE VERY END
+   ============================================================ */
+
+html,
+body,
+#root {
+    min-height: 100% !important;
+
+    background:
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(59, 130, 246, 0.20) 0%,
+            rgba(37, 99, 235, 0.08) 30%,
+            transparent 55%
+        ),
+        radial-gradient(
+            circle at 10% 85%,
+            rgba(56, 189, 248, 0.12) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            #020617 0%,
+            #07152D 30%,
+            #0B2142 65%,
+            #12345F 100%
+        ) !important;
+
+    background-attachment: fixed !important;
+}
+
+
+/* Make React/page wrappers transparent so the gradient is visible */
+
+#root > div,
+#root > main,
+#root main,
+#root section {
+    background: transparent !important;
+}
+
+
+/* Remove solid backgrounds from common wrappers */
+
+#root > div:first-child {
+    background: transparent !important;
+}
+
+
+/* ============================================================
+   FORCE THE LOGGED-IN PAGE TO SHOW THE GRADIENT
+   ============================================================ */
+
+body * {
+    /* Don't apply a background here —
+       only the page/root should control it */
+}
+
+
+/* ============================================================
+   SUBTLE BLUE GLOW
+   ============================================================ */
+
+#root {
+    position: relative !important;
+    isolation: isolate !important;
+}
+
+#root::before {
+    content: "";
+
+    position: fixed;
+
+    width: 700px;
+    height: 700px;
+
+    top: -300px;
+    right: -200px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(59, 130, 246, 0.15),
+            transparent 70%
+        );
+
+    pointer-events: none;
+    z-index: -1;
+}
