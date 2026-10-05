@@ -13297,12 +13297,6 @@ a:active {
   color: rgba(255, 255, 255, 0.62);
 }
 
-
-.dashboard-close-button button{
-   background-color: #953fe0;
-   cursor: pointer;
-}
-
 /* Desktop: 3 cards per row */
 @media (min-width: 701px) {
   .dashboard-stats-grid {
@@ -13336,161 +13330,56 @@ a:active {
   }
 }
 
+
 /* ============================================================
-   FINAL DASHBOARD OVERRIDES
-   - Welcome text has no background box on desktop/mobile
-   - Dashboard panel is wide and centered on desktop
-   - Dashboard keeps 3 cards per row on desktop
-   - Dashboard keeps 2 cards per row on mobile
+   FLASHCARDS CLOSE BUTTON
 ============================================================ */
 
-.dashboard-welcome {
-  width: 100% !important;
-  margin: 0 auto 28px !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-.dashboard-welcome h2 {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  color: #ffffff !important;
-  font-size: 30px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-/* Prevent the old generic dashboard child rule from making
-   the dashboard panel narrow. */
-.dashboard-section > .dashboard-panel {
-  width: 100% !important;
-  max-width: 1120px !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
-  padding: 30px 34px 34px !important;
-}
-
-/* The old generic selector must not style the welcome box. */
-.dashboard-section > .dashboard-welcome {
-  width: 100% !important;
-  max-width: none !important;
-  padding: 0 !important;
-  margin: 0 auto 28px !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-.dashboard-panel .dashboard-heading {
-  width: 100%;
+.flashcards-header-actions {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 0 0 26px;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.dashboard-panel .dashboard-heading h2 {
-  margin: 6px 0 4px;
-  font-size: 28px;
-  line-height: 1.2;
-  font-weight: 700;
+.flashcards-close-btn {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(153, 104, 237, 0.75);
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.16);
   color: #ffffff;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.dashboard-panel .dashboard-heading p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.62);
+.flashcards-close-btn:hover {
+  transform: scale(1.08);
+  background: rgba(99, 102, 241, 0.32);
+  border-color: rgba(174, 126, 255, 0.95);
 }
 
-.dashboard-panel .dashboard-stats-grid {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  column-gap: 22px !important;
-  row-gap: 20px !important;
-  box-sizing: border-box !important;
-}
-
-.dashboard-panel .dashboard-stat-card {
-  width: 100% !important;
-  min-width: 0 !important;
-  box-sizing: border-box !important;
+.flashcards-close-btn:active {
+  transform: scale(0.95);
 }
 
 @media (max-width: 700px) {
-  .dashboard-welcome {
-    width: 100% !important;
-    margin: 0 auto 24px !important;
-    padding: 0 !important;
-    text-align: center !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+  .flashcards-header-actions {
+    gap: 8px;
   }
 
-  .dashboard-welcome h2 {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    font-size: 23px;
-    line-height: 1.25;
-    color: #ffffff !important;
+  .flashcards-close-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
   }
-
-  .dashboard-section > .dashboard-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    padding: 20px 14px 24px !important;
-    border-radius: 18px;
-  }
-
-  .dashboard-panel .dashboard-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    column-gap: 12px !important;
-    row-gap: 12px !important;
-  }
-
-  .dashboard-panel .dashboard-stat-card {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .dashboard-panel .dashboard-stats-grid {
-    column-gap: 8px !important;
-    row-gap: 8px !important;
-  }
-}
-
-
-/* Reduce gap between upper and lower sections */
-.hero {
-  min-height: 380px;
-  padding-bottom: 0;
-}
-
-.dashboard-section {
-  padding-top: 40px;
 }
