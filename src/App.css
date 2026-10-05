@@ -13338,7 +13338,7 @@ a:active {
 
 .dashboard-section {
   width: 100%;
-  max-width: 1180px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 24px 20px 34px;
   box-sizing: border-box;
@@ -13363,7 +13363,6 @@ a:active {
 .dashboard-panel {
   position: relative;
   width: 100%;
-  max-width: 1120px;
   margin: 0 auto;
   padding: 28px 32px 32px;
   box-sizing: border-box;
@@ -13449,7 +13448,9 @@ a:active {
     max-width: 100%;
     padding: 18px 12px 28px;
   }
-
+  .dashboard-welcome{
+     width: 100%;
+  }
   .dashboard-welcome h2 {
     font-size: 23px;
   }
