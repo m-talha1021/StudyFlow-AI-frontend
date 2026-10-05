@@ -10439,4 +10439,131 @@ select:focus {
   pointer-events: none;
   z-index: -1;
 }
+/* =========================================================
+   LOGGED-IN FOOTER — FIXED GRADIENT
+   ========================================================= */
 
+.app-footer,
+.footer,
+footer {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      110deg,
+      #050B18 0%,
+      #081326 35%,
+      #0C1B38 68%,
+      #132B52 100%
+    ) !important;
+
+  color: #E2E8F0;
+
+  border-top:
+    1px solid rgba(59, 130, 246, 0.20);
+
+  box-shadow:
+    0 -12px 35px rgba(0, 0, 0, 0.20);
+}
+
+
+/* Subtle gradient highlight across the top */
+
+.app-footer::before,
+.footer::before,
+footer::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #1D4ED8 20%,
+      #3B82F6 40%,
+      #38BDF8 55%,
+      #6366F1 75%,
+      transparent 100%
+    );
+
+  opacity: 0.55;
+
+  pointer-events: none;
+}
+
+
+/* Very subtle blue glow inside footer */
+
+.app-footer::after,
+.footer::after,
+footer::after {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 180px;
+
+  left: 50%;
+  bottom: -150px;
+
+  transform: translateX(-50%);
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(37, 99, 235, 0.18),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+
+/* Footer text */
+
+.app-footer,
+.footer,
+footer {
+  color: #CBD5E1;
+}
+
+
+.app-footer strong,
+.footer strong,
+footer strong {
+  color: #F8FAFC;
+}
+
+
+.app-footer p,
+.footer p,
+footer p {
+  color: #94A3B8;
+}
+
+
+/* Footer links */
+
+.app-footer a,
+.footer a,
+footer a {
+  color: #94A3B8;
+
+  transition:
+    color 0.2s ease;
+}
+
+
+.app-footer a:hover,
+.footer a:hover,
+footer a:hover {
+  color: #60A5FA;
+}
