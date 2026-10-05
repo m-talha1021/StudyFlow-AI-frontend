@@ -11234,3 +11234,94 @@ body * {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   LOGGED-IN PAGE — REDUCE HERO VERTICAL GAP
+   ============================================================ */
+
+/* Reduce space around Welcome heading */
+.welcome-section,
+.welcome-header,
+.dashboard-welcome {
+    margin-bottom: 20px !important;
+    padding-bottom: 0 !important;
+}
+
+
+/* Reduce the large empty area before the main hero */
+.hero,
+.dashboard-hero,
+.study-hero {
+    padding-top: 30px !important;
+    margin-top: 0 !important;
+}
+
+
+/* If the welcome heading has a large bottom margin */
+h1 {
+    margin-bottom: 15px !important;
+}
+
+
+/* Reduce spacing before the study content */
+.study-material,
+.study-material-card,
+.material-card {
+    margin-top: 20px !important;
+}
+
+
+/* ============================================================
+   MORE AGGRESSIVE OVERRIDE
+   ============================================================ */
+
+main {
+    padding-top: 0 !important;
+}
+
+main > div {
+    margin-top: 0 !important;
+}
+
+
+/* Remove excessive vertical spacing from common containers */
+.dashboard,
+.dashboard-page,
+.logged-in-page,
+.page-content {
+    padding-top: 10px !important;
+}
+
+
+/* Hero heading spacing */
+.dashboard h1,
+.dashboard-page h1 {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
