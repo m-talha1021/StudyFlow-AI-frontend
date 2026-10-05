@@ -9076,3 +9076,742 @@ body,
 .dashboard-section {
   padding-top: 40px;
 }
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   STUDYFLOW - FINAL COLOR THEME
+   Navy + Blue + Cyan
+   ============================================================ */
+
+:root {
+  /* Main backgrounds */
+  --sf-bg-primary: #07111F;
+  --sf-bg-secondary: #0B172A;
+  --sf-bg-tertiary: #0F1F38;
+
+  /* Cards */
+  --sf-card: rgba(15, 29, 48, 0.72);
+  --sf-card-soft: rgba(255, 255, 255, 0.045);
+  --sf-card-hover: rgba(59, 130, 246, 0.10);
+
+  /* Primary */
+  --sf-blue: #3B82F6;
+  --sf-blue-dark: #2563EB;
+  --sf-blue-deep: #1D4ED8;
+  --sf-blue-light: #60A5FA;
+
+  /* Accent */
+  --sf-cyan: #38BDF8;
+  --sf-cyan-light: #7DD3FC;
+
+  /* Text */
+  --sf-text: #F8FAFC;
+  --sf-text-secondary: #CBD5E1;
+  --sf-text-muted: #94A3B8;
+  --sf-text-faint: #64748B;
+
+  /* Borders */
+  --sf-border: rgba(96, 165, 250, 0.14);
+  --sf-border-hover: rgba(96, 165, 250, 0.38);
+
+  /* Status */
+  --sf-success: #22C55E;
+  --sf-warning: #F59E0B;
+  --sf-error: #EF4444;
+
+  /* Shadows */
+  --sf-blue-shadow: rgba(37, 99, 235, 0.25);
+}
+
+
+/* ============================================================
+   GLOBAL APP BACKGROUND
+   ============================================================ */
+
+html,
+body {
+  background: var(--sf-bg-primary);
+  color: var(--sf-text);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.app {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: clip;
+  position: relative;
+  isolation: isolate;
+
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(37, 99, 235, 0.20),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(56, 189, 248, 0.12),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(30, 64, 175, 0.10),
+      transparent 36%
+    ),
+    var(--sf-bg-primary);
+
+  color: var(--sf-text);
+}
+
+
+/* ============================================================
+   WELCOME / HERO PAGE
+   ============================================================ */
+
+.welcome-page {
+  min-height: calc(100vh - 77px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 70px 24px 100px;
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      rgba(59, 130, 246, 0.17),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(56, 189, 248, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #07111F 0%,
+      #0B172A 50%,
+      #0F1F38 100%
+    );
+}
+
+
+/* Hero heading */
+
+.welcome-hero h1 {
+  color: #F8FAFC;
+}
+
+.welcome-hero h1 span {
+  background: linear-gradient(
+    90deg,
+    #60A5FA 0%,
+    #3B82F6 50%,
+    #38BDF8 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+
+/* Hero description */
+
+.welcome-hero > p {
+  color: rgba(226, 232, 240, 0.68);
+}
+
+
+/* Welcome badge */
+
+.welcome-badge {
+  color: #93C5FD;
+}
+
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.public-navbar,
+.app-navbar {
+  background:
+    rgba(7, 17, 31, 0.92);
+
+  border-bottom:
+    1px solid rgba(96, 165, 250, 0.14);
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+
+/* Navbar links */
+
+.app-navbar .app-nav-links > button {
+  border: 1px solid rgba(96, 165, 250, 0.14);
+
+  background:
+    rgba(59, 130, 246, 0.08);
+
+  color: #E2E8F0;
+
+  box-shadow: none;
+}
+
+
+/* Navbar hover */
+
+.app-navbar .app-nav-links > button:hover {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(96, 165, 250, 0.38);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.25),
+      rgba(56, 189, 248, 0.15)
+    );
+
+  color: #FFFFFF;
+
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.16);
+}
+
+
+/* User pill */
+
+.app-navbar .user-pill {
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  background: rgba(255, 255, 255, 0.045);
+  color: #F8FAFC;
+}
+
+
+/* ============================================================
+   MOBILE NAVBAR
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+  .app-navbar .navbar-menu-button {
+    border:
+      1px solid rgba(96, 165, 250, 0.28);
+
+    background:
+      linear-gradient(
+        135deg,
+        #2563EB,
+        #3B82F6
+      );
+
+    color: white;
+
+    box-shadow:
+      0 8px 24px rgba(37, 99, 235, 0.22);
+  }
+
+
+  .app-navbar .app-nav-links {
+    background:
+      linear-gradient(
+        145deg,
+        rgba(8, 20, 36, 0.98),
+        rgba(7, 17, 31, 0.98)
+      );
+
+    border:
+      1px solid rgba(96, 165, 250, 0.18);
+
+    box-shadow:
+      0 24px 65px rgba(0, 0, 0, 0.48),
+      0 0 35px rgba(37, 99, 235, 0.10);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+
+  .app-navbar .app-nav-links > button {
+    background:
+      rgba(59, 130, 246, 0.08);
+
+    border:
+      1px solid rgba(96, 165, 250, 0.12);
+
+    color: #E2E8F0;
+  }
+
+
+  .app-navbar .app-nav-links > button:hover,
+  .app-navbar .app-nav-links > button:active {
+    background:
+      linear-gradient(
+        135deg,
+        #2563EB,
+        #3B82F6
+      );
+
+    color: #FFFFFF;
+  }
+}
+
+
+/* ============================================================
+   PERFORMANCE DASHBOARD
+   ============================================================ */
+
+.performance-section {
+  background:
+    rgba(10, 22, 38, 0.68);
+
+  border:
+    1px solid rgba(96, 165, 250, 0.12);
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.24);
+}
+
+
+/* ============================================================
+   AUTH / LOGIN / SIGNUP
+   ============================================================ */
+
+.auth-shell {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(37, 99, 235, 0.18),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(56, 189, 248, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      #07111F 0%,
+      #0B172A 55%,
+      #0F1F38 100%
+    );
+
+  color: #F8FAFC;
+}
+
+
+/* Auth card */
+
+.auth-card {
+  background:
+    rgba(10, 24, 40, 0.88);
+
+  border:
+    1px solid rgba(96, 165, 250, 0.14);
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.40);
+}
+
+
+/* Auth inputs */
+
+.auth-card input {
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  border:
+    1px solid rgba(96, 165, 250, 0.14);
+
+  color: #FFFFFF;
+}
+
+.auth-card input:focus {
+  border-color:
+    rgba(59, 130, 246, 0.75);
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+
+/* ============================================================
+   MODE BUTTONS
+   Summary / Explain / Quiz / Flashcards / Exam Mode
+   ============================================================ */
+
+.mode {
+  background:
+    rgba(15, 29, 48, 0.65);
+
+  border:
+    1px solid rgba(96, 165, 250, 0.12);
+
+  color: #F8FAFC;
+}
+
+
+.mode:hover {
+  border-color:
+    rgba(59, 130, 246, 0.55);
+
+  background:
+    rgba(59, 130, 246, 0.07);
+
+  transform:
+    translateY(-2px);
+}
+
+
+.mode.active {
+  border-color:
+    #3B82F6;
+
+  background:
+    rgba(59, 130, 246, 0.12);
+
+  box-shadow:
+    0 0 20px rgba(37, 99, 235, 0.08);
+}
+
+
+.mode strong {
+  color: #F8FAFC;
+}
+
+
+.mode small {
+  color: #94A3B8;
+}
+
+
+/* ============================================================
+   GENERATE BUTTON
+   ============================================================ */
+
+.generate-button {
+  background:
+    linear-gradient(
+      90deg,
+      #2563EB,
+      #3B82F6
+    );
+
+  color: #FFFFFF;
+
+  border: none;
+
+  box-shadow:
+    0 12px 35px rgba(37, 99, 235, 0.28);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.generate-button:hover {
+  background:
+    linear-gradient(
+      90deg,
+      #1D4ED8,
+      #2563EB
+    );
+
+  box-shadow:
+    0 14px 38px rgba(37, 99, 235, 0.36);
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* ============================================================
+   CHATBOT
+   ============================================================ */
+
+.chatbot-heading-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB,
+      #38BDF8
+    );
+
+  box-shadow:
+    0 8px 24px rgba(37, 99, 235, 0.30);
+}
+
+
+.chatbot-heading-button:hover {
+  box-shadow:
+    0 10px 28px rgba(37, 99, 235, 0.40);
+}
+
+
+.chatbot-heading-active {
+  background:
+    #1D4ED8;
+}
+
+
+/* Chat messages */
+
+.message-content {
+  background:
+    #0F1F38;
+
+  color:
+    #F8FAFC;
+}
+
+
+.user-message .message-content {
+  background:
+    #2563EB;
+
+  color:
+    #FFFFFF;
+}
+
+
+/* Chat input */
+
+.chat-input-form {
+  background:
+    #0B172A;
+
+  border-top:
+    1px solid rgba(96, 165, 250, 0.12);
+}
+
+
+.chat-input-form input {
+  background:
+    #0F1F38;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.16);
+
+  color:
+    #F8FAFC;
+}
+
+
+.chat-input-form input:focus {
+  border-color:
+    #3B82F6;
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+
+.chat-input-form button {
+  background:
+    #2563EB;
+
+  color:
+    #FFFFFF;
+}
+
+
+.chat-input-form button:hover:not(:disabled) {
+  background:
+    #1D4ED8;
+}
+
+
+/* ============================================================
+   FLASHCARDS
+   ============================================================ */
+
+.flashcard-back {
+  background:
+    radial-gradient(
+      circle at bottom,
+      rgba(56, 189, 248, 0.13),
+      rgba(8, 18, 31, 0.98)
+    );
+}
+
+
+.flashcard-face span {
+  color:
+    #60A5FA;
+}
+
+
+.flashcard-face strong {
+  color:
+    #F8FAFC;
+}
+
+
+.flashcard-face small {
+  color:
+    rgba(255, 255, 255, 0.42);
+}
+
+
+.flashcard-controls button {
+  border:
+    1px solid rgba(96, 165, 250, 0.30);
+
+  background:
+    rgba(59, 130, 246, 0.07);
+
+  color:
+    #FFFFFF;
+}
+
+
+.flashcard-controls .flip-button {
+  background:
+    rgba(37, 99, 235, 0.18);
+
+  border-color:
+    rgba(96, 165, 250, 0.30);
+}
+
+
+/* ============================================================
+   CAMERA BUTTON
+   ============================================================ */
+
+.camera-button {
+  border:
+    1px solid rgba(96, 165, 250, 0.45);
+
+  background:
+    #0B172A;
+
+  color:
+    #FFFFFF;
+}
+
+
+.camera-button:hover {
+  border-color:
+    #3B82F6;
+
+  box-shadow:
+    0 7px 20px rgba(37, 99, 235, 0.20);
+}
+
+
+/* ============================================================
+   GENERAL CARDS
+   ============================================================ */
+
+.feature-card,
+.card,
+.dashboard-card {
+  background:
+    var(--sf-card);
+
+  border:
+    1px solid var(--sf-border);
+}
+
+
+.feature-card:hover,
+.card:hover,
+.dashboard-card:hover {
+  border-color:
+    var(--sf-border-hover);
+}
+
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+a {
+  color:
+    #60A5FA;
+}
+
+a:hover {
+  color:
+    #38BDF8;
+}
+
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+
+::selection {
+  background:
+    rgba(59, 130, 246, 0.35);
+
+  color:
+    #FFFFFF;
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background:
+    #07111F;
+}
+
+::-webkit-scrollbar-thumb {
+  background:
+    #1E40AF;
+
+  border-radius:
+    999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:
+    #3B82F6;
+}
+
+
+/* ============================================================
+   FOCUS ACCESSIBILITY
+   ============================================================ */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline:
+    2px solid #60A5FA;
+
+  outline-offset:
+    2px;
+}
