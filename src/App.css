@@ -10849,3 +10849,291 @@ html body .public-page .feature-icon {
   border:
     1px solid rgba(96, 165, 250, 0.16) !important;
 }
+
+
+/* ============================================================
+   STUDYFLOW LOGGED-IN PAGE
+   FORCE GRADIENT BACKGROUND
+   ============================================================ */
+
+html body {
+  background:
+    linear-gradient(
+      135deg,
+      #030817 0%,
+      #061226 30%,
+      #0A1B38 60%,
+      #102A52 100%
+    ) !important;
+
+  background-color: #061226 !important;
+}
+
+
+/* ============================================================
+   MAIN LOGGED-IN CONTENT
+   ============================================================ */
+
+html body .dashboard,
+html body .dashboard-page,
+html body .logged-in-page,
+html body .main-content,
+html body .page-content {
+  background:
+    radial-gradient(
+      ellipse 700px 500px at 80% 25%,
+      rgba(37, 99, 235, 0.12),
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 600px 450px at 10% 75%,
+      rgba(56, 189, 248, 0.07),
+      transparent 70%
+    ),
+
+    linear-gradient(
+      135deg,
+      #030817 0%,
+      #061226 35%,
+      #0A1B38 68%,
+      #102A52 100%
+    ) !important;
+
+  background-color: #061226 !important;
+}
+
+
+/* ============================================================
+   HERO / STUDY SECTION
+   ============================================================ */
+
+html body .hero,
+html body .dashboard-hero,
+html body .study-hero {
+  background: transparent !important;
+}
+
+
+/* ============================================================
+   STUDY MATERIAL CARD
+   ============================================================ */
+
+html body .study-material,
+html body .study-material-card,
+html body .material-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 40, 68, 0.88),
+      rgba(8, 22, 42, 0.94)
+    ) !important;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.18) !important;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.18) !important;
+}
+
+
+/* ============================================================
+   "WHAT WOULD YOU LIKE TO DO?" CARDS
+   ============================================================ */
+
+html body .action-card,
+html body .feature-card,
+html body .study-action-card {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(16, 36, 63, 0.90),
+      rgba(7, 20, 39, 0.96)
+    ) !important;
+
+  border:
+    1px solid rgba(59, 130, 246, 0.22) !important;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.15) !important;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+html body .action-card:hover,
+html body .feature-card:hover,
+html body .study-action-card:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(23, 52, 88, 0.94),
+      rgba(8, 25, 48, 0.98)
+    ) !important;
+
+  border-color:
+    rgba(56, 189, 248, 0.45) !important;
+
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 18px 45px rgba(37, 99, 235, 0.14) !important;
+}
+
+
+/* ============================================================
+   SELECTED ACTION CARD
+   ============================================================ */
+
+html body .action-card.active,
+html body .action-card.selected,
+html body .study-action-card.active {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(30, 75, 145, 0.72),
+      rgba(15, 48, 91, 0.90)
+    ) !important;
+
+  border-color:
+    #3B82F6 !important;
+
+  box-shadow:
+    0 12px 35px rgba(37, 99, 235, 0.20) !important;
+}
+
+
+/* ============================================================
+   PRIMARY BUTTONS
+   ============================================================ */
+
+html body .primary-button,
+html body .start-button,
+html body button.primary {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #3B82F6 50%,
+      #38BDF8 100%
+    ) !important;
+
+  border:
+    1px solid rgba(147, 197, 253, 0.28) !important;
+
+  color:
+    #FFFFFF !important;
+
+  box-shadow:
+    0 12px 30px rgba(37, 99, 235, 0.25) !important;
+}
+
+
+html body .primary-button:hover,
+html body .start-button:hover,
+html body button.primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #2563EB,
+      #0EA5E9
+    ) !important;
+
+  box-shadow:
+    0 16px 38px rgba(37, 99, 235, 0.35) !important;
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* ============================================================
+   HEADINGS
+   ============================================================ */
+
+html body .dashboard h1,
+html body .dashboard h2,
+html body .dashboard h3 {
+  color:
+    #F8FAFC !important;
+}
+
+
+/* Blue emphasis text */
+
+html body .dashboard .gradient-text,
+html body .dashboard .accent-text {
+  background:
+    linear-gradient(
+      90deg,
+      #60A5FA,
+      #3B82F6,
+      #38BDF8
+    ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+
+  -webkit-text-fill-color: transparent !important;
+}
+
+
+/* ============================================================
+   SUBTLE PAGE GLOW
+   ============================================================ */
+
+html body .dashboard-page::before,
+html body .logged-in-page::before {
+  content: "" !important;
+
+  position: fixed !important;
+
+  width: 700px !important;
+  height: 700px !important;
+
+  top: 5% !important;
+  right: -250px !important;
+
+  border-radius: 50% !important;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(37, 99, 235, 0.10),
+      transparent 70%
+    ) !important;
+
+  pointer-events: none !important;
+
+  z-index: 0 !important;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+html body footer,
+html body .footer,
+html body .app-footer {
+  background:
+    linear-gradient(
+      110deg,
+      #040A17 0%,
+      #08152C 40%,
+      #0D2142 72%,
+      #122B52 100%
+    ) !important;
+
+  background-color:
+    #08152C !important;
+
+  border-top:
+    1px solid rgba(59, 130, 246, 0.20) !important;
+}
