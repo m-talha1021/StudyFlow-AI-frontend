@@ -11415,3 +11415,30 @@ main .hero-badge {
     position: relative !important;
     top: 20px !important;
 }
+/* =========================================================
+   FORCE SPACE BETWEEN TOP BORDER AND AI BADGE
+   ========================================================= */
+
+body {
+    overflow-x: hidden;
+}
+
+/* Find the first visible content after the top navigation */
+body > *:first-child + * {
+    padding-top: 30px !important;
+}
+
+/* Any element containing the AI-powered learning text */
+*:has(> *:first-child) {
+    box-sizing: border-box;
+}
+
+/* Move the badge visually */
+*:where(
+    [class*="badge"],
+    [class*="Badge"],
+    [class*="ai"],
+    [class*="AI"]
+) {
+    box-sizing: border-box;
+}
