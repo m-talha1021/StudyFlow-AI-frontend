@@ -356,6 +356,7 @@ function App() {
   });
 
   const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   // Dashboard history
   const [dashboardHistoryType, setDashboardHistoryType] = useState(null);
@@ -1031,6 +1032,8 @@ function App() {
 
   const handleLogout = async () => {
     setMobileMenuOpen(false);
+    setShowDashboard(false);
+    setDashboardHistoryType(null);
 
     try {
       await signOut(auth);
@@ -1508,6 +1511,13 @@ function App() {
 
   const handleFlipFlashcard = () => {
     setFlashcardFlipped((previous) => !previous);
+  };
+
+  const handleCloseFlashcards = () => {
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setDashboardHistoryType(null);
   };
 
   // ========================================================
@@ -2448,9 +2458,13 @@ const trackFeatureUsage = async (featureName) => {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              document.getElementById("dashboard-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
+              setShowDashboard(true);
+              setDashboardHistoryType(null);
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
               });
             }}
           >
@@ -2566,25 +2580,43 @@ const trackFeatureUsage = async (featureName) => {
         </button>
       </header>
 
-     <section
-  id="dashboard-section"
-  className="dashboard-section">
-  <div
-    className="dashboard-heading">
-    <span className="section-kicker">YOUR DASHBOARD</span>
+      <section
+        id="dashboard-section"
+        className="dashboard-section"
+      >
+        <div className="dashboard-welcome">
+          <h2>
+            {user?.displayName
+              ? `Welcome back, ${user.displayName}`
+              : "Welcome back"}
+          </h2>
+        </div>
 
-    <h2>
-      {user?.displayName
-        ? `Welcome back, ${user.displayName}`
-        : "Your learning dashboard"}
-    </h2>
+        {showDashboard && (
+          <div className="dashboard-panel">
+            <div className="dashboard-heading">
+              <div className="dashboard-heading-content">
+               
+                <h2>Your Dashboard</h2>
+                <p>
+                  Your personal StudyFlow AI progress and activity.
+                </p>
+              </div>
 
-    <p>
-      Your personal StudyFlow AI progress and activity.
-    </p>
-  </div>
+              <button
+                type="button"
+                className="dashboard-close-btn"
+                onClick={() => {
+                  setShowDashboard(false);
+                  closeDashboardHistory();
+                }}
+                aria-label="Close dashboard"
+              >
+                X
+              </button>
+            </div>
 
-  {dashboardLoading ? (
+            {dashboardLoading ? (
     <div>
       Loading your dashboard...
     </div>
@@ -2787,7 +2819,10 @@ const trackFeatureUsage = async (featureName) => {
       )}
     </>
   )}
-</section>
+
+          </div>
+        )}
+      </section>
 
       <main className="container">
 
@@ -3416,11 +3451,7 @@ const trackFeatureUsage = async (featureName) => {
               <button
                 type="button"
                 className="flashcards-close-btn"
-                onClick={() => {
-                  setFlashcards([]);
-                  setFlashcardIndex(0);
-                  setFlashcardFlipped(false);
-                }}
+                onClick={handleCloseFlashcards}
                 aria-label="Close flashcards"
                 title="Close flashcards"
               >
