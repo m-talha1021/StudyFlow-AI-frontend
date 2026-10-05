@@ -10567,3 +10567,285 @@ footer a {
 footer a:hover {
   color: #60A5FA;
 }
+
+/* ============================================================
+   STUDYFLOW PUBLIC PAGE
+   FORCE GRADIENT BACKGROUND
+   Put this at the VERY END of your CSS
+   ============================================================ */
+
+html body .public-page {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+
+  background:
+    /* Cyan glow — upper right */
+    radial-gradient(
+      ellipse 650px 500px at 85% 20%,
+      rgba(56, 189, 248, 0.14),
+      transparent 68%
+    ),
+
+    /* Blue glow — lower left */
+    radial-gradient(
+      ellipse 600px 500px at 8% 82%,
+      rgba(37, 99, 235, 0.16),
+      transparent 70%
+    ),
+
+    /* Main gradient */
+    linear-gradient(
+      135deg,
+      #030817 0%,
+      #071326 28%,
+      #0A1935 58%,
+      #102B55 100%
+    ) !important;
+
+  background-color: #071326 !important;
+}
+
+
+/* ============================================================
+   EXTRA ATMOSPHERE
+   ============================================================ */
+
+html body .public-page::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  width: 750px !important;
+  height: 750px !important;
+
+  top: -300px !important;
+  right: -220px !important;
+
+  border-radius: 50% !important;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.13) 0%,
+      rgba(56, 189, 248, 0.05) 38%,
+      transparent 72%
+    ) !important;
+
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+
+/* Bottom blue atmosphere */
+
+html body .public-page::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  width: 850px !important;
+  height: 450px !important;
+
+  left: 50% !important;
+  bottom: -330px !important;
+
+  transform: translateX(-50%) !important;
+
+  border-radius: 50% !important;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(37, 99, 235, 0.14),
+      transparent 70%
+    ) !important;
+
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+
+html body .public-page .hero,
+html body .public-page .public-hero {
+  position: relative;
+  z-index: 1;
+
+  background: transparent !important;
+}
+
+
+/* ============================================================
+   AI POWERED BADGE
+   ============================================================ */
+
+html body .public-page .public-badge,
+html body .public-page .ai-badge {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.20),
+      rgba(56, 189, 248, 0.10)
+    ) !important;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.35) !important;
+
+  color: #7DD3FC !important;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.10) !important;
+}
+
+
+/* ============================================================
+   MAIN GRADIENT HEADING
+   ============================================================ */
+
+html body .public-page h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #60A5FA 0%,
+      #3B82F6 45%,
+      #38BDF8 100%
+    ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+
+/* ============================================================
+   GET STARTED BUTTON
+   ============================================================ */
+
+html body .public-page .primary-button,
+html body .public-page .get-started-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #3B82F6 48%,
+      #38BDF8 100%
+    ) !important;
+
+  border:
+    1px solid rgba(147, 197, 253, 0.30) !important;
+
+  color: #FFFFFF !important;
+
+  box-shadow:
+    0 12px 35px rgba(37, 99, 235, 0.30) !important;
+}
+
+
+html body .public-page .primary-button:hover,
+html body .public-page .get-started-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #2563EB,
+      #0EA5E9
+    ) !important;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 42px rgba(37, 99, 235, 0.40) !important;
+}
+
+
+/* ============================================================
+   SECONDARY BUTTON
+   ============================================================ */
+
+html body .public-page .secondary-button {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(24, 48, 82, 0.85),
+      rgba(10, 26, 49, 0.92)
+    ) !important;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.20) !important;
+
+  color: #F8FAFC !important;
+}
+
+
+html body .public-page .secondary-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.20),
+      rgba(10, 30, 56, 0.94)
+    ) !important;
+
+  border-color:
+    rgba(96, 165, 250, 0.40) !important;
+}
+
+
+/* ============================================================
+   FEATURE CARDS
+   ============================================================ */
+
+html body .public-page .feature-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22, 42, 70, 0.78),
+      rgba(8, 22, 41, 0.90)
+    ) !important;
+
+  border:
+    1px solid rgba(59, 130, 246, 0.35) !important;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.18) !important;
+}
+
+
+html body .public-page .feature-card:hover {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(28, 57, 94, 0.85),
+      rgba(9, 26, 49, 0.94)
+    ) !important;
+
+  border-color:
+    rgba(56, 189, 248, 0.55) !important;
+
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 22px 50px rgba(37, 99, 235, 0.14) !important;
+}
+
+
+/* ============================================================
+   FEATURE CARD ICON CONTAINER
+   ============================================================ */
+
+html body .public-page .feature-icon {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.18),
+      rgba(56, 189, 248, 0.10)
+    ) !important;
+
+  border:
+    1px solid rgba(96, 165, 250, 0.16) !important;
+}
