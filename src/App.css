@@ -9833,31 +9833,24 @@ select:focus-visible {
 
 /* Main welcome screen */
 .welcome-page {
-  min-height: calc(100vh - 77px);
-
-  position: relative;
-  isolation: isolate;
-
   background:
     radial-gradient(
-      ellipse 700px 500px at 75% 38%,
-      rgba(37, 99, 235, 0.13),
-      transparent 70%
+      circle at 75% 35%,
+      rgba(59, 130, 246, 0.20),
+      transparent 35%
     ),
     radial-gradient(
-      ellipse 500px 400px at 15% 15%,
-      rgba(59, 130, 246, 0.08),
-      transparent 70%
+      circle at 15% 15%,
+      rgba(30, 64, 175, 0.18),
+      transparent 35%
     ),
     linear-gradient(
       135deg,
-      #07111F 0%,
-      #080F1C 42%,
-      #0B172A 72%,
-      #0F1F38 100%
+      #050B18 0%,
+      #0B1530 45%,
+      #101F4D 75%,
+      #172B63 100%
     );
-
-  color: #F8FAFC;
 }
 
 
