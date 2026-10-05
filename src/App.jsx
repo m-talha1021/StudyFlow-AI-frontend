@@ -1032,6 +1032,8 @@ function App() {
 
   const handleLogout = async () => {
     setMobileMenuOpen(false);
+    setShowDashboard(false);
+    setDashboardHistoryType(null);
 
     try {
       await signOut(auth);
@@ -2450,9 +2452,12 @@ const trackFeatureUsage = async (featureName) => {
             onClick={() => {
               setMobileMenuOpen(false);
               setShowDashboard(true);
-              document.getElementById("dashboard-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
+              setDashboardHistoryType(null);
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
               });
             }}
           >
@@ -2568,28 +2573,48 @@ const trackFeatureUsage = async (featureName) => {
         </button>
       </header>
 
-     <section
-  id="dashboard-section"
-  className="dashboard-section">
-  <div
-    className="dashboard-heading">
-    <span className="section-kicker">YOUR DASHBOARD</span>
-
-    <h2>
-      {user?.displayName
-        ? `Welcome back, ${user.displayName}`
-        : "Welcome back"}
-    </h2>
-  </div>
-
-  {showDashboard && (
-    <div className="dashboard-panel">
-      {dashboardLoading ? (
-        <div className="dashboard-loading">
-          Loading your dashboard...
+      <section
+        id="dashboard-section"
+        className="dashboard-section"
+      >
+        <div className="dashboard-welcome">
+          <h2>
+            {user?.displayName
+              ? `Welcome back, ${user.displayName}`
+              : "Welcome back"}
+          </h2>
         </div>
-      ) : (
-        <>
+
+        {showDashboard && (
+          <div className="dashboard-panel">
+            <div className="dashboard-heading">
+              <div className="dashboard-heading-content">
+                <span className="section-kicker">YOUR DASHBOARD</span>
+                <h2>Your Dashboard</h2>
+                <p>
+                  Your personal StudyFlow AI progress and activity.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="dashboard-close-btn"
+                onClick={() => {
+                  setShowDashboard(false);
+                  closeDashboardHistory();
+                }}
+                aria-label="Close dashboard"
+              >
+                ×
+              </button>
+            </div>
+
+            {dashboardLoading ? (
+    <div>
+      Loading your dashboard...
+    </div>
+  ) : (
+    <>
       <div className="dashboard-stats-grid">
         {[
           {
@@ -2784,24 +2809,13 @@ const trackFeatureUsage = async (featureName) => {
             </p>
           )}
         </div>
-          )}
-        </>
       )}
-
-      <button
-        type="button"
-        className="dashboard-close-btn"
-        onClick={() => {
-          setShowDashboard(false);
-          closeDashboardHistory();
-        }}
-        aria-label="Close dashboard"
-      >
-        ×
-      </button>
-    </div>
+    </>
   )}
-</section>
+
+          </div>
+        )}
+      </section>
 
       <main className="container">
 
