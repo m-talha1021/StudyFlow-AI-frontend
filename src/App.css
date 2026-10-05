@@ -9903,3 +9903,540 @@ select:focus-visible {
 .welcome-hero > p {
   color: #94A3B8;
 }
+
+
+
+/* ============================================================
+   STUDYFLOW — LOGGED-IN DASHBOARD GRADIENT THEME
+   ============================================================ */
+
+/* ---------- Main logged-in application ---------- */
+
+.app {
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+
+  background:
+    radial-gradient(
+      ellipse 700px 500px at 78% 30%,
+      rgba(37, 99, 235, 0.16),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 550px 450px at 12% 85%,
+      rgba(56, 189, 248, 0.08),
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      #050B18 0%,
+      #071326 35%,
+      #0A1933 68%,
+      #10294D 100%
+    );
+
+  color: #F8FAFC;
+}
+
+
+/* ---------- Remove old yellow/purple global glow ---------- */
+
+.app::before {
+  background: none !important;
+}
+
+
+/* ============================================================
+   LOGGED-IN NAVBAR
+   ============================================================ */
+
+.app-navbar {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 11, 24, 0.96),
+      rgba(9, 24, 48, 0.94)
+    );
+
+  border-bottom:
+    1px solid rgba(59, 130, 246, 0.18);
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+
+/* Thin gradient line under navbar */
+
+.app-navbar::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #1D4ED8 25%,
+      #38BDF8 50%,
+      #3B82F6 75%,
+      transparent 100%
+    );
+
+  opacity: 0.55;
+}
+
+
+/* ============================================================
+   NAVIGATION BUTTONS
+   ============================================================ */
+
+.app-navbar .app-nav-links > button {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(17, 36, 65, 0.85),
+      rgba(10, 26, 50, 0.90)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.14);
+
+  color:
+    #E2E8F0;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+  transition:
+    all 0.2s ease;
+}
+
+
+.app-navbar .app-nav-links > button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.22),
+      rgba(56, 189, 248, 0.10)
+    );
+
+  border-color:
+    rgba(96, 165, 250, 0.38);
+
+  color:
+    #FFFFFF;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 8px 22px rgba(37, 99, 235, 0.12);
+}
+
+
+/* ============================================================
+   USER PROFILE PILL
+   ============================================================ */
+
+.app-navbar .user-pill {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(17, 36, 65, 0.90),
+      rgba(8, 22, 42, 0.95)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.16);
+
+  color:
+    #F8FAFC;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* ============================================================
+   LOGOUT BUTTON
+   ============================================================ */
+
+.app-navbar .logout-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #3B82F6 50%,
+      #38BDF8 100%
+    );
+
+  border:
+    1px solid rgba(147, 197, 253, 0.25);
+
+  color:
+    #FFFFFF;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.25);
+
+  transition:
+    all 0.2s ease;
+}
+
+
+.app-navbar .logout-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #2563EB,
+      #0EA5E9
+    );
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 12px 30px rgba(37, 99, 235, 0.35);
+}
+
+
+/* ============================================================
+   WELCOME TITLE
+   ============================================================ */
+
+.welcome-title {
+  color:
+    #F8FAFC;
+}
+
+
+/* If your heading uses this selector */
+
+.welcome-hero h1 {
+  color:
+    #F8FAFC;
+}
+
+
+.welcome-hero h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #60A5FA 0%,
+      #3B82F6 48%,
+      #38BDF8 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+
+/* ============================================================
+   LOGGED-IN HERO AREA
+   ============================================================ */
+
+.welcome-page {
+  background:
+    radial-gradient(
+      ellipse 650px 450px at 70% 40%,
+      rgba(37, 99, 235, 0.13),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 500px 400px at 20% 70%,
+      rgba(56, 189, 248, 0.06),
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      #050B18 0%,
+      #081326 42%,
+      #0B1A34 75%,
+      #102744 100%
+    );
+}
+
+
+/* ============================================================
+   STUDY MATERIAL CARD
+   ============================================================ */
+
+.study-material,
+.study-material-card,
+.upload-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 60, 0.82),
+      rgba(8, 20, 38, 0.90)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.16);
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+
+/* ============================================================
+   GENERIC DASHBOARD CARDS
+   ============================================================ */
+
+.card,
+.dashboard-card,
+.feature-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 60, 0.72),
+      rgba(8, 20, 38, 0.86)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.14);
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.16);
+}
+
+
+.card:hover,
+.dashboard-card:hover,
+.feature-card:hover {
+  border-color:
+    rgba(56, 189, 248, 0.32);
+}
+
+
+/* ============================================================
+   PRIMARY BUTTONS
+   ============================================================ */
+
+.generate-button,
+.primary-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB 0%,
+      #3B82F6 48%,
+      #38BDF8 100%
+    );
+
+  border:
+    1px solid rgba(147, 197, 253, 0.25);
+
+  color:
+    #FFFFFF;
+
+  box-shadow:
+    0 12px 32px rgba(37, 99, 235, 0.28);
+
+  transition:
+    all 0.2s ease;
+}
+
+
+.generate-button:hover,
+.primary-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #2563EB,
+      #0EA5E9
+    );
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 16px 40px rgba(37, 99, 235, 0.38);
+}
+
+
+/* ============================================================
+   SECONDARY BUTTONS
+   ============================================================ */
+
+.secondary-button {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(25, 48, 79, 0.80),
+      rgba(11, 27, 51, 0.90)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.18);
+
+  color:
+    #F8FAFC;
+}
+
+
+.secondary-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.16),
+      rgba(15, 35, 62, 0.92)
+    );
+
+  border-color:
+    rgba(96, 165, 250, 0.38);
+}
+
+
+/* ============================================================
+   MODE CARDS
+   ============================================================ */
+
+.mode {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 37, 64, 0.72),
+      rgba(9, 23, 43, 0.88)
+    );
+
+  border:
+    1px solid rgba(96, 165, 250, 0.13);
+
+  color:
+    #F8FAFC;
+}
+
+
+.mode:hover {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(37, 99, 235, 0.15),
+      rgba(10, 28, 53, 0.90)
+    );
+
+  border-color:
+    rgba(59, 130, 246, 0.42);
+}
+
+
+.mode.active {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(37, 99, 235, 0.22),
+      rgba(14, 45, 82, 0.85)
+    );
+
+  border-color:
+    #3B82F6;
+
+  box-shadow:
+    0 0 25px rgba(37, 99, 235, 0.12);
+}
+
+
+/* ============================================================
+   INPUTS / TEXTAREAS
+   ============================================================ */
+
+input,
+textarea,
+select {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16, 34, 58, 0.85),
+      rgba(8, 22, 41, 0.92)
+    );
+
+  border-color:
+    rgba(96, 165, 250, 0.14);
+
+  color:
+    #F8FAFC;
+}
+
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color:
+    rgba(59, 130, 246, 0.65);
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.10);
+}
+
+
+/* ============================================================
+   CHATBOT
+   ============================================================ */
+
+.chatbot-heading-button {
+  background:
+    linear-gradient(
+      135deg,
+      #2563EB,
+      #3B82F6,
+      #38BDF8
+    );
+
+  box-shadow:
+    0 10px 28px rgba(37, 99, 235, 0.28);
+}
+
+
+.chatbot-heading-active {
+  background:
+    linear-gradient(
+      135deg,
+      #1D4ED8,
+      #2563EB
+    );
+}
+
+
+/* ============================================================
+   SUBTLE BLUE ATMOSPHERE
+   ============================================================ */
+
+.welcome-page::after {
+  content: "";
+
+  position: absolute;
+
+  width: 700px;
+  height: 500px;
+
+  right: -250px;
+  top: 180px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(56, 189, 248, 0.07),
+      transparent 68%
+    );
+
+  pointer-events: none;
+  z-index: -1;
+}
+
