@@ -13330,49 +13330,47 @@ a:active {
   }
 }
 
-
 /* ============================================================
    DASHBOARD OPEN/CLOSE PANEL
 ============================================================ */
 .dashboard-panel {
   position: relative;
-  margin-top: 18px;
-  padding-top: 8px;
+  width: 100%;
 }
 
-.dashboard-close-button {
+.dashboard-close-btn {
   position: absolute;
   top: -4px;
   right: 0;
   width: 34px;
   height: 34px;
+  display: grid;
+  place-items: center;
   border: 1px solid rgba(153, 104, 237, 0.65);
   border-radius: 50%;
-  background: rgba(52, 62, 69, 0.95);
+  background: rgba(52, 62, 69, 0.92);
   color: #fff;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
   z-index: 5;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
 
-.dashboard-close-button:hover {
+.dashboard-close-btn:hover {
   transform: scale(1.08);
-  background: rgba(75, 85, 95, 0.98);
+  background: rgba(70, 80, 90, 0.98);
+  border-color: rgba(174, 126, 255, 0.95);
+}
+
+.dashboard-loading {
+  padding: 30px 10px;
+  text-align: center;
 }
 
 @media (max-width: 700px) {
-  .dashboard-panel {
-    margin-top: 14px;
-    padding-top: 42px;
-  }
-
-  .dashboard-close-button {
-    top: 0;
-    right: 4px;
-    width: 31px;
-    height: 31px;
-    font-size: 20px;
+  .dashboard-close-btn {
+    top: -2px;
+    right: 2px;
   }
 }
