@@ -11379,3 +11379,14 @@ main {
 main > div {
     min-height: 0 !important;
 }
+/* Add breathing room below the navbar/border */
+header + main {
+    padding-top: 25px !important;
+}
+
+/* Badge spacing */
+main .badge,
+main .ai-badge,
+main .hero-badge {
+    margin-top: 15px !important;
+}
