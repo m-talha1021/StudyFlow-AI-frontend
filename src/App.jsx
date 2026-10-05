@@ -2589,7 +2589,7 @@ const trackFeatureUsage = async (featureName) => {
           <div className="dashboard-panel">
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
-                <span className="section-kicker">YOUR DASHBOARD</span>
+               
                 <h2>Your Dashboard</h2>
                 <p>
                   Your personal StudyFlow AI progress and activity.
@@ -2605,7 +2605,7 @@ const trackFeatureUsage = async (featureName) => {
                 }}
                 aria-label="Close dashboard"
               >
-                ×
+                X
               </button>
             </div>
 
