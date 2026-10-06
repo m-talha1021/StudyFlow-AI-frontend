@@ -11844,3 +11844,35 @@ nav button:hover *,
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10) !important;
 }
 
+
+
+
+/* =========================================================
+   FLASHCARDS - MOBILE QUESTION + ANSWER TEXT
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  /* Question */
+  .flashcard .question,
+  .flashcard .question-text,
+  .flashcard .card-question,
+  .flashcard .question-content,
+
+  /* Answer */
+  .flashcard .answer,
+  .flashcard .answer-text,
+  .flashcard .card-answer,
+  .flashcard .answer-content,
+
+  /* Generic text inside flashcard */
+  [class*="flashcard"] .question,
+  [class*="flashcard"] .question-text,
+  [class*="flashcard"] .answer,
+  [class*="flashcard"] .answer-text {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+  }
+
+}
