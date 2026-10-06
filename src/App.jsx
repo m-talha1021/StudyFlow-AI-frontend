@@ -4097,7 +4097,67 @@ const trackFeatureUsage = async (featureName) => {
 
         </div>
       )}
+function CookieConsent() {
+  const [showCookieBar, setShowCookieBar] = useState(false);
 
+  useEffect(() => {
+    const consent = localStorage.getItem("studyflow_cookie_consent");
+
+    if (!consent) {
+      setShowCookieBar(true);
+    }
+  }, []);
+
+  const handleConsent = (choice) => {
+    localStorage.setItem(
+      "studyflow_cookie_consent",
+      JSON.stringify({
+        choice,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    setShowCookieBar(false);
+  };
+
+  if (!showCookieBar) {
+    return null;
+  }
+
+  return (
+    <div
+      className="cookie-consent-bar"
+      role="dialog"
+      aria-label="Cookie consent"
+    >
+      <div className="cookie-consent-content">
+        <span className="cookie-consent-icon">🍪</span>
+
+        <p className="cookie-consent-text">
+          We use cookies to improve your StudyFlow AI experience.
+        </p>
+
+        <div className="cookie-consent-actions">
+          <button
+            type="button"
+            className="cookie-decline-button"
+            onClick={() => handleConsent("declined")}
+          >
+            Decline
+          </button>
+
+          <button
+            type="button"
+            className="cookie-accept-button"
+            onClick={() => handleConsent("accepted")}
+          >
+            Accept
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
       {/* ==================================================
           FOOTER
       ================================================== */}
