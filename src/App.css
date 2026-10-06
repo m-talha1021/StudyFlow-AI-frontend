@@ -2818,76 +2818,6 @@ footer h3 {
 
 
 
-/* ==================================================
-   WHAT WOULD YOU LIKE TO DO + CHATBOT
-================================================== */
-
-.action-heading-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.action-heading-row h2 {
-  margin: 0;
-  padding: 0;
-}
-
-/* Chatbot button beside heading */
-
-.chatbot-heading-button {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  border: none;
-  border-radius: 50%;
-
-  background: linear-gradient(135deg,
-      #6638e8,
-      #7745f5);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 8px 22px rgba(101, 56, 232, 0.35);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.chatbot-heading-button:hover {
-  transform: scale(1.08);
-
-  box-shadow:
-    0 10px 28px rgba(101, 56, 232, 0.5);
-}
-
-.chatbot-heading-button:active {
-  transform: scale(0.96);
-}
-
-.heading-robot-icon {
-  font-size: 30px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chatbot-heading-active {
-  box-shadow:
-    0 0 0 4px rgba(119, 69, 245, 0.2),
-    0 10px 28px rgba(101, 56, 232, 0.5);
-}
-
 /* =========================================
    ACTION HEADING + CHATBOT
 ========================================= */
@@ -11309,7 +11239,7 @@ body * {
 
 
 /* ============================================================
-   STUDYFLOW AI — SMALL COOKIE CONSENT BAR
+   STUDYFLOW AI — COOKIE CONSENT BAR
    ============================================================ */
 
 .cookie-consent-bar {
@@ -11317,71 +11247,41 @@ body * {
   left: 50% !important;
   bottom: 16px !important;
   transform: translateX(-50%) !important;
-
+  z-index: 999999 !important;
   width: min(720px, calc(100% - 28px)) !important;
   box-sizing: border-box !important;
-
   padding: 9px 12px !important;
-
-  display: flex !important;
-  align-items: center !important;
-
-  background: linear-gradient(
-    135deg,
-    rgba(4, 15, 32, 0.97),
-    rgba(17, 35, 68, 0.97)
-  ) !important;
-
   border: 1px solid rgba(96, 165, 250, 0.28) !important;
   border-radius: 11px !important;
-
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.35),
-    0 0 20px rgba(59, 130, 246, 0.08) !important;
-
+  background: linear-gradient(135deg, rgba(4, 15, 32, 0.97), rgba(17, 35, 68, 0.97)) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(59, 130, 246, 0.08) !important;
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
-
-  z-index: 999999 !important;
 }
 
 .cookie-consent-content {
   width: 100% !important;
-
   display: flex !important;
   align-items: center !important;
-
   gap: 10px !important;
 }
 
 .cookie-consent-icon {
   width: 28px !important;
   height: 28px !important;
-
-  flex-shrink: 0 !important;
-
+  flex: 0 0 28px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-
   border-radius: 7px !important;
-
-  background: linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-  ) !important;
-
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
   font-size: 14px !important;
 }
 
 .cookie-consent-text {
   flex: 1 !important;
-
   margin: 0 !important;
-
   color: #cbd5e1 !important;
-
   font-size: 12px !important;
   line-height: 1.35 !important;
 }
@@ -11390,31 +11290,23 @@ body * {
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-
-  flex-shrink: 0 !important;
+  flex: 0 0 auto !important;
 }
 
 .cookie-consent-actions button {
   height: 30px !important;
-
   padding: 0 12px !important;
-
   border-radius: 7px !important;
-
   font-family: inherit !important;
   font-size: 12px !important;
   font-weight: 600 !important;
-
   cursor: pointer !important;
-
-  transition: all 0.2s ease !important;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .cookie-decline-button {
   background: rgba(255, 255, 255, 0.04) !important;
-
   border: 1px solid rgba(148, 163, 184, 0.28) !important;
-
   color: #cbd5e1 !important;
 }
 
@@ -11425,30 +11317,15 @@ body * {
 
 .cookie-accept-button {
   border: 1px solid rgba(96, 165, 250, 0.3) !important;
-
-  background: linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-  ) !important;
-
+  background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
   color: #ffffff !important;
-
-  box-shadow:
-    0 4px 12px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
 }
 
 .cookie-accept-button:hover {
-  background: linear-gradient(
-    135deg,
-    #3b82f6,
-    #9333ea
-  ) !important;
-
+  background: linear-gradient(135deg, #3b82f6, #9333ea) !important;
   transform: translateY(-1px) !important;
-
-  box-shadow:
-    0 6px 18px rgba(59, 130, 246, 0.32) !important;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.32) !important;
 }
 
 @media (max-width: 600px) {
