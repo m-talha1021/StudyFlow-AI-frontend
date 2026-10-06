@@ -11846,33 +11846,37 @@ nav button:hover *,
 
 
 
-
 /* =========================================================
-   FLASHCARDS - MOBILE QUESTION + ANSWER TEXT
+   FLASHCARD QUESTION + ANSWER TEXT FIX
+   Based on actual JSX classes
    ========================================================= */
 
 @media (max-width: 768px) {
 
-  /* Question */
-  .flashcard .question,
-  .flashcard .question-text,
-  .flashcard .card-question,
-  .flashcard .question-content,
-
-  /* Answer */
-  .flashcard .answer,
-  .flashcard .answer-text,
-  .flashcard .card-answer,
-  .flashcard .answer-content,
-
-  /* Generic text inside flashcard */
-  [class*="flashcard"] .question,
-  [class*="flashcard"] .question-text,
-  [class*="flashcard"] .answer,
-  [class*="flashcard"] .answer-text {
+  /* Question text */
+  .flashcard .flashcard-front p {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+    opacity: 1 !important;
   }
 
+  /* Answer text */
+  .flashcard .flashcard-back p {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+  }
+
+  /* Question / Answer labels */
+  .flashcard .flashcard-label {
+    color: #60a5fa !important;
+    -webkit-text-fill-color: #60a5fa !important;
+  }
+
+  /* Small instruction text */
+  .flashcard .flashcard-front small,
+  .flashcard .flashcard-back small {
+    color: #cbd5e1 !important;
+    -webkit-text-fill-color: #cbd5e1 !important;
+  }
 }
