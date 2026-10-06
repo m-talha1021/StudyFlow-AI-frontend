@@ -11302,3 +11302,171 @@ body * {
     transform:
         translateY(-2px) !important;
 }
+
+
+
+
+
+
+/* ============================================================
+   STUDYFLOW AI — SMALL COOKIE CONSENT BAR
+   ============================================================ */
+
+.cookie-consent-bar {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 16px !important;
+  transform: translateX(-50%) !important;
+
+  width: min(720px, calc(100% - 28px)) !important;
+  box-sizing: border-box !important;
+
+  padding: 9px 12px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(4, 15, 32, 0.97),
+    rgba(17, 35, 68, 0.97)
+  ) !important;
+
+  border: 1px solid rgba(96, 165, 250, 0.28) !important;
+  border-radius: 11px !important;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(59, 130, 246, 0.08) !important;
+
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+
+  z-index: 999999 !important;
+}
+
+.cookie-consent-content {
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 10px !important;
+}
+
+.cookie-consent-icon {
+  width: 28px !important;
+  height: 28px !important;
+
+  flex-shrink: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 7px !important;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  ) !important;
+
+  font-size: 14px !important;
+}
+
+.cookie-consent-text {
+  flex: 1 !important;
+
+  margin: 0 !important;
+
+  color: #cbd5e1 !important;
+
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+.cookie-consent-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+
+  flex-shrink: 0 !important;
+}
+
+.cookie-consent-actions button {
+  height: 30px !important;
+
+  padding: 0 12px !important;
+
+  border-radius: 7px !important;
+
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+
+  cursor: pointer !important;
+
+  transition: all 0.2s ease !important;
+}
+
+.cookie-decline-button {
+  background: rgba(255, 255, 255, 0.04) !important;
+
+  border: 1px solid rgba(148, 163, 184, 0.28) !important;
+
+  color: #cbd5e1 !important;
+}
+
+.cookie-decline-button:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #ffffff !important;
+}
+
+.cookie-accept-button {
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  ) !important;
+
+  color: #ffffff !important;
+
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+.cookie-accept-button:hover {
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #9333ea
+  ) !important;
+
+  transform: translateY(-1px) !important;
+
+  box-shadow:
+    0 6px 18px rgba(59, 130, 246, 0.32) !important;
+}
+
+@media (max-width: 600px) {
+  .cookie-consent-bar {
+    width: calc(100% - 20px) !important;
+    bottom: 10px !important;
+  }
+
+  .cookie-consent-content {
+    flex-wrap: wrap !important;
+  }
+
+  .cookie-consent-text {
+    font-size: 11px !important;
+  }
+
+  .cookie-consent-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
+  }
+}
