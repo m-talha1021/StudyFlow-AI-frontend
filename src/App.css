@@ -9141,9 +9141,7 @@ body {
 
 /* Hero heading */
 
-.welcome-hero h1 {
-  color: #F8FAFC;
-}
+
 
 .welcome-hero h1 span {
   background: linear-gradient(
@@ -9756,9 +9754,7 @@ select:focus-visible {
 
 
 /* Remove the old purple / yellow background effects */
-.app::before {
-  background: none !important;
-}
+
 
 
 /* Main welcome screen */
@@ -11345,5 +11341,146 @@ body * {
   .cookie-consent-actions {
     width: 100% !important;
     justify-content: flex-end !important;
+  }
+}
+
+/* ============================================================
+   STUDYFLOW AI — PRODUCTION / ACCESSIBILITY OVERRIDES
+   Keep this section as the final source of truth for new
+   launch-readiness styles. Older component rules above remain
+   intact where they are needed by the existing UI.
+   ============================================================ */
+
+:root {
+  --sf-blue: #2563eb;
+  --sf-blue-light: #38bdf8;
+  --sf-purple: #7c3aed;
+  --sf-page-dark: #020617;
+  --sf-text: #f8fafc;
+  --sf-muted: #cbd5e1;
+}
+
+/* Visible keyboard focus for buttons, links and form controls. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(56, 189, 248, 0.85) !important;
+  outline-offset: 3px !important;
+}
+
+/* Public-page footer. */
+.public-footer {
+  width: 100%;
+  padding: 28px 20px 34px;
+  background: linear-gradient(135deg, #020617 0%, #07152d 48%, #12345f 100%);
+  border-top: 1px solid rgba(96, 165, 250, 0.18);
+}
+
+.public-footer-inner {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.public-footer strong {
+  color: #fff;
+  font-size: 16px;
+}
+
+.public-footer p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.public-footer-links,
+.app-footer-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.public-footer-links a,
+.app-footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.public-footer-links a:hover,
+.app-footer-links a:hover {
+  color: #7dd3fc;
+}
+
+/* Logged-in footer. */
+.app-footer {
+  margin-top: 48px;
+  padding: 30px 24px;
+  background: linear-gradient(135deg, #020617 0%, #07152d 48%, #12345f 100%) !important;
+  border-top: 1px solid rgba(96, 165, 250, 0.18) !important;
+}
+
+.app-footer-main {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.app-footer-main p {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+/* Small, readable consent bar. */
+.cookie-consent-bar {
+  width: min(720px, calc(100% - 28px)) !important;
+  padding: 9px 12px !important;
+  border-radius: 11px !important;
+  background: linear-gradient(135deg, rgba(4, 15, 32, 0.97), rgba(17, 35, 68, 0.97)) !important;
+  border: 1px solid rgba(96, 165, 250, 0.28) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+.cookie-consent-text a {
+  color: #7dd3fc !important;
+  text-decoration: underline !important;
+}
+
+.cookie-consent-text a:hover {
+  color: #ffffff !important;
+}
+
+@media (max-width: 700px) {
+  .public-footer-inner,
+  .app-footer-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .public-footer-links,
+  .app-footer-links {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
