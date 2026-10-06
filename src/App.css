@@ -11347,3 +11347,95 @@ body * {
     justify-content: flex-end !important;
   }
 }
+
+
+
+
+
+
+/* =========================================================
+   FINAL NAVBAR GRADIENT OVERRIDE
+   Put this at the VERY END of App.css
+   ========================================================= */
+
+body header,
+body .navbar,
+body nav,
+header.navbar,
+nav.navbar {
+    background: linear-gradient(
+        90deg,
+        #071426 0%,
+        #0b1f3a 30%,
+        #172554 65%,
+        #24145f 100%
+    ) !important;
+
+    background-color: transparent !important;
+    background-image: linear-gradient(
+        90deg,
+        #071426 0%,
+        #0b1f3a 30%,
+        #172554 65%,
+        #24145f 100%
+    ) !important;
+
+    border-bottom: 1px solid rgba(96, 165, 250, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Override inner navbar containers */
+body header > *,
+body .navbar > *,
+body nav > * {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* If the navbar has a wrapper/container */
+body header .container,
+body header .navbar-container,
+body nav .container,
+body nav .navbar-container {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Keep navigation buttons visible */
+body header button,
+body nav button {
+    background-color: rgba(15, 35, 65, 0.75) !important;
+}
+
+/* Navbar button hover */
+body header button:hover,
+body nav button:hover {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    ) !important;
+
+    color: #ffffff !important;
+    border-color: rgba(147, 197, 253, 0.6) !important;
+}
+
+/* User/profile area */
+body header .user-menu,
+body header .profile,
+body nav .user-menu,
+body nav .profile {
+    background: rgba(10, 30, 60, 0.75) !important;
+}
+
+/* Logout button */
+body header button:last-child,
+body nav button:last-child {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #38bdf8
+    ) !important;
+
+    color: #ffffff !important;
+}
