@@ -36,6 +36,39 @@ const API_BASE_URL =
   (import.meta.env?.VITE_API_BASE_URL ||
     "https://study-flow-ai-backend.vercel.app").replace(/\/+$/, "");
 
+const GA_MEASUREMENT_ID =
+  import.meta.env?.VITE_GA_MEASUREMENT_ID || "";
+
+const loadAnalytics = () => {
+  if (!GA_MEASUREMENT_ID || typeof window === "undefined") {
+    return;
+  }
+
+  if (window.__studyflowAnalyticsLoaded) {
+    return;
+  }
+
+  window.__studyflowAnalyticsLoaded = true;
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", GA_MEASUREMENT_ID, {
+    anonymize_ip: true,
+    send_page_view: true,
+  });
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(
+    GA_MEASUREMENT_ID
+  )}`;
+  document.head.appendChild(script);
+};
+
 // ========================================================
 // API HELPER
 // ========================================================
@@ -44,6 +77,10 @@ const apiRequest = async (endpoint, options = {}) => {
   const isFormData =
     typeof FormData !== "undefined" &&
     options.body instanceof FormData;
+
+  const token = auth.currentUser
+    ? await auth.currentUser.getIdToken()
+    : "";
 
   const response = await fetch(
     `${API_BASE_URL}${endpoint}`,
@@ -57,6 +94,12 @@ const apiRequest = async (endpoint, options = {}) => {
               "Content-Type":
                 "application/json",
             }),
+
+        ...(token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {}),
 
         ...(options.headers || {}),
       },
@@ -142,7 +185,28 @@ function WelcomePage({ onLogin, onSignup }) {
           </div>
         </section>
       </main>
+
+      <PublicFooter />
+      <CookieConsent />
     </div>
+  );
+}
+
+function PublicFooter() {
+  return (
+    <footer className="public-footer">
+      <div className="public-footer-inner">
+        <div>
+          <strong>StudyFlow AI</strong>
+          <p>Learn better, understand faster.</p>
+        </div>
+
+        <nav className="public-footer-links" aria-label="Legal">
+          <a href="/privacy.html">Privacy Policy</a>
+          <a href="/terms.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </footer>
   );
 }
 
@@ -229,6 +293,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 }
                 placeholder="your password"
                 autoComplete={isSignup ? "new-password" : "current-password"}
+                minLength={6}
                 required
               />
               <button
@@ -310,6 +375,9 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
           </p>
         </form>
       </main>
+
+      <PublicFooter />
+      <CookieConsent />
     </div>
   );
 }
@@ -318,21 +386,40 @@ function CookieConsent() {
   const [showCookieBar, setShowCookieBar] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("studyflow_cookie_consent");
+    try {
+      const consent = localStorage.getItem("studyflow_cookie_consent");
 
-    if (!consent) {
+      if (!consent) {
+        setShowCookieBar(true);
+        return;
+      }
+
+      const parsedConsent = JSON.parse(consent);
+
+      if (parsedConsent?.choice === "accepted") {
+        loadAnalytics();
+      }
+    } catch {
       setShowCookieBar(true);
     }
   }, []);
 
   const handleConsent = (choice) => {
-    localStorage.setItem(
-      "studyflow_cookie_consent",
-      JSON.stringify({
-        choice,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    try {
+      localStorage.setItem(
+        "studyflow_cookie_consent",
+        JSON.stringify({
+          choice,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    } catch {
+      // Consent UI should still work if browser storage is unavailable.
+    }
+
+    if (choice === "accepted") {
+      loadAnalytics();
+    }
 
     setShowCookieBar(false);
   };
@@ -345,13 +432,16 @@ function CookieConsent() {
     <div
       className="cookie-consent-bar"
       role="dialog"
-      aria-label="Cookie consent"
+      aria-modal="false"
+      aria-label="Cookie preferences"
     >
       <div className="cookie-consent-content">
-        <span className="cookie-consent-icon">🍪</span>
+        <span className="cookie-consent-icon" aria-hidden="true">🍪</span>
 
         <p className="cookie-consent-text">
-          We use cookies to improve your StudyFlow AI experience.
+          We use essential browser storage to remember your preferences.
+          Optional analytics are only enabled after you accept.
+          <a href="/privacy.html"> Privacy Policy</a>
         </p>
 
         <div className="cookie-consent-actions">
@@ -958,6 +1048,16 @@ function App() {
     if (isSignup) {
       if (!authForm.name.trim()) {
         setAuthError("Please enter your full name.");
+        return;
+      }
+
+      if (authForm.name.trim().length < 2) {
+        setAuthError("Please enter a valid name.");
+        return;
+      }
+
+      if (password.length < 6) {
+        setAuthError("Password should be at least 6 characters.");
         return;
       }
 
@@ -4165,35 +4265,19 @@ const trackFeatureUsage = async (featureName) => {
           FOOTER
       ================================================== */}
 
-      <footer>
+      <footer className="app-footer">
+        <div className="app-footer-main">
+          <p>
+            <b>
+              StudyFlow AI • Learn better, Grow faster. Developed by M. Talha
+            </b>
+          </p>
 
-        <p
-          style={{
-            color: "white",
-            fontSize: "18px",
-          }}
-        >
-
-          <b>
-            StudyFlow AI • Learn better,
-            Grow faster. Developed by:
-          </b>
-
-        </p>
-
-        <h3
-          style={{
-            color: "white",
-            fontSize: "20px",
-          }}
-        >
-
-          <b>
-            M. Talha
-          </b>
-
-        </h3>
-
+          <nav className="app-footer-links" aria-label="Legal">
+            <a href="/privacy.html">Privacy Policy</a>
+            <a href="/terms.html">Terms &amp; Conditions</a>
+          </nav>
+        </div>
       </footer>
 
       {showGoUp && (
