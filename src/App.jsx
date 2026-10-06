@@ -2993,83 +2993,72 @@ const trackFeatureUsage = async (featureName) => {
 
           {/* MOBILE CAMERA */}
 
-          <div className="camera-upload">
+          {/* MOBILE CAMERA */}
+<div className="camera-upload">
+  <button
+    type="button"
+    className="camera-button camera-button-large"
+    onClick={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openCamera();
+    }}
+    disabled={processing}
+    title="Take a photo"
+    aria-label="Take a photo"
+  >
+    <span className="camera-icon-wrap">
+      <svg
+        className="camera-svg"
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          className="camera-corner"
+          d="M12 30V12H30 M70 12H88V30 M88 70V88H70 M30 88H12V70"
+        />
 
-            <button
-              type="button"
-              className="camera-button"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                openCamera();
-              }}
-              disabled={processing}
-              title="Take a photo"
-              aria-label="Take a photo"
-            >
+        <rect
+          className="camera-body"
+          x="25"
+          y="32"
+          width="50"
+          height="40"
+          rx="8"
+        />
 
-              <svg
-                className="camera-svg"
-                viewBox="0 0 100 100"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
+        <circle
+          className="camera-lens"
+          cx="50"
+          cy="52"
+          r="11"
+        />
 
-                <path
-                  className="camera-corner"
-                  d="M12 30V12H30"
-                />
+        <circle
+          className="camera-dot"
+          cx="65"
+          cy="41"
+          r="3"
+        />
+      </svg>
+    </span>
 
-                <path
-                  className="camera-corner"
-                  d="M70 12H88V30"
-                />
+    <span className="camera-text">
+      Take Photo
+    </span>
+  </button>
 
-                <path
-                  className="camera-corner"
-                  d="M12 70V88H30"
-                />
-
-                <path
-                  className="camera-corner"
-                  d="M70 88H88V70"
-                />
-
-                <path
-                  className="camera-body"
-                  d="M25 38H34L39 30H61L66 38H75C78 38 80 40 80 43V68C80 71 78 73 75 73H25C22 73 20 71 20 68V43C20 40 22 38 25 38Z"
-                />
-
-                <circle
-                  className="camera-lens"
-                  cx="50"
-                  cy="55"
-                  r="11"
-                />
-
-              </svg>
-
-              <span className="camera-text">
-                Take Photo
-              </span>
-
-            </button>
-
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={
-                handleCameraCapture
-              }
-              disabled={processing}
-              style={{
-                display: "none",
-              }}
-            />
-
-          </div>
+  <input
+    ref={cameraInputRef}
+    type="file"
+    accept="image/*"
+    capture="environment"
+    onChange={handleCameraCapture}
+    disabled={processing}
+    style={{ display: "none" }}
+  />
+</div>
 
           {/* SELECTED FILE */}
 
