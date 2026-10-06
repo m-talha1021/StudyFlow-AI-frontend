@@ -11351,91 +11351,55 @@ body * {
 
 
 
+/* =========================================
+   REMOVE BOX/BACKGROUND BEHIND NAVBAR
+   ========================================= */
 
-
-/* =========================================================
-   FINAL NAVBAR GRADIENT OVERRIDE
-   Put this at the VERY END of App.css
-   ========================================================= */
-
-body header,
-body .navbar,
-body nav,
-header.navbar,
-nav.navbar {
-    background: linear-gradient(
-        90deg,
-        #071426 0%,
-        #0b1f3a 30%,
-        #172554 65%,
-        #24145f 100%
-    ) !important;
-
-    background-color: transparent !important;
-    background-image: linear-gradient(
-        90deg,
-        #071426 0%,
-        #0b1f3a 30%,
-        #172554 65%,
-        #24145f 100%
-    ) !important;
-
-    border-bottom: 1px solid rgba(96, 165, 250, 0.4) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Override inner navbar containers */
-body header > *,
-body .navbar > *,
-body nav > * {
+/* Navbar itself */
+nav,
+.navbar,
+header,
+.navbar-container,
+.nav-container,
+.nav-menu,
+.nav-links {
     background: transparent !important;
-    background-color: transparent !important;
+    box-shadow: none !important;
+    background-image: none !important;
 }
 
-/* If the navbar has a wrapper/container */
-body header .container,
-body header .navbar-container,
-body nav .container,
-body nav .navbar-container {
+/* Remove background from common navigation wrappers */
+nav > div,
+header > div,
+.navbar > div,
+.navbar-container > div,
+.nav-menu-container {
     background: transparent !important;
-    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
-/* Keep navigation buttons visible */
-body header button,
-body nav button {
-    background-color: rgba(15, 35, 65, 0.75) !important;
+/* Remove unwanted border around the navbar */
+nav,
+.navbar,
+header {
+    border: none !important;
 }
 
-/* Navbar button hover */
-body header button:hover,
-body nav button:hover {
-    background: linear-gradient(
-        135deg,
-        #2563eb,
-        #7c3aed
-    ) !important;
-
-    color: #ffffff !important;
-    border-color: rgba(147, 197, 253, 0.6) !important;
+/* Keep the individual navigation buttons styled */
+nav a,
+.navbar a,
+.nav-menu a,
+.nav-links a,
+nav button,
+.navbar button {
+    background: transparent;
 }
 
-/* User/profile area */
-body header .user-menu,
-body header .profile,
-body nav .user-menu,
-body nav .profile {
-    background: rgba(10, 30, 60, 0.75) !important;
+/* Optional: keep the buttons as separate rounded items */
+nav a:hover,
+.navbar a:hover,
+.nav-menu a:hover,
+.nav-links a:hover {
+    background: rgba(59, 130, 246, 0.12) !important;
 }
 
-/* Logout button */
-body header button:last-child,
-body nav button:last-child {
-    background: linear-gradient(
-        135deg,
-        #2563eb,
-        #38bdf8
-    ) !important;
-
-    color: #ffffff !important;
-}
