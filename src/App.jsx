@@ -2556,6 +2556,7 @@ const trackFeatureUsage = async (featureName) => {
           <button
             type="button"
             onClick={() => {
+              setmode("oral");
               setMobileMenuOpen(false);
               document.getElementById("action-section")?.scrollIntoView({
                 behavior: "smooth",
@@ -2563,7 +2564,7 @@ const trackFeatureUsage = async (featureName) => {
               });
             }}
           >
-            Quiz &amp; AI
+            Oral Test
           </button>
 
           <button
