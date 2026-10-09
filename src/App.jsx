@@ -2556,20 +2556,6 @@ const trackFeatureUsage = async (featureName) => {
           <button
             type="button"
             onClick={() => {
-              setmode("oral");
-              setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Oral Test
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
               setMode("test");
               setMobileMenuOpen(false);
               document.getElementById("action-section")?.scrollIntoView({
