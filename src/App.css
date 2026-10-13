@@ -12073,35 +12073,34 @@ nav button:hover *,
   box-shadow: none;
 }
 
-/* Mobile menu button — blue theme */
-@media (max-width: 768px) {
-  .menu-toggle,
-  .mobile-menu-toggle,
-  .hamburger-button {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-    border: 1px solid rgba(96, 165, 250, 0.65) !important;
-    border-radius: 14px !important;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
-    transition: all 0.25s ease !important;
-  }
 
-  .menu-toggle:hover,
-  .mobile-menu-toggle:hover,
-  .hamburger-button:hover {
-    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
-    border-color: #93c5fd !important;
-  }
-
-  .menu-toggle span,
-  .mobile-menu-toggle span,
-  .hamburger-button span,
-  .menu-toggle svg,
-  .mobile-menu-toggle svg,
-  .hamburger-button svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
-  }
+/* Blue gradient — mobile navigation button */
+.navbar-menu-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.7) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3) !important;
+  transition: all 0.3s ease !important;
 }
+
+/* White hamburger lines */
+.navbar-menu-button span {
+  background-color: #ffffff !important;
+}
+
+/* Brighter blue gradient on hover */
+.navbar-menu-button:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%) !important;
+  border-color: #93c5fd !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+/* Press effect */
+.navbar-menu-button:active {
+  transform: scale(0.96) !important;
+}
+
 
 
 }
