@@ -11992,3 +11992,19 @@ nav button:hover *,
   .feedback-overlay, .feedback-modal { animation: none; }
   .feedback-submit, .feedback-type-chip { transition: none; }
 }
+
+/* StudyFlow AI logo inside the feedback modal */
+.feedback-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.feedback-icon img {
+  display: block;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+}
+
