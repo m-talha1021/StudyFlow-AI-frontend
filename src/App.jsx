@@ -366,7 +366,7 @@ function FeedbackModal({ user, onClose }) {
           <div className="feedback-art-orb feedback-art-orb-two" />
           <div className="feedback-icon">
             <img
-              src="./assets/favicon.png"
+              src="/favicon.png"
               alt="StudyFlow AI logo"
             />
           </div>
