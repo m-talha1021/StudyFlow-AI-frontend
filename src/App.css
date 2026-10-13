@@ -12047,7 +12047,7 @@ nav button:hover *,
 /* Hover Effect */
 .forgot-password-button:hover {
   background-color: #0c6be8;
-  color: #1675f2;
+  color: #ffffff;
   border-color: #a78bfa;
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(124, 58, 237, 0.18);
@@ -12075,19 +12075,13 @@ nav button:hover *,
 
 
 /* Blue gradient — mobile navigation button */
-.navbar-menu-button {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%) !important;
-  border: 1px solid rgba(96, 165, 250, 0.7) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3) !important;
-  transition: all 0.3s ease !important;
-}
 
 
 .navbar-menu-button {
   background: linear-gradient(135deg, #38bdf8, #2563eb, #1d4ed8) !important;
   background-color: #2563eb !important;
   border-color: #60a5fa !important;
+  font-weight: 430 !important;
 }
 
 
