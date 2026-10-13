@@ -11980,6 +11980,7 @@ nav button:hover *,
   .feedback-form textarea { min-height: 100px; }
   .feedback-close { top: 10px; right: 10px; width: 32px; height: 32px; }
   .app-nav-links .feedback-nav-link { justify-content: flex-start !important; }
+  .feedback-type-chip { font-size: 10px; } 
 }
 @media (max-width: 360px) {
   .feedback-overlay { padding: 7px; }
@@ -12028,7 +12029,7 @@ nav button:hover *,
   padding: 6px 10px;
   margin: 8px 0 12px;
 
-  background: #1675f2;
+  background-color: #1675f2;
   color: #ffffff;
 
   border: 1px solid rgba(167, 139, 250, 0.35);
@@ -12045,7 +12046,7 @@ nav button:hover *,
 
 /* Hover Effect */
 .forgot-password-button:hover {
-  background: rgba(124, 58, 237, 0.20);
+  background-color: #0c6be8;
   color: #1675f2;
   border-color: #a78bfa;
   transform: translateY(-1px);
@@ -12071,6 +12072,37 @@ nav button:hover *,
   transform: none;
   box-shadow: none;
 }
+
+/* Mobile menu button — blue theme */
+@media (max-width: 768px) {
+  .menu-toggle,
+  .mobile-menu-toggle,
+  .hamburger-button {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border: 1px solid rgba(96, 165, 250, 0.65) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+    transition: all 0.25s ease !important;
+  }
+
+  .menu-toggle:hover,
+  .mobile-menu-toggle:hover,
+  .hamburger-button:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    border-color: #93c5fd !important;
+  }
+
+  .menu-toggle span,
+  .mobile-menu-toggle span,
+  .hamburger-button span,
+  .menu-toggle svg,
+  .mobile-menu-toggle svg,
+  .hamburger-button svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+}
+
 
 }
 
