@@ -12025,11 +12025,11 @@ nav button:hover *,
   align-items: center;
   justify-content: center;
 
-  padding: 9px 14px;
+  padding: 6px 10px;
   margin: 8px 0 12px;
 
-  background: rgba(124, 58, 237, 0.10);
-  color: #c4b5fd;
+  background: #1675f2;
+  color: #ffffff;
 
   border: 1px solid rgba(167, 139, 250, 0.35);
   border-radius: 10px;
@@ -12046,7 +12046,7 @@ nav button:hover *,
 /* Hover Effect */
 .forgot-password-button:hover {
   background: rgba(124, 58, 237, 0.20);
-  color: #ffffff;
+  color: #1675f2;
   border-color: #a78bfa;
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(124, 58, 237, 0.18);
@@ -12072,80 +12072,6 @@ nav button:hover *,
   box-shadow: none;
 }
 
-/* Reduce gap in the welcome section */
-.welcome-section {
-  margin-bottom: 12px !important;
-  padding-bottom: 0 !important;
-}
-
-/* Reduce spacing around the welcome heading */
-.welcome-section h1 {
-  margin-top: 0 !important;
-  margin-bottom: 8px !important;
-  line-height: 1.2 !important;
-}
-
-/* Reduce space before the next section/card */
-.welcome-section + * {
-  margin-top: 12px !important;
-}
-
-/* Responsive spacing for mobile */
-@media (max-width: 768px) {
-  .welcome-section {
-    margin-bottom: 8px !important;
-    padding-bottom: 0 !important;
-  }
-
-  .welcome-section + * {
-    margin-top: 8px !important;
-  }
-   
-/* Feedback button — blue hover effect */
-.feedback-button {
-  transition: all 0.25s ease !important;
-}
-
-.feedback-button:hover {
-  background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
-  border-color: #60a5fa !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35) !important;
-  transform: translateY(-2px);
-}
-
-.feedback-button:hover svg,
-.feedback-button:hover span {
-  color: #ffffff !important;
-}
-
-.feedback-button:active {
-  transform: translateY(0);
-}
-
-/* Login and Sign Up buttons — add borders */
-.login-button,
-.signup-button {
-  border: 1px solid rgba(129, 140, 248, 0.35) !important;
-  border-radius: 14px !important;
-  transition: all 0.25s ease !important;
-}
-
-/* Login button border */
-.login-button {
-  border-color: rgba(129, 140, 248, 0.55) !important;
-}
-
-/* Sign Up button border */
-.signup-button {
-  border-color: rgba(96, 165, 250, 0.30) !important;
-}
-
-/* Hover effects */
-.login-button:hover,
-.signup-button:hover {
-  border-color: #60a5fa !important;
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.20) !important;
 }
 
 }
