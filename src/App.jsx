@@ -314,6 +314,91 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
   );
 }
 
+function FeedbackModal({ user, onClose }) {
+  const [feedbackType, setFeedbackType] = useState("Suggestion");
+  const [message, setMessage] = useState("");
+  const [replyEmail, setReplyEmail] = useState(user?.email || "");
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState({ type: "", message: "" });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && !sending) onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, sending]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (message.trim().length < 5) {
+      setStatus({ type: "error", message: "Please write at least 5 characters." });
+      return;
+    }
+    setSending(true);
+    setStatus({ type: "", message: "" });
+    try {
+      await apiRequest("/api/feedback", {
+        method: "POST",
+        body: JSON.stringify({
+          type: feedbackType,
+          message: message.trim(),
+          email: replyEmail.trim(),
+          name: user?.displayName || "StudyFlow AI user",
+        }),
+      });
+      setStatus({ type: "success", message: "Thanks! Your feedback has been sent." });
+      setMessage("");
+      window.setTimeout(onClose, 1500);
+    } catch (error) {
+      setStatus({ type: "error", message: error.message || "Could not send feedback. Please try again." });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="feedback-overlay" role="presentation" onMouseDown={(event) => {
+      if (event.target === event.currentTarget && !sending) onClose();
+    }}>
+      <section className="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+        <button className="feedback-close" type="button" onClick={onClose} disabled={sending} aria-label="Close feedback form">×</button>
+        <div className="feedback-art" aria-hidden="true">
+          <div className="feedback-art-orb feedback-art-orb-one" />
+          <div className="feedback-art-orb feedback-art-orb-two" />
+          <div className="feedback-icon">✦</div>
+          <span className="feedback-art-caption">YOUR VOICE MATTERS</span>
+        </div>
+        <div className="feedback-content">
+          <div className="feedback-eyebrow"><span /> HELP US GET BETTER</div>
+          <h2 id="feedback-title">We’re listening<span>.</span></h2>
+          <p className="feedback-subtitle">Have an idea, spotted a bug, or want to share a thought? Tell us about it.</p>
+          <form onSubmit={handleSubmit} className="feedback-form">
+            <label htmlFor="feedback-type">What’s on your mind?</label>
+            <div className="feedback-type-grid">
+              {["Suggestion", "Bug report", "General feedback"].map((type) => (
+                <button key={type} type="button" className={`feedback-type-chip ${feedbackType === type ? "selected" : ""}`} onClick={() => setFeedbackType(type)} aria-pressed={feedbackType === type}>
+                  {type === "Suggestion" ? "✧" : type === "Bug report" ? "⚑" : "♡"} <span>{type}</span>
+                </button>
+              ))}
+            </div>
+            <label htmlFor="feedback-message">Your feedback</label>
+            <textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your thoughts with us..." maxLength={3000} rows={5} required minLength={5} />
+            <div className="feedback-field-footer"><span>Be honest — every idea helps.</span><span>{message.length}/3000</span></div>
+            <label htmlFor="feedback-email">Email for a reply <span className="feedback-optional">(optional)</span></label>
+            <input id="feedback-email" type="email" value={replyEmail} onChange={(event) => setReplyEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" />
+            {status.message && <div className={`feedback-status ${status.type}`} role="status">{status.type === "success" ? "✓" : "!"} {status.message}</div>}
+            <button className="feedback-submit" type="submit" disabled={sending}>
+              <span>{sending ? "Sending your feedback…" : "Send feedback"}</span><span aria-hidden="true">↗</span>
+            </button>
+            <p className="feedback-privacy">🔒 Your feedback is sent privately to the StudyFlow AI team.</p>
+          </form>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function CookieConsent() {
   const [showCookieBar, setShowCookieBar] = useState(false);
 
@@ -403,6 +488,7 @@ function App() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [gamesOpen, setGamesOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // ========================================================
   // DASHBOARD
@@ -2577,6 +2663,17 @@ const trackFeatureUsage = async (featureName) => {
             Games Fun
           </button>
 
+          <button
+            type="button"
+            className="feedback-nav-link"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setFeedbackOpen(true);
+            }}
+          >
+            <span aria-hidden="true">✧</span> Feedback
+          </button>
+
           <div className="mobile-account-block">
             <span>
               👤 {user.displayName || user.email || "Account"}
@@ -2621,6 +2718,10 @@ const trackFeatureUsage = async (featureName) => {
           <span />
         </button>
       </header>
+
+      {feedbackOpen && (
+        <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
+      )}
 
       <section
         id="dashboard-section"
