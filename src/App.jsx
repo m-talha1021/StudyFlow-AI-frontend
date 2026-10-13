@@ -382,7 +382,7 @@ function FeedbackModal({ user, onClose }) {
             </div>
             <label htmlFor="feedback-message">Your feedback</label>
             <textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your thoughts with us..." maxLength={3000} rows={5} required minLength={5} />
-            <div className="feedback-field-footer"><span>Be honest — every idea helps.</span><span>{message.length}/3000</span></div>
+            <div className="feedback-field-footer"><span>{message.length}/3000</span></div>
             {status.message && <div className={`feedback-status ${status.type}`} role="status">{status.type === "success" ? "✓" : "!"} {status.message}</div>}
             <button className="feedback-submit" type="submit" disabled={sending}>
               <span>{sending ? "Sending your feedback…" : "Send feedback"}</span><span aria-hidden="true">↗</span>
