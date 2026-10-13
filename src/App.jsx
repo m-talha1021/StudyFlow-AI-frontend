@@ -364,7 +364,12 @@ function FeedbackModal({ user, onClose }) {
         <div className="feedback-art" aria-hidden="true">
           <div className="feedback-art-orb feedback-art-orb-one" />
           <div className="feedback-art-orb feedback-art-orb-two" />
-          <div className="feedback-icon">✦</div>
+          <div className="feedback-icon">
+            <img
+              src="./assets/favicon.png"
+              alt="StudyFlow AI logo"
+            />
+          </div>
           <span className="feedback-art-caption">YOUR VOICE MATTERS</span>
         </div>
         <div className="feedback-content">
