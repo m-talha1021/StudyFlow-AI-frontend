@@ -317,7 +317,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
 function FeedbackModal({ user, onClose }) {
   const [feedbackType, setFeedbackType] = useState("Suggestion");
   const [message, setMessage] = useState("");
-  const [replyEmail, setReplyEmail] = useState(user?.email || "");
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
@@ -343,7 +342,6 @@ function FeedbackModal({ user, onClose }) {
         body: JSON.stringify({
           type: feedbackType,
           message: message.trim(),
-          email: replyEmail.trim(),
           name: user?.displayName || "StudyFlow AI user",
         }),
       });
@@ -385,8 +383,6 @@ function FeedbackModal({ user, onClose }) {
             <label htmlFor="feedback-message">Your feedback</label>
             <textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your thoughts with us..." maxLength={3000} rows={5} required minLength={5} />
             <div className="feedback-field-footer"><span>Be honest — every idea helps.</span><span>{message.length}/3000</span></div>
-            <label htmlFor="feedback-email">Email for a reply <span className="feedback-optional">(optional)</span></label>
-            <input id="feedback-email" type="email" value={replyEmail} onChange={(event) => setReplyEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" />
             {status.message && <div className={`feedback-status ${status.type}`} role="status">{status.type === "success" ? "✓" : "!"} {status.message}</div>}
             <button className="feedback-submit" type="submit" disabled={sending}>
               <span>{sending ? "Sending your feedback…" : "Send feedback"}</span><span aria-hidden="true">↗</span>
