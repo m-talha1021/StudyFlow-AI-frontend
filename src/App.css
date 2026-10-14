@@ -12094,9 +12094,15 @@ nav button:hover *,
 .feedback-close{
    background-color: #2563EB !important;
 }
+.feedback-content{
+   background-color: #0c264f !important;
+}
 @media (max-width: 750px){
    .feedback-submit{
       margin-left: 60px !important;
        height: 44px !important;
+   }
+   .feedback-type-chip{
+      font-size: 11px !important;
    }
 }
