@@ -12084,6 +12084,7 @@ nav button:hover *,
   font-weight: 430 !important;
 }
 .feedback-submit{
- width: 300px !important;
+ width: 150px !important;
  font-weight: 400 !important;
+ margin-left: 300px !important;
 }
