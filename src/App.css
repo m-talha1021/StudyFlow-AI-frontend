@@ -12087,7 +12087,9 @@ nav button:hover *,
  width: 200px !important;
  font-weight: 400 !important;
  margin-left: 120px !important;
- height: 40px !important;
+ height: 44px !important;
+ align-items: center !important;
+ justify-content: center !important;
 }
 
 @media (max-width: 750px){
