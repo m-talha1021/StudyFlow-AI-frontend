@@ -12091,7 +12091,9 @@ nav button:hover *,
  align-items: center !important;
  justify-content: center !important;
 }
-
+.feedback-close{
+   background-color: #2563EB !important;
+}
 @media (max-width: 750px){
    .feedback-submit{
       margin-left: 60px !important;
