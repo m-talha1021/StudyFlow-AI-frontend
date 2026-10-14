@@ -12086,5 +12086,12 @@ nav button:hover *,
 .feedback-submit{
  width: 150px !important;
  font-weight: 400 !important;
- margin-left: 300px !important;
+ margin-left: 100px !important;
+ height: 80px !important;
+}
+
+@media (max-width: 750px){
+   .feedback-submit{
+      margin-left: 5px !important;
+   }
 }
