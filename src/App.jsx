@@ -338,7 +338,6 @@ function FeedbackModal({ user, onClose }) {
         method: "POST",
         body: JSON.stringify({
           type: feedbackType,
-          message: message.trim(),
           name: user?.displayName || "StudyFlow AI user",
         }),
       });
