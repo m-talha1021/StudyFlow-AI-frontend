@@ -390,7 +390,7 @@ function FeedbackModal({ user, onClose }) {
             <div className="feedback-field-footer"><span>{message.length}/3000</span></div>
             {status.message && <div className={`feedback-status ${status.type}`} role="status">{status.type === "success" ? "✓" : "!"} {status.message}</div>}
             <button className="feedback-submit" type="submit" disabled={sending}>
-              <span>{sending ? "Submitting your feedback…" : "Submit feedback"}
+              <span>{sending ? "Submitting your feedback…" : "Submit feedback"}</span>
             </button>
             <p className="feedback-privacy">🔒 Your feedback is sent privately to the StudyFlow AI team.</p>
           </form>
