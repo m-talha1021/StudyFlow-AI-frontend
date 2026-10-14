@@ -12087,7 +12087,7 @@ nav button:hover *,
  width: 200px !important;
  font-weight: 400 !important;
  margin-left: 120px !important;
- height: 44px !important;
+ height: 47px !important;
  align-items: center !important;
  justify-content: center !important;
 }
@@ -12095,5 +12095,6 @@ nav button:hover *,
 @media (max-width: 750px){
    .feedback-submit{
       margin-left: 60px !important;
+       height: 44px !important;
    }
 }
