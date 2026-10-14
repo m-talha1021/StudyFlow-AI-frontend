@@ -12105,4 +12105,9 @@ nav button:hover *,
    .feedback-type-chip{
       font-size: 11px !important;
    }
+   .go-up-button{
+      font-size: 23px !important;
+      justify-content: center !important;
+      align-items: center !important;
+   }
 }
