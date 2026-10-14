@@ -342,10 +342,10 @@ function FeedbackModal({ user, onClose }) {
           name: user?.displayName || "StudyFlow AI user",
         }),
       });
-      setStatus({ type: "success", message: "Thanks! Your feedback has been sent." });
+      setStatus({ type: "success", message: "Thanks! Your feedback has been submitted." });
       setMessage("");
     } catch (error) {
-      setStatus({ type: "error", message: error.message || "Could not send feedback. Please try again." });
+      setStatus({ type: "error", message: error.message || "Could not submit feedback. Please try again." });
     } finally {
       setSending(false);
     }
@@ -382,7 +382,7 @@ function FeedbackModal({ user, onClose }) {
               ))}
             </div>
             <label htmlFor="feedback-message">Your feedback</label>
-            <textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your thoughts with us..." maxLength={3000} rows={5} required minLength={5} />
+            <textarea id="feedback-message" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your thoughts with us..." maxLength={3000} rows={5} />
             <div className="feedback-field-footer"><span>{message.length}/3000</span></div>
             {status.message && <div className={`feedback-status ${status.type}`} role="status">{status.type === "success" ? "✓" : "!"} {status.message}</div>}
             <button className="feedback-submit" type="submit" disabled={sending}>
