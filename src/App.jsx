@@ -330,10 +330,7 @@ function FeedbackModal({ user, onClose }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (message.trim().length < 5) {
-      setStatus({ type: "error", message: "Please write at least 5 characters." });
-      return;
-    }
+   
     setSending(true);
     setStatus({ type: "", message: "" });
     try {
@@ -347,7 +344,6 @@ function FeedbackModal({ user, onClose }) {
       });
       setStatus({ type: "success", message: "Thanks! Your feedback has been sent." });
       setMessage("");
-      window.setTimeout(onClose, 1500);
     } catch (error) {
       setStatus({ type: "error", message: error.message || "Could not send feedback. Please try again." });
     } finally {
