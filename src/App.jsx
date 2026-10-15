@@ -1476,7 +1476,7 @@ function App() {
     }
     if (selectedFile.size > 15 * 1024 * 1024) {
       setTranscriptionFile(null);
-      setTranscriptionError("This deployment accepts files up to 4 MB. Please choose a shorter or compressed clip.");
+      setTranscriptionError("This deployment accepts files up to 15 MB. Please choose a shorter or compressed clip.");
       event.target.value = "";
       return;
     }
@@ -1509,7 +1509,7 @@ function App() {
       });
       setTranscriptionText(data.transcript || "");
       setTranscriptionLanguage(data.language || "unknown");
-      setTranscriptionNotice("Transcription completed. The original spoken language was preserved.");
+      setTranscriptionNotice("Transcription completed.");
     } catch (error) {
       console.error("Lecture transcription error:", error);
       setTranscriptionError(error.message || "Could not transcribe this lecture. Please try again.");
@@ -3288,85 +3288,7 @@ const trackFeatureUsage = async (featureName) => {
 
         </section>
 
-        {/* =================================================
-            LECTURE TRANSCRIPTION
-        ================================================= */}
-        <section className="transcription-section" id="transcribing-section">
-          <div className="transcription-heading">
-            <span className="transcription-kicker">AUDIO TO TEXT</span>
-            <h2>🎙️ Lecture Transcribing</h2>
-            <p>Upload an audio or video lecture and convert speech into editable text. Language detection is automatic, and the transcript stays in the original spoken language.</p>
-          </div>
-          <div className="transcription-card">
-            <input
-              ref={transcriptionInputRef}
-              className="transcription-file-input"
-              type="file"
-              accept=".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac,audio/*,video/mp4,video/webm"
-              onChange={handleTranscriptionFileChange}
-              disabled={transcriptionLoading}
-            />
-            <button type="button" className="transcription-choose-button" onClick={() => transcriptionInputRef.current?.click()} disabled={transcriptionLoading}>
-              <span aria-hidden="true">📁</span>
-              {transcriptionFile ? "Choose another file" : "Choose audio or video"}
-            </button>
-            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 4 MB per file on this deployment</p>
-
-            {transcriptionFile && (
-              <div className="transcription-selected-file">
-                <span aria-hidden="true">🎧</span>
-                <div>
-                  <strong>{transcriptionFile.name}</strong>
-                  <small>{(transcriptionFile.size / (1024 * 1024)).toFixed(2)} MB</small>
-                </div>
-                <button type="button" onClick={() => {
-                  setTranscriptionFile(null);
-                  setTranscriptionError("");
-                  setTranscriptionNotice("");
-                  setTranscriptionText("");
-                  setTranscriptionLanguage("");
-                }} disabled={transcriptionLoading} aria-label="Remove selected lecture">×</button>
-              </div>
-            )}
-
-            <button type="button" className="transcription-submit-button" onClick={transcribeLecture} disabled={!transcriptionFile || transcriptionLoading}>
-              {transcriptionLoading ? "Transcribing lecture…" : "Transcribe lecture"}
-            </button>
-            {transcriptionLoading && (
-              <div className="transcription-progress" role="status">
-                <span className="transcription-spinner" />
-                <span>Recognizing speech and detecting transcript language…</span>
-              </div>
-            )}
-            {transcriptionError && <div className="transcription-message error" role="alert">{transcriptionError}</div>}
-            {transcriptionNotice && <div className="transcription-message success" role="status">{transcriptionNotice}</div>}
-
-            {transcriptionText && (
-              <div className="transcription-result">
-                <div className="transcription-result-header">
-                  <div>
-                    <span className="transcription-kicker">YOUR TRANSCRIPT</span>
-                    <h3>Transcript ready</h3>
-                    <p>Detected language: <strong>{({ english: "English", urdu: "Urdu", arabic: "Arabic", mixed: "Mixed language", unknown: "Unable to determine" })[transcriptionLanguage] || transcriptionLanguage}</strong> · {transcriptionText.length.toLocaleString()} characters</p>
-                  </div>
-                  <div className="transcription-result-actions">
-                    <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy</button>
-                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}>Download TXT</button>
-                  </div>
-                </div>
-                <textarea
-                  className="transcription-output"
-                  value={transcriptionText}
-                  onChange={(event) => setTranscriptionText(event.target.value)}
-                  aria-label="Editable lecture transcript"
-                  dir={transcriptionLanguage === "urdu" || transcriptionLanguage === "arabic" ? "rtl" : "auto"}
-                  spellCheck="false"
-                />
-                <small className="transcription-original-language-note">Original-language transcription only — no translation was applied.</small>
-              </div>
-            )}
-          </div>
-        </section>
+       
 
         {/* =================================================
             ACTION SECTION
@@ -3599,6 +3521,85 @@ const trackFeatureUsage = async (featureName) => {
 
         </section>
 
+
+        {/* =================================================
+            LECTURE TRANSCRIPTION
+        ================================================= */}
+        <section className="transcription-section" id="transcribing-section">
+          <div className="transcription-heading">
+            <span className="transcription-kicker">AUDIO TO TEXT</span>
+            <h2>🎙️ Lecture Transcribing</h2>
+            <p>Upload an audio or video lecture and convert it into text.</div>
+          <div className="transcription-card">
+            <input
+              ref={transcriptionInputRef}
+              className="transcription-file-input"
+              type="file"
+              accept=".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac,audio/*,video/mp4,video/webm"
+              onChange={handleTranscriptionFileChange}
+              disabled={transcriptionLoading}
+            />
+            <button type="button" className="transcription-choose-button" onClick={() => transcriptionInputRef.current?.click()} disabled={transcriptionLoading}>
+              <span aria-hidden="true">📁</span>
+              {transcriptionFile ? "Choose another file" : "Choose audio or video"}
+            </button>
+            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 15 MB size.</p>
+
+            {transcriptionFile && (
+              <div className="transcription-selected-file">
+                <span aria-hidden="true">🎧</span>
+                <div>
+                  <strong>{transcriptionFile.name}</strong>
+                  <small>{(transcriptionFile.size / (1024 * 1024)).toFixed(2)} MB</small>
+                </div>
+                <button type="button" onClick={() => {
+                  setTranscriptionFile(null);
+                  setTranscriptionError("");
+                  setTranscriptionNotice("");
+                  setTranscriptionText("");
+                  setTranscriptionLanguage("");
+                }} disabled={transcriptionLoading} aria-label="Remove selected file">×</button>
+              </div>
+            )}
+
+            <button type="button" className="transcription-submit-button" onClick={transcribeLecture} disabled={!transcriptionFile || transcriptionLoading}>
+              {transcriptionLoading ? "Transcribing lecture…" : "Transcribe"}
+            </button>
+            {transcriptionLoading && (
+              <div className="transcription-progress" role="status">
+                <span className="transcription-spinner" />
+                <span>Recognizing speech and detecting transcript language…</span>
+              </div>
+            )}
+            {transcriptionError && <div className="transcription-message error" role="alert">{transcriptionError}</div>}
+            {transcriptionNotice && <div className="transcription-message success" role="status">{transcriptionNotice}</div>}
+
+            {transcriptionText && (
+              <div className="transcription-result">
+                <div className="transcription-result-header">
+                  <div>
+                    <span className="transcription-kicker">YOUR TRANSCRIPT</span>
+                    <h3>Transcript is ready:</h3>
+                  </div>
+                  <div className="transcription-result-actions">
+                    <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy</button>
+                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}>Download TXT</button>
+                  </div>
+                </div>
+                <textarea
+                  className="transcription-output"
+                  value={transcriptionText}
+                  onChange={(event) => setTranscriptionText(event.target.value)}
+                  aria-label="Editable lecture transcript"
+                  dir={transcriptionLanguage === "urdu" || transcriptionLanguage === "arabic" ? "rtl" : "auto"}
+                  spellCheck="false"
+                />
+                <small className="transcription-original-language-note">Original-language transcription only — no translation was applied.</small>
+              </div>
+            )}
+          </div>
+        </section>
+        
         {/* =================================================
             GENERATED RESULT
         ================================================= */}
@@ -4429,7 +4430,8 @@ const trackFeatureUsage = async (featureName) => {
         </div>
       )}
       <CookieConsent />
-
+    
+      
       {/* ==================================================
           FOOTER
       ================================================== */}
