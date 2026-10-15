@@ -1123,13 +1123,17 @@ function App() {
           setAuthError("Password should be at least 6 characters.");
           break;
         case "auth/invalid-credential":
-        case "auth/wrong-password":
-        case "auth/user-not-found":
           setAuthError("Invalid email or password.");
+          break;
+        case "auth/wrong-password":
+          setAuthError("Password is incorrect!");
+          break;
+        case "auth/user-not-found":
+          setAuthError("Account does not exist.");
           break;
         case "auth/network-request-failed":
           setAuthError(
-            "Failed: Check your Firebase configuration and internet connection."
+            "Failed: Check your internet connection."
           );
           break;
         case "auth/operation-not-allowed":
