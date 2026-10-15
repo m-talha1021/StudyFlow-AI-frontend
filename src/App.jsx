@@ -1474,7 +1474,7 @@ function App() {
       event.target.value = "";
       return;
     }
-    if (selectedFile.size > 4 * 1024 * 1024) {
+    if (selectedFile.size > 15 * 1024 * 1024) {
       setTranscriptionFile(null);
       setTranscriptionError("This deployment accepts files up to 4 MB. Please choose a shorter or compressed clip.");
       event.target.value = "";
