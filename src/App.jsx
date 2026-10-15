@@ -518,6 +518,11 @@ function App() {
     "learning", "memory", "concept", "chapter", "subject", "language",
     "history", "physics", "biology", "formula", "process", "function",
     "variable", "internet", "keyboard", "software", "hardware", "storage",
+    "academy", "classroom", "curriculum", "degree", "lecture", "notebook",
+    "professor", "research", "scholar", "syllabus", "algorithm", "application",
+    "browser", "cloud", "code", "developer", "interface", "monitor",
+    "processor", "server", "analysis", "chemistry", "discovery", "element",
+    "equation", "experiment", "galaxy", "hypothesis", "laboratory", "theory",
   ];
 
   const [guessWord, setGuessWord] = useState("");
