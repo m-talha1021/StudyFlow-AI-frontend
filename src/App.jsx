@@ -3529,7 +3529,8 @@ const trackFeatureUsage = async (featureName) => {
           <div className="transcription-heading">
             <span className="transcription-kicker">AUDIO TO TEXT</span>
             <h2>🎙️ Lecture Transcribing</h2>
-            <p>Upload an audio or video lecture and convert it into text.</div>
+            <p>Upload an audio or video lecture and convert it into text.</p>
+          </div>
           <div className="transcription-card">
             <input
               ref={transcriptionInputRef}
