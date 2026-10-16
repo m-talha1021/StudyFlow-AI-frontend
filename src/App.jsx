@@ -3751,6 +3751,7 @@ function App() {
                 <option value="english">English</option>
                 <option value="arabic">Arabic</option>
                 <option value="hindi">Hindi</option>
+                <option value="mixed">Mixed languages</option>
               </select>
             </div>
 
