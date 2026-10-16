@@ -12151,3 +12151,17 @@ nav button:hover *,
 .transcription-card .transcribe-button {
     align-self: center;
 }
+
+
+textarea.transcription-output {
+    width: 120% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep the output box responsive on mobile */
+@media (max-width: 767px) {
+    textarea.transcription-output {
+        width: 100% !important;
+    }
+}
