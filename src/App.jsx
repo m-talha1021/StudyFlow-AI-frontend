@@ -85,10 +85,13 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 
   if (!response.ok || data.success === false) {
-    throw new Error(
+    const baseMessage =
       data.error ||
-        data.message ||
-        `Request failed with status ${response.status}.`
+      data.message ||
+      `Request failed with status ${response.status}.`;
+
+    throw new Error(
+      data.details ? `${baseMessage} (${data.details})` : baseMessage
     );
   }
 
