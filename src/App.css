@@ -12111,3 +12111,43 @@ nav button:hover *,
       align-items: center !important;
    }
 }
+
+
+.transcription-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.transcription-card .transcription-language-select {
+    align-items: center;
+    width: 100%;
+}
+
+.transcription-card .transcription-language-select select {
+    width: 250px !important;
+    max-width: 100%;
+}
+
+.transcription-card .transcription-selected-file {
+    justify-content: center;
+}
+
+.transcription-card .transcription-formats {
+    text-align: center;
+}
+
+.transcription-card .transcription-language-select small {
+    text-align: center;
+    max-width: 400px;
+}
+
+.transcription-card .transcription-choose-button {
+    align-self: center;
+}
+
+.transcription-card button[type="submit"],
+.transcription-card .transcribe-button {
+    align-self: center;
+}
