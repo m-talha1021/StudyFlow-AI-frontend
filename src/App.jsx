@@ -199,7 +199,7 @@ const decodeAudioFile = async (file) => {
   }
 };
 
-const transcribeFileInSegments = async (file, onProgress) => {
+const transcribeFileInSegments = async (file, onProgress, forcedLanguage) => {
   const audioBuffer = await decodeAudioFile(file);
   const pcm = toMono16k(audioBuffer);
 
@@ -207,7 +207,7 @@ const transcribeFileInSegments = async (file, onProgress) => {
   const totalSegments = Math.max(1, Math.ceil(pcm.length / segmentLength));
   const baseName = file.name.replace(/\.[^.]+$/, "");
   const transcripts = [];
-  let language = "unknown";
+  let language = forcedLanguage || "unknown";
 
   for (let index = 0; index < totalSegments; index += 1) {
     const start = index * segmentLength;
@@ -734,6 +734,9 @@ function App() {
   const [transcriptionError, setTranscriptionError] = useState("");
   const [transcriptionNotice, setTranscriptionNotice] = useState("");
   const [transcriptionProgress, setTranscriptionProgress] = useState("");
+  // Language of the recording. "auto" lets the backend detect it, otherwise
+  // the choice is forced so Urdu is never transcribed as Hindi, etc.
+  const [transcriptionSourceLanguage, setTranscriptionSourceLanguage] = useState("auto");
   const transcriptionInputRef = useRef(null);
 
   // ========================================================
@@ -1662,10 +1665,17 @@ function App() {
 
     try {
       let data;
+      const forcedLanguage =
+        transcriptionSourceLanguage && transcriptionSourceLanguage !== "auto"
+          ? transcriptionSourceLanguage
+          : "";
 
       if (transcriptionFile.size <= DIRECT_UPLOAD_LIMIT) {
         const formData = new FormData();
         formData.append("file", transcriptionFile);
+        if (forcedLanguage) {
+          formData.append("language", forcedLanguage);
+        }
         data = await apiRequest("/api/transcribe", {
           method: "POST",
           body: formData,
@@ -1675,7 +1685,7 @@ function App() {
         // small segments that stay under Vercel's 4.5 MB body limit.
         data = await transcribeFileInSegments(transcriptionFile, (part, total) => {
           setTranscriptionProgress(`Transcribing part ${part} of ${total}…`);
-        });
+        }, forcedLanguage);
       }
 
       setTranscriptionText(data.transcript || "");
@@ -3717,6 +3727,35 @@ const trackFeatureUsage = async (featureName) => {
               {transcriptionFile ? "Choose another file" : "Choose audio or video"}
             </button>
             <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 15 MB size.</p>
+
+            <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 10px" }}>
+              <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Recording language</label>
+              <select
+                id="transcription-language"
+                value={transcriptionSourceLanguage}
+                onChange={(event) => setTranscriptionSourceLanguage(event.target.value)}
+                disabled={transcriptionLoading}
+                style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", background: "#0f1b3d", color: "#e8eeff", fontSize: "0.95rem" }}
+              >
+                <option value="auto">Auto-detect</option>
+                <option value="urdu">Urdu</option>
+                <option value="hindi">Hindi</option>
+                <option value="arabic">Arabic</option>
+                <option value="english">English</option>
+                <option value="punjabi">Punjabi</option>
+                <option value="pashto">Pashto</option>
+                <option value="sindhi">Sindhi</option>
+                <option value="persian">Persian</option>
+                <option value="bengali">Bengali</option>
+                <option value="spanish">Spanish</option>
+                <option value="french">French</option>
+                <option value="turkish">Turkish</option>
+              </select>
+              <small style={{ opacity: 0.75, fontSize: "0.8rem" }}>
+                Urdu and Hindi sound the same. Pick the language of the recording so
+                the text is written in the correct script.
+              </small>
+            </div>
 
             {transcriptionFile && (
               <div className="transcription-selected-file">
