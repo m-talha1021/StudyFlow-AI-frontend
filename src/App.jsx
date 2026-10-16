@@ -3748,17 +3748,9 @@ function App() {
               >
                 <option value="auto">Auto-detect</option>
                 <option value="urdu">Urdu</option>
-                <option value="hindi">Hindi</option>
-                <option value="arabic">Arabic</option>
                 <option value="english">English</option>
-                <option value="punjabi">Punjabi</option>
-                <option value="pashto">Pashto</option>
-                <option value="sindhi">Sindhi</option>
-                <option value="persian">Persian</option>
-                <option value="bengali">Bengali</option>
-                <option value="spanish">Spanish</option>
-                <option value="french">French</option>
-                <option value="turkish">Turkish</option>
+                <option value="arabic">Arabic</option>
+                <option value="hindi">Hindi</option>
               </select>
             </div>
 
