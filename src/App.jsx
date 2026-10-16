@@ -3735,7 +3735,7 @@ const trackFeatureUsage = async (featureName) => {
                 value={transcriptionSourceLanguage}
                 onChange={(event) => setTranscriptionSourceLanguage(event.target.value)}
                 disabled={transcriptionLoading}
-                style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", background: "#0f1b3d", color: "#e8eeff", fontSize: "0.95rem" }}
+                style={{ padding: "10px 6px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)", background: "#0f1b3d", color: "#e8eeff", fontSize: "0.95rem" }}
               >
                 <option value="auto">Auto-detect</option>
                 <option value="urdu">Urdu</option>
