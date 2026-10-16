@@ -3713,7 +3713,7 @@ const trackFeatureUsage = async (featureName) => {
             <h2>🎙️ Lecture Transcribing</h2>
             <p>Upload an audio or video lecture and convert it into text.</p>
           </div>
-          <div className="transcription-card" style={{ justifyContent: center, alignitems: center }}>
+          <div className="transcription-card">
             <input
               ref={transcriptionInputRef}
               className="transcription-file-input"
@@ -3726,16 +3726,26 @@ const trackFeatureUsage = async (featureName) => {
               <span aria-hidden="true">📁</span>
               {transcriptionFile ? "Choose another file" : "Choose audio or video"}
             </button>
-            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 15MB size.</p>
+            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 15 MB size.</p>
 
             <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 10px" }}>
-              <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Select audio/video/recording language:</label>
+              <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Recording language</label>
               <select
                 id="transcription-language"
                 value={transcriptionSourceLanguage}
                 onChange={(event) => setTranscriptionSourceLanguage(event.target.value)}
                 disabled={transcriptionLoading}
-                style={{ padding: "10px 6px", borderRadius: "8px", width: 350px, maxwidth: 100%, border: "1px solid rgba(255,255,255,0.2)", background: "#0f1b3d", color: "#e8eeff", fontSize: "0.95rem" }}
+               style={{
+                        padding: "8px 10px",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        background: "#0f1b3d",
+                        color: "#e8eeff",
+                        fontSize: "0.9rem",
+                        width: "250px",
+                        maxWidth: "100%",
+                        boxSizing: "border-box"
+                      }}
               >
                 <option value="auto">Auto-detect</option>
                 <option value="urdu">Urdu</option>
@@ -3751,6 +3761,10 @@ const trackFeatureUsage = async (featureName) => {
                 <option value="french">French</option>
                 <option value="turkish">Turkish</option>
               </select>
+              <small style={{ opacity: 0.75, fontSize: "0.8rem" }}>
+                Urdu and Hindi sound the same. Pick the language of the recording so
+                the text is written in the correct script.
+              </small>
             </div>
 
             {transcriptionFile && (
@@ -3772,7 +3786,7 @@ const trackFeatureUsage = async (featureName) => {
             )}
 
             <button type="button" className="transcription-submit-button" onClick={transcribeLecture} disabled={!transcriptionFile || transcriptionLoading}>
-              {transcriptionLoading ? "Transcribing..." : "Transcribe"}
+              {transcriptionLoading ? "Transcribing lecture…" : "Transcribe"}
             </button>
             {transcriptionLoading && (
               <div className="transcription-progress" role="status">
