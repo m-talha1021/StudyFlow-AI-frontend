@@ -12154,7 +12154,7 @@ nav button:hover *,
 
 
 textarea.transcription-output {
-    width: 120% !important;
+    width: 130% !important;
     max-width: none !important;
     box-sizing: border-box !important;
 }
@@ -12162,6 +12162,6 @@ textarea.transcription-output {
 /* Keep the output box responsive on mobile */
 @media (max-width: 767px) {
     textarea.transcription-output {
-        width: 100% !important;
+        width: 130% !important;
     }
 }
