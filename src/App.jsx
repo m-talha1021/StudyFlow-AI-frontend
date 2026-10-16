@@ -107,7 +107,7 @@ const apiRequest = async (endpoint, options = {}) => {
 // browser decodes the audio, splits it into small mono WAV segments
 // (each comfortably under the limit) and transcribes them one by one.
 
-const DIRECT_UPLOAD_LIMIT = 4 * 1024 * 1024;
+const DIRECT_UPLOAD_LIMIT = 100 * 1024 * 1024;
 const TRANSCRIPTION_SEGMENT_SECONDS = 55;
 const TRANSCRIPTION_SAMPLE_RATE = 16000;
 
@@ -3725,7 +3725,7 @@ function App() {
               <span aria-hidden="true">📁</span>
               {transcriptionFile ? "Choose another file" : "Choose audio or video"}
             </button>
-            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 15MB size.</p>
+            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 100MB size.</p>
 
             <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 10px" }}>
               <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Select language:</label>
