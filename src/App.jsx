@@ -1708,7 +1708,7 @@ function App() {
     if (!transcriptionText) return;
     try {
       await navigator.clipboard.writeText(transcriptionText);
-      setTranscriptionNotice("Transcript copied to clipboard.");
+      setTranscriptionNotice("Transcript copied.");
       setTranscriptionError("");
     } catch {
       setTranscriptionError("Clipboard access was blocked. Select the transcript and copy it manually.");
@@ -3797,7 +3797,7 @@ function App() {
                     <h3>Transcript is ready:</h3>
                   </div>
                   <div className="transcription-result-actions">
-                    <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy</button>
+                    <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy📋</button>
                     <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}>Download TXT</button>
                   </div>
                 </div>
