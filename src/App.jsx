@@ -102,12 +102,14 @@ const apiRequest = async (endpoint, options = {}) => {
 // AUDIO CHUNKING FOR LARGE LECTURES
 // ========================================================
 //
-// Vercel rejects serverless request bodies larger than 4.5 MB, so
-// a single 15 MB upload can never reach the backend. Instead the
-// browser decodes the audio, splits it into small mono WAV segments
-// (each comfortably under the limit) and transcribes them one by one.
+// Vercel Functions reject request bodies larger than about 4.5 MB.
+// Keep direct multipart uploads safely below that limit. Larger audio
+// and video files are decoded in the browser and sent as short WAV parts.
+// The original recording can be up to 100 MB; each part stays small enough
+// to pass through the serverless request-size limit.
 
-const DIRECT_UPLOAD_LIMIT = 100 * 1024 * 1024;
+const MAX_TRANSCRIPTION_FILE_SIZE = 100 * 1024 * 1024;
+const DIRECT_UPLOAD_LIMIT = 4 * 1024 * 1024;
 const TRANSCRIPTION_SEGMENT_SECONDS = 55;
 const TRANSCRIPTION_SAMPLE_RATE = 16000;
 
@@ -1635,9 +1637,9 @@ function App() {
       event.target.value = "";
       return;
     }
-    if (selectedFile.size > 15 * 1024 * 1024) {
+    if (selectedFile.size > MAX_TRANSCRIPTION_FILE_SIZE) {
       setTranscriptionFile(null);
-      setTranscriptionError("This deployment accepts files up to 15 MB. Please choose a shorter or compressed clip.");
+      setTranscriptionError("The maximum supported audio/video file size is 100 MB. Please choose a smaller or compressed file.");
       event.target.value = "";
       return;
     }
@@ -1681,8 +1683,10 @@ function App() {
           body: formData,
         });
       } else {
-        // Large lecture: decode in the browser and upload it in
-        // small segments that stay under Vercel's 4.5 MB body limit.
+        // Files over 4 MB: decode in the browser and upload small WAV
+        // segments that stay under Vercel's 4.5 MB request-body limit.
+        // This allows recordings up to 100 MB without sending the original
+        // large file as one request.
         data = await transcribeFileInSegments(transcriptionFile, (part, total) => {
           setTranscriptionProgress(`Transcribing part ${part} of ${total}…`);
         }, forcedLanguage);
