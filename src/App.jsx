@@ -3804,7 +3804,6 @@ function App() {
                   dir={RTL_TRANSCRIPTION_LANGUAGES.includes(transcriptionLanguage) ? "rtl" : "auto"}
                   spellCheck="false"
                 />
-                <small className="transcription-original-language-note">Original-language transcription only — no translation was applied.</small>
               </div>
             )}
           </div>
