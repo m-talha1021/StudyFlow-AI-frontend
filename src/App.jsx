@@ -111,6 +111,12 @@ const DIRECT_UPLOAD_LIMIT = 4 * 1024 * 1024;
 const TRANSCRIPTION_SEGMENT_SECONDS = 55;
 const TRANSCRIPTION_SAMPLE_RATE = 16000;
 
+// Languages written right-to-left, so the transcript is edited in RTL mode.
+const RTL_TRANSCRIPTION_LANGUAGES = [
+  "urdu", "arabic", "persian", "pashto", "sindhi", "dari",
+  "hebrew", "yiddish", "kurdish", "kashmiri", "balochi",
+];
+
 const toMono16k = (audioBuffer) => {
   const channelCount = audioBuffer.numberOfChannels;
   const sourceLength = audioBuffer.length;
@@ -211,6 +217,12 @@ const transcribeFileInSegments = async (file, onProgress) => {
     const formData = new FormData();
     formData.append("file", wavBlob, `${baseName}-part-${index + 1}.wav`);
 
+    // Once the first segment reveals the spoken language, lock the remaining
+    // segments to it so the transcript never drifts into another language.
+    if (language && language !== "unknown" && language !== "mixed") {
+      formData.append("language", language);
+    }
+
     const data = await apiRequest("/api/transcribe", {
       method: "POST",
       body: formData,
@@ -219,7 +231,7 @@ const transcribeFileInSegments = async (file, onProgress) => {
     if (data.transcript) {
       transcripts.push(data.transcript.trim());
     }
-    if (data.language && language === "unknown") {
+    if (data.language && data.language !== "unknown") {
       language = data.language;
     }
     if (onProgress) {
@@ -3753,7 +3765,7 @@ const trackFeatureUsage = async (featureName) => {
                   value={transcriptionText}
                   onChange={(event) => setTranscriptionText(event.target.value)}
                   aria-label="Editable lecture transcript"
-                  dir={transcriptionLanguage === "urdu" || transcriptionLanguage === "arabic" ? "rtl" : "auto"}
+                  dir={RTL_TRANSCRIPTION_LANGUAGES.includes(transcriptionLanguage) ? "rtl" : "auto"}
                   spellCheck="false"
                 />
                 <small className="transcription-original-language-note">Original-language transcription only — no translation was applied.</small>
