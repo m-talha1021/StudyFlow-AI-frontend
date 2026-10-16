@@ -46,23 +46,33 @@ const apiRequest = async (endpoint, options = {}) => {
     typeof FormData !== "undefined" &&
     options.body instanceof FormData;
 
-  const response = await fetch(
-    `${API_BASE_URL}${endpoint}`,
-    {
-      ...options,
+  let response;
 
-      headers: {
-        ...(isFormData
-          ? {}
-          : {
-              "Content-Type":
-                "application/json",
-            }),
+  try {
+    response = await fetch(
+      `${API_BASE_URL}${endpoint}`,
+      {
+        ...options,
 
-        ...(options.headers || {}),
-      },
-    }
-  );
+        headers: {
+          ...(isFormData
+            ? {}
+            : {
+                "Content-Type":
+                  "application/json",
+              }),
+
+          ...(options.headers || {}),
+        },
+      }
+    );
+  } catch {
+    // A rejected fetch (CORS, oversized upload, or offline) surfaces
+    // in the browser only as "Failed to fetch".
+    throw new Error(
+      "Could not reach the server. Check your internet connection and try again."
+    );
+  }
 
   let data;
 
@@ -83,6 +93,138 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 
   return data;
+};
+
+// ========================================================
+// AUDIO CHUNKING FOR LARGE LECTURES
+// ========================================================
+//
+// Vercel rejects serverless request bodies larger than 4.5 MB, so
+// a single 15 MB upload can never reach the backend. Instead the
+// browser decodes the audio, splits it into small mono WAV segments
+// (each comfortably under the limit) and transcribes them one by one.
+
+const DIRECT_UPLOAD_LIMIT = 4 * 1024 * 1024;
+const TRANSCRIPTION_SEGMENT_SECONDS = 55;
+const TRANSCRIPTION_SAMPLE_RATE = 16000;
+
+const toMono16k = (audioBuffer) => {
+  const channelCount = audioBuffer.numberOfChannels;
+  const sourceLength = audioBuffer.length;
+  const ratio = audioBuffer.sampleRate / TRANSCRIPTION_SAMPLE_RATE;
+  const targetLength = Math.max(1, Math.floor(sourceLength / ratio));
+  const result = new Float32Array(targetLength);
+
+  const channelData = [];
+  for (let channel = 0; channel < channelCount; channel += 1) {
+    channelData.push(audioBuffer.getChannelData(channel));
+  }
+
+  for (let index = 0; index < targetLength; index += 1) {
+    const position = index * ratio;
+    const lower = Math.floor(position);
+    const upper = Math.min(lower + 1, sourceLength - 1);
+    const fraction = position - lower;
+
+    let sum = 0;
+    for (let channel = 0; channel < channelCount; channel += 1) {
+      const data = channelData[channel];
+      sum += data[lower] * (1 - fraction) + data[upper] * fraction;
+    }
+
+    result[index] = sum / channelCount;
+  }
+
+  return result;
+};
+
+const encodeWavBlob = (samples, sampleRate) => {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+
+  const writeString = (offset, value) => {
+    for (let index = 0; index < value.length; index += 1) {
+      view.setUint8(offset + index, value.charCodeAt(index));
+    }
+  };
+
+  writeString(0, "RIFF");
+  view.setUint32(4, 36 + samples.length * 2, true);
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, "data");
+  view.setUint32(40, samples.length * 2, true);
+
+  let offset = 44;
+  for (let index = 0; index < samples.length; index += 1, offset += 2) {
+    const sample = Math.max(-1, Math.min(1, samples[index]));
+    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+  }
+
+  return new Blob([view], { type: "audio/wav" });
+};
+
+const decodeAudioFile = async (file) => {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContextClass) {
+    throw new Error("This browser cannot decode audio for large uploads. Try a smaller file or a different browser.");
+  }
+
+  const audioContext = new AudioContextClass();
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    return await audioContext.decodeAudioData(arrayBuffer);
+  } catch {
+    throw new Error("This audio or video format could not be decoded in the browser. Try converting it to MP3 or WAV first.");
+  } finally {
+    audioContext.close();
+  }
+};
+
+const transcribeFileInSegments = async (file, onProgress) => {
+  const audioBuffer = await decodeAudioFile(file);
+  const pcm = toMono16k(audioBuffer);
+
+  const segmentLength = TRANSCRIPTION_SAMPLE_RATE * TRANSCRIPTION_SEGMENT_SECONDS;
+  const totalSegments = Math.max(1, Math.ceil(pcm.length / segmentLength));
+  const baseName = file.name.replace(/\.[^.]+$/, "");
+  const transcripts = [];
+  let language = "unknown";
+
+  for (let index = 0; index < totalSegments; index += 1) {
+    const start = index * segmentLength;
+    const segment = pcm.subarray(start, Math.min(start + segmentLength, pcm.length));
+    const wavBlob = encodeWavBlob(segment, TRANSCRIPTION_SAMPLE_RATE);
+
+    const formData = new FormData();
+    formData.append("file", wavBlob, `${baseName}-part-${index + 1}.wav`);
+
+    const data = await apiRequest("/api/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (data.transcript) {
+      transcripts.push(data.transcript.trim());
+    }
+    if (data.language && language === "unknown") {
+      language = data.language;
+    }
+    if (onProgress) {
+      onProgress(index + 1, totalSegments);
+    }
+  }
+
+  return { transcript: transcripts.join(" ").trim(), language };
 };
 
 // ========================================================
@@ -576,6 +718,7 @@ function App() {
   const [transcriptionLanguage, setTranscriptionLanguage] = useState("");
   const [transcriptionError, setTranscriptionError] = useState("");
   const [transcriptionNotice, setTranscriptionNotice] = useState("");
+  const [transcriptionProgress, setTranscriptionProgress] = useState("");
   const transcriptionInputRef = useRef(null);
 
   // ========================================================
@@ -1486,6 +1629,7 @@ function App() {
     setTranscriptionLanguage("");
     setTranscriptionError("");
     setTranscriptionNotice("");
+    setTranscriptionProgress("");
     event.target.value = "";
   };
 
@@ -1499,14 +1643,26 @@ function App() {
     setTranscriptionNotice("");
     setTranscriptionText("");
     setTranscriptionLanguage("");
+    setTranscriptionProgress("");
 
     try {
-      const formData = new FormData();
-      formData.append("file", transcriptionFile);
-      const data = await apiRequest("/api/transcribe", {
-        method: "POST",
-        body: formData,
-      });
+      let data;
+
+      if (transcriptionFile.size <= DIRECT_UPLOAD_LIMIT) {
+        const formData = new FormData();
+        formData.append("file", transcriptionFile);
+        data = await apiRequest("/api/transcribe", {
+          method: "POST",
+          body: formData,
+        });
+      } else {
+        // Large lecture: decode in the browser and upload it in
+        // small segments that stay under Vercel's 4.5 MB body limit.
+        data = await transcribeFileInSegments(transcriptionFile, (part, total) => {
+          setTranscriptionProgress(`Transcribing part ${part} of ${total}…`);
+        });
+      }
+
       setTranscriptionText(data.transcript || "");
       setTranscriptionLanguage(data.language || "unknown");
       setTranscriptionNotice("Transcription completed.");
@@ -1515,6 +1671,7 @@ function App() {
       setTranscriptionError(error.message || "Could not transcribe this lecture. Please try again.");
     } finally {
       setTranscriptionLoading(false);
+      setTranscriptionProgress("");
     }
   };
 
@@ -3559,6 +3716,7 @@ const trackFeatureUsage = async (featureName) => {
                   setTranscriptionNotice("");
                   setTranscriptionText("");
                   setTranscriptionLanguage("");
+                  setTranscriptionProgress("");
                 }} disabled={transcriptionLoading} aria-label="Remove selected file">×</button>
               </div>
             )}
@@ -3569,7 +3727,7 @@ const trackFeatureUsage = async (featureName) => {
             {transcriptionLoading && (
               <div className="transcription-progress" role="status">
                 <span className="transcription-spinner" />
-                <span>Recognizing speech and detecting transcript language…</span>
+                <span>{transcriptionProgress || "Recognizing speech and detecting transcript language…"}</span>
               </div>
             )}
             {transcriptionError && <div className="transcription-message error" role="alert">{transcriptionError}</div>}
