@@ -3774,7 +3774,7 @@ function App() {
             )}
 
             <button type="button" className="transcription-submit-button" onClick={transcribeLecture} disabled={!transcriptionFile || transcriptionLoading}>
-              {transcriptionLoading ? "Transcribing lecture…" : "Transcribe"}
+              {transcriptionLoading ? "Transcribing..." : "Transcribe"}
             </button>
             {transcriptionLoading && (
               <div className="transcription-progress" role="status">
