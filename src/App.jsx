@@ -4659,7 +4659,7 @@ function App() {
         >
 
           <b>
-            StudyFlow AI • Learn better,
+            © StudyFlow AI • Learn better,
             Grow faster. Developed by:
           </b>
 
