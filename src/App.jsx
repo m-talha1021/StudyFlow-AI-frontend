@@ -2969,7 +2969,7 @@ function App() {
               setFeedbackOpen(true);
             }}
           >
-            <span aria-hidden="true">✧</span> Feedback
+            <span aria-hidden="true">📝</span> Feedback
           </button>
 
           <div className="mobile-account-block">
