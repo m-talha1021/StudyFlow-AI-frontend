@@ -2958,7 +2958,7 @@ function App() {
               setGamesOpen(true);
             }}
           >
-            Games Fun
+            Fun Zone
           </button>
 
           <button
