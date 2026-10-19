@@ -490,7 +490,10 @@ function FeedbackModal({ user, onClose }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    if (message.trim().length < 5) {
+      setStatus({ type: "error", message: "Please write at least 5 characters." });
+      return;
+    }
     setSending(true);
     setStatus({ type: "", message: "" });
     try {
