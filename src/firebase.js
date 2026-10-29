@@ -1,4 +1,5 @@
-import { initializeApp } from "firebase/app";
+
+import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -11,12 +12,35 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// Validate required Firebase configuration
+const requiredConfig = [
+  "apiKey",
+  "authDomain",
+  "projectId",
+  "appId",
+];
+
+const missingConfig = requiredConfig.filter(
+  (key) => !firebaseConfig[key]
+);
+
+if (missingConfig.length > 0) {
+  throw new Error(
+    `Missing Firebase configuration: ${missingConfig.join(", ")}. ` +
+    "Check your VITE_FIREBASE_* environment variables."
+  );
+}
+
+// Prevent duplicate initialization during hot reload
+const app = getApps().length
+  ? getApp()
+  : initializeApp(firebaseConfig);
 
 // Firebase Authentication
 export const auth = getAuth(app);
 
-// Firestore Database
+// Cloud Firestore
 export const db = getFirestore(app);
 
+// Export Firebase app
 export default app;
