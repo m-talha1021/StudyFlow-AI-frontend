@@ -720,6 +720,7 @@ function App() {
 
   const [materialReady, setMaterialReady] =
     useState(false);
+  const [processedMaterialText, setProcessedMaterialText] = useState("");
 
   const [processing, setProcessing] =
     useState(false);
@@ -730,6 +731,8 @@ function App() {
   const [result, setResult] = useState("");
   const [resultLanguage, setResultLanguage] =
     useState("");
+  const [sharedPublicData, setSharedPublicData] = useState(null);
+  const [sharedPublicError, setSharedPublicError] = useState("");
 
   // Lecture transcription
   const [transcriptionFile, setTranscriptionFile] = useState(null);
@@ -845,6 +848,30 @@ function App() {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // Shared result links are readable without signing in (Firestore rules must
+  // allow public reads of sharedResults documents).
+  useEffect(() => {
+    const shareId = new URLSearchParams(window.location.search).get("shared");
+    if (!shareId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const snapshot = await getDoc(doc(db, "sharedResults", shareId));
+        if (!snapshot.exists()) throw new Error("This shared result link is invalid or has expired.");
+        const shared = snapshot.data();
+        if (!shared?.result) throw new Error("No result was found at this link.");
+        if (cancelled) return;
+        setSharedPublicData({ ...shared, id: shareId });
+        setResult(shared.result);
+        setMode(shared.mode || "summary");
+        setResultLanguage(shared.language || "english");
+      } catch (error) {
+        if (!cancelled) setSharedPublicError(error.message || "Could not load this shared result.");
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   // ========================================================
@@ -1451,6 +1478,32 @@ function App() {
   // PROCESS MULTIPLE FILES
   // ========================================================
 
+// Compress large camera/photos in the browser before uploading. This reduces
+// upload time and OCR latency; if the browser cannot decode the format, keep
+// the original file and let the backend handle it.
+const compressStudyImage = async (file) => {
+  if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
+  if (!("createImageBitmap" in window)) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxDimension = 2000;
+    const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d", { alpha: false });
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+    if (!blob || blob.size >= file.size) return file;
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
+    return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
+  } catch (error) {
+    console.warn("Image compression skipped:", error);
+    return file;
+  }
+};
+
   const processFiles = async (selectedFiles) => {
     const validFiles = Array.from(selectedFiles || []).filter(Boolean);
 
@@ -1469,6 +1522,7 @@ function App() {
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
+    setProcessedMaterialText("");
     setFlashcards([]);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
@@ -1481,7 +1535,8 @@ function App() {
     try {
       const formData = new FormData();
 
-      validFiles.forEach((selectedFile) => {
+      const uploadFiles = await Promise.all(validFiles.map(compressStudyImage));
+      uploadFiles.forEach((selectedFile) => {
         formData.append("files", selectedFile);
       });
 
@@ -1500,6 +1555,7 @@ function App() {
         );
       }
 
+      setProcessedMaterialText(data.materialText || "");
       setMaterialReady(true);
 
       // Save this user's material and study-session activity.
@@ -1558,6 +1614,7 @@ function App() {
 
       setFiles([]);
       setFile(null);
+      setProcessedMaterialText("");
       setMaterialReady(false);
 
     } finally {
@@ -1776,6 +1833,7 @@ function App() {
         );
       }
 
+      setProcessedMaterialText(data.materialText || text.trim());
       setMaterialReady(true);
 
       return true;
@@ -2256,13 +2314,18 @@ function App() {
       return;
     }
 
+    if (processing) {
+      alert("Your material is still processing. Please wait until processing finishes.");
+      return;
+    }
+
     setGenerating(true);
     setResult("");
 
     stopSpeech();
 
     try {
-      let ready = materialReady;
+      let ready = materialReady || files.length > 0 || Boolean(file);
 
       // Automatically process pasted text
       if (!ready && text.trim()) {
@@ -2300,6 +2363,7 @@ function App() {
 
           body: JSON.stringify({
             mode: mode,
+            materialText: processedMaterialText || (text.trim() ? text.trim() : ""),
           }),
         }
       );
@@ -2343,6 +2407,30 @@ function App() {
 
     } finally {
       setGenerating(false);
+    }
+  };
+
+  // ========================================================
+  // SHARE RESULT
+  // ========================================================
+
+  const handleShareResult = async () => {
+    if (!result?.trim()) return;
+    try {
+      const shareId = (window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/[^a-zA-Z0-9-]/g, "");
+      await setDoc(doc(db, "sharedResults", shareId), {
+        result,
+        mode,
+        language: resultLanguage || "english",
+        title: mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary",
+        createdAt: serverTimestamp(),
+      });
+      const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(shareId)}`;
+      await navigator.clipboard.writeText(shareUrl);
+      alert("Share link copied. Anyone with the link can open the result and download it as a PDF.");
+    } catch (error) {
+      console.error("Share result error:", error);
+      alert("Could not create the share link. Check your Firestore rules and clipboard permissions.");
     }
   };
 
@@ -2820,6 +2908,28 @@ function App() {
   // ========================================================
   // AUTH GATE
   // ========================================================
+
+  const sharedQueryId = new URLSearchParams(window.location.search).get("shared");
+  if (sharedQueryId) {
+    return (
+      <div className="app shared-result-page">
+        <section className="result-section shared-result-viewer">
+          <div className="result-header">
+            <div><span className="result-icon">📄</span><div><h2>{sharedPublicData?.title || "Shared StudyFlow Result"}</h2><small>Shared using StudyFlow AI</small></div></div>
+            <div className="result-actions">
+              <button type="button" className="download-button" onClick={handleDownloadPDF} disabled={!result}>📄 Download PDF</button>
+              <button type="button" className="secondary-button" onClick={handleCopy} disabled={!result}>📋 Copy</button>
+            </div>
+          </div>
+          {sharedPublicError ? <p role="alert">{sharedPublicError}</p> : !sharedPublicData ? <p>Loading shared result…</p> : (
+            <div className="result-content" dir={["urdu", "arabic"].includes(resultLanguage) ? "rtl" : "ltr"}>
+              {result.split("\n").map((line, index) => <p key={index}>{line || "\u00A0"}</p>)}
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  }
 
   if (!authChecked) {
     return (
@@ -3897,6 +4007,15 @@ function App() {
                 </button>
 
                 <button
+                  type="button"
+                  onClick={handleShareResult}
+                  className="share-button"
+                  title="Copy a shareable link"
+                >
+                  🔗 Share
+                </button>
+
+                <button
                   onClick={
                     handleReadAloud
                   }
@@ -3912,6 +4031,16 @@ function App() {
                     ? "⏹ Stop"
                     : "🔊 Read Aloud"}
 
+                </button>
+
+                <button
+                  type="button"
+                  className="close-result-button"
+                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); }}
+                  title="Close result"
+                  aria-label="Close result"
+                >
+                  ✕ Close
                 </button>
 
               </div>
