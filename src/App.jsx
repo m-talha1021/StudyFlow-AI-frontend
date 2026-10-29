@@ -622,6 +622,120 @@ function CookieConsent() {
 }
 
 // ========================================================
+// MOTIVATIONAL QUOTES
+// ========================================================
+
+const motivationalQuotes = [
+  "Believe in yourself and all that you are.",
+  "Small steps every day lead to big achievements.",
+  "Your future is created by what you do today.",
+  "Every expert was once a beginner.",
+  "Dream big, work hard, stay focused.",
+  "Progress, not perfection.",
+  "Great things never come from comfort zones.",
+  "Your only limit is your mind.",
+  "Success starts with the decision to try.",
+  "Stay patient. Trust your journey.",
+  "Don't stop until you're proud.",
+  "Learn something new every single day.",
+  "Difficult roads often lead to beautiful destinations.",
+  "You are capable of more than you imagine.",
+  "Make today count.",
+  "Consistency turns effort into achievement.",
+  "Every day is another chance to grow.",
+  "The secret of getting ahead is getting started.",
+  "Focus on your goals, not your obstacles.",
+  "One day or day one. You decide.",
+  "Your dreams deserve your dedication.",
+  "Education is an investment in yourself.",
+  "The more you learn, the more you grow.",
+  "Every page you read brings a new opportunity.",
+  "Knowledge gives you the power to shape your future.",
+  "Your effort today becomes your strength tomorrow.",
+  "Don't compare your chapter one to someone else's chapter twenty.",
+  "Be stronger than your excuses.",
+  "Great achievements begin with ordinary efforts.",
+  "Believe you can, and you're halfway there.",
+  "Turn your challenges into opportunities.",
+  "A little progress each day adds up to big results.",
+  "Your mindset determines your direction.",
+  "Stay curious. Keep learning. Keep growing.",
+  "The best investment you can make is in yourself.",
+  "You don't have to be perfect to make progress.",
+  "Discipline will take you where motivation cannot.",
+  "Start where you are. Use what you have. Do what you can.",
+  "The journey of learning never truly ends.",
+  "Mistakes are proof that you are trying.",
+  "Every challenge is a chance to become better.",
+  "Success is built one habit at a time.",
+  "Be proud of how far you've come.",
+  "Your hard work will create your opportunities.",
+  "Don't fear failure; learn from it.",
+  "A focused mind can achieve remarkable things.",
+  "Keep going, even when progress feels slow.",
+  "Your potential grows every time you try.",
+  "Choose growth over comfort.",
+  "You are writing the story of your future.",
+  "Small wins create lasting confidence.",
+  "Make learning a habit, not a task.",
+  "Your determination is more powerful than your doubts.",
+  "Every sunrise brings a fresh opportunity.",
+  "Success begins with showing up.",
+  "Work quietly and let your progress speak.",
+  "Be consistent, even when no one is watching.",
+  "You are one decision away from a new beginning.",
+  "The best time to start is now.",
+  "Let your goals be bigger than your fears.",
+  "Great minds are built through continuous learning.",
+  "Your future self will thank you for today's effort.",
+  "Turn your curiosity into knowledge.",
+  "Don't wait for inspiration; create momentum.",
+  "Every difficult lesson makes you wiser.",
+  "Stay focused on what you can control.",
+  "You can do hard things.",
+  "Keep planting seeds. Your time to bloom will come.",
+  "Your ambition needs action to become reality.",
+  "The difference is often persistence.",
+  "Give yourself credit for trying again.",
+  "Learn from yesterday, act today, prepare for tomorrow.",
+  "A positive attitude creates new possibilities.",
+  "The effort you make today matters.",
+  "Be a student of life, always.",
+  "You grow every time you step beyond your limits.",
+  "Let your progress inspire you.",
+  "Big goals are achieved through small daily actions.",
+  "You don't need to know everything to begin.",
+  "Every problem has something to teach you.",
+  "Stay humble, keep learning, and aim high.",
+  "Your focus is your superpower.",
+  "Replace 'I can't' with 'I'll learn how.'",
+  "Confidence comes from keeping promises to yourself.",
+  "Make your setbacks your setup for a comeback.",
+  "Your dedication can turn potential into achievement.",
+  "A meaningful future starts with intentional choices.",
+  "The more effort you invest, the more you discover.",
+  "Be patient with yourself; growth takes time.",
+  "Keep your goals clear and your actions consistent.",
+  "Today's struggle can become tomorrow's strength.",
+  "You are allowed to grow at your own pace.",
+  "Never underestimate the power of a fresh start.",
+  "Be brave enough to begin and persistent enough to continue.",
+  "Your best competition is who you were yesterday.",
+  "Knowledge opens doors that effort helps you walk through.",
+  "Success grows where preparation meets opportunity.",
+  "Keep moving forward; every step matters.",
+  "Make yourself proud, one day at a time."
+];
+
+function pickMotivationalQuote(previousQuote = "") {
+  const availableQuotes = motivationalQuotes.filter(
+    (quote) => quote !== previousQuote
+  );
+  const quotes = availableQuotes.length ? availableQuotes : motivationalQuotes;
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
+// ========================================================
 // APP
 // ========================================================
 
@@ -632,6 +746,8 @@ function App() {
 
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
+  const [motivationalQuote, setMotivationalQuote] = useState("");
+  const previousQuoteRef = useRef("");
   const [authView, setAuthView] = useState("welcome");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -843,6 +959,9 @@ function App() {
       setAuthChecked(true);
 
       if (firebaseUser) {
+        const nextQuote = pickMotivationalQuote(previousQuoteRef.current);
+        previousQuoteRef.current = nextQuote;
+        setMotivationalQuote(nextQuote);
         setAuthView("app");
       }
     });
@@ -3144,6 +3263,24 @@ const compressStudyImage = async (file) => {
               ? `Welcome back, ${user.displayName}`
               : "Welcome back"}
           </h2>
+          {motivationalQuote && (
+            <p
+              className="dashboard-motivational-quote"
+              style={{
+                margin: "12px auto 0",
+                maxWidth: "850px",
+                color: "#c5d8ff",
+                fontSize: "17px",
+                fontWeight: 400,
+                fontStyle: "italic",
+                lineHeight: 1.7,
+                textAlign: "center",
+                opacity: 0.96,
+              }}
+            >
+              <em>“{motivationalQuote}”</em>
+            </p>
+          )}
         </div>
 
         {showDashboard && (
