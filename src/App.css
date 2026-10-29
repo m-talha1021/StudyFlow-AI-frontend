@@ -12326,3 +12326,25 @@ textarea.transcription-output {
     padding: 18px;
   }
 }
+
+
+/* Reduce gap below motivational quote */
+.motivational-quote {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1.4 !important;
+}
+
+/* Reduce space in the welcome/header section */
+.dashboard-header,
+.dashboard-welcome,
+.welcome-section {
+    padding-bottom: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Reduce gap before the next section */
+.motivational-quote + * {
+    margin-top: 10px !important;
+}
+
