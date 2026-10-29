@@ -12165,3 +12165,86 @@ textarea.transcription-output {
         width: 130% !important;
     }
 }
+
+
+
+
+/* =========================================
+   DESKTOP NAVBAR RESPONSIVENESS FIX
+   Keep mobile navbar unchanged
+========================================= */
+
+@media (min-width: 901px) {
+
+  .app-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 10px clamp(12px, 2.5vw, 32px);
+    box-sizing: border-box;
+  }
+
+  /* Logo and brand */
+  .app-navbar .brand-mark {
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .app-navbar .brand-mark img {
+    flex-shrink: 0;
+  }
+
+  /* Navigation links */
+  .app-navbar .app-nav-links {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.6vw, 8px);
+  }
+
+  .app-navbar .app-nav-links > button {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 9px clamp(7px, 0.9vw, 13px);
+    font-size: clamp(11px, 1vw, 13px);
+    white-space: nowrap;
+  }
+
+  /* User profile and logout */
+  .app-navbar .desktop-nav-user {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .app-navbar .user-pill {
+    flex: 0 1 150px;
+    min-width: 0;
+    max-width: 150px;
+    padding: 8px 10px;
+  }
+
+  .app-navbar .user-pill strong {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-navbar .logout-button {
+    flex: 0 0 auto;
+    padding: 10px 13px;
+    white-space: nowrap;
+  }
+}
