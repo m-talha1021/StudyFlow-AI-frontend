@@ -837,6 +837,7 @@ function App() {
   const [materialReady, setMaterialReady] =
     useState(false);
   const [processedMaterialText, setProcessedMaterialText] = useState("");
+  const getCurrentMaterialText = () => (processedMaterialText || text || "").trim();
 
   const [processing, setProcessing] =
     useState(false);
@@ -1980,6 +1981,8 @@ const compressStudyImage = async (file) => {
   // ========================================================
 
   const handleGenerateFlashcards = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    if (!getCurrentMaterialText()) { alert("Please upload or paste study material first."); return; }
     setFlashcardsLoading(true);
     setResult("");
 
@@ -2015,6 +2018,7 @@ const compressStudyImage = async (file) => {
           method: "POST",
           body: JSON.stringify({
             count: 10,
+            materialText: getCurrentMaterialText(),
           }),
         }
       );
@@ -2196,6 +2200,8 @@ const compressStudyImage = async (file) => {
   };
 
   const handleGenerateTest = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    if (!getCurrentMaterialText() && !text.trim()) { alert("Please upload or paste study material first."); return; }
     setTestLoading(true);
     setResult("");
     stopSpeech();
@@ -2216,7 +2222,7 @@ const compressStudyImage = async (file) => {
 
       const data = await apiRequest("/api/test-concepts", {
         method: "POST",
-        body: JSON.stringify({ count: 20 }),
+        body: JSON.stringify({ count: 20, materialText: getCurrentMaterialText() }),
       });
 
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
@@ -2324,7 +2330,7 @@ const compressStudyImage = async (file) => {
         try {
           const data = await apiRequest("/api/oral-exam", {
             method: "POST",
-            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer })
+            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer, materialText: getCurrentMaterialText() })
           });
           if (!data.success) throw new Error(data.error || "Could not evaluate your answer.");
           setOralExam(p => ({
@@ -2390,7 +2396,7 @@ const compressStudyImage = async (file) => {
         alert("Please upload study material or paste your content first.");
         return;
       }
-      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start" }) });
+      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start", materialText: getCurrentMaterialText() }) });
       if (!data.success) throw new Error(data.error || "Could not start the oral test.");
       setOralExam({ active: true, sessionId: data.session_id, question: data.question, questionNumber: data.question_number || 1, totalQuestions: data.total_questions || 10, language: data.language || "english", status: "asking", feedback: "", score: 0, listening: false, supported: true });
       setTimeout(() => document.getElementById("oral-exam-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
@@ -2913,6 +2919,7 @@ const compressStudyImage = async (file) => {
 
                 history:
                   history,
+                materialText: getCurrentMaterialText(),
               }),
             }
           );
