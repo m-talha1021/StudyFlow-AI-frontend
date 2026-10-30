@@ -4251,16 +4251,47 @@ const compressStudyImage = async (file) => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateFlashcards}
-                disabled={flashcardsLoading}
-              >
-                {flashcardsLoading
-                  ? "⏳ Generating..."
-                  : "🔄 Regenerate"}
-              </button>
+              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateFlashcards}
+                  disabled={flashcardsLoading}
+                >
+                  {flashcardsLoading
+                    ? "⏳ Generating..."
+                    : "🔄 Regenerate"}
+                </button>
+                <button
+                  type="button"
+                  className="generated-section-close-button"
+                  onClick={() => {
+                    setFlashcards([]);
+                    setFlashcardIndex(0);
+                    setFlashcardFlipped(false);
+                  }}
+                  aria-label="Close generated flashcards"
+                  title="Close flashcards"
+                  style={{
+                    flex: "0 0 32px",
+                    width: "32px",
+                    height: "32px",
+                    minWidth: "32px",
+                    padding: 0,
+                    display: "grid",
+                    placeItems: "center",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.09)",
+                    color: "#ffffff",
+                    fontSize: "19px",
+                    lineHeight: 1,
+                    cursor: "pointer"
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="flashcard-progress">
@@ -4353,14 +4384,51 @@ const compressStudyImage = async (file) => {
                 <h2>Test concepts</h2>
                 <p>Timed multiple-choice questions generated from your study material.</p>
               </div>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateTest}
-                disabled={testLoading}
-              >
-                {testLoading ? "Generating..." : "Regenerate test"}
-              </button>
+              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateTest}
+                  disabled={testLoading}
+                >
+                  {testLoading ? "Generating..." : "Regenerate test"}
+                </button>
+                <button
+                  type="button"
+                  className="generated-section-close-button"
+                  onClick={() => {
+                    setTestQuestions([]);
+                    setTestAnswers({});
+                    setTestIndex(0);
+                    setTestStarted(false);
+                    setTestFinished(false);
+                    setTestTimeLeft(0);
+                    setTestTotalSeconds(0);
+                    setTestScore(0);
+                    testSubmissionRecordedRef.current = false;
+                  }}
+                  aria-label="Close generated test"
+                  title="Close test concepts"
+                  style={{
+                    flex: "0 0 32px",
+                    width: "32px",
+                    height: "32px",
+                    minWidth: "32px",
+                    padding: 0,
+                    display: "grid",
+                    placeItems: "center",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.09)",
+                    color: "#ffffff",
+                    fontSize: "19px",
+                    lineHeight: 1,
+                    cursor: "pointer"
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             {!testStarted && !testFinished && (
