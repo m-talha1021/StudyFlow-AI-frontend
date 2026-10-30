@@ -12348,3 +12348,41 @@ textarea.transcription-output {
     margin-top: 10px !important;
 }
 
+
+/* Mobile: position close buttons in the top-right corner */
+@media (max-width: 768px) {
+
+    /* Flashcards section */
+    .flashcards-section {
+        position: relative !important;
+    }
+
+    .flashcards-close-button {
+        position: absolute !important;
+        top: 18px !important;
+        right: 18px !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 20 !important;
+    }
+
+    /* Test Concepts section */
+    .test-concepts-section {
+        position: relative !important;
+    }
+
+    .test-concepts-close-button {
+        position: absolute !important;
+        top: 18px !important;
+        right: 18px !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 20 !important;
+    }
+
+    /* Keep section headings clear of the close button */
+    .flashcards-header,
+    .test-concepts-header {
+        padding-right: 45px !important;
+    }
+}
