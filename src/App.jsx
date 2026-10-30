@@ -4386,13 +4386,13 @@ const compressStudyImage = async (file) => {
               </div>
               <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={handleGenerateTest}
-                  disabled={testLoading}
-                >
-                  {testLoading ? "Generating..." : "Regenerate test"}
-                </button>
+                type="button"
+                className="generate-button"
+                onClick={handleGenerateTest}
+                disabled={testLoading}
+              >
+                {testLoading ? "⏳ Generating..." : "✨ Generate test"}
+              </button>
                 <button
                   type="button"
                   className="generated-section-close-button"
