@@ -12566,12 +12566,12 @@ footer p {
     width: 100%;
     box-sizing: border-box;
     margin-top: auto;
-    padding: 24px 16px;
+    padding: 12px 14px;
     text-align: center;
     height: 65px;
     background: #08152b;
     border-top: 1px solid rgba(59, 130, 246, 0.25);
-    color: #ffffff;
+    color: white;
 }
 
 .public-footer p {
