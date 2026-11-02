@@ -12548,3 +12548,55 @@ footer p {
         font-size: 14px !important;
     }
 }
+
+/* Full-width footer at bottom of public landing page */
+.auth-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-page {
+    flex: 1;
+    width: 100%;
+}
+
+/* Footer */
+.public-footer {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    padding: 24px 16px;
+    text-align: center;
+
+    background: #08152b;
+    border-top: 1px solid rgba(59, 130, 246, 0.25);
+    color: #f1f5f9;
+}
+
+.public-footer p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.public-footer .public-footer-credit {
+    margin-top: 8px;
+    font-size: 15px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .public-footer {
+        padding: 18px 12px;
+    }
+
+    .public-footer p {
+        font-size: 14px;
+    }
+
+    .public-footer .public-footer-credit {
+        font-size: 13px;
+    }
+}
+
