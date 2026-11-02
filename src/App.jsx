@@ -295,12 +295,29 @@ function WelcomePage({ onLogin, onSignup }) {
 
           <div className="feature-grid">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes of material</small></div>
+            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
+            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
             <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from material</small></div>
           </div>
+          <footer
+            className="public-page-footer"
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              marginTop: "36px",
+              padding: "24px 16px",
+              textAlign: "center",
+              borderTop: "1px solid rgba(96, 165, 250, 0.28)",
+              color: "#f1f5f9",
+              background: "rgba(5, 15, 35, 0.38)",
+              fontSize: "clamp(14px, 2vw, 20px)",
+              fontWeight: 700,
+              lineHeight: 1.55,
+            }}
+          >
+            <div>© StudyFlow AI · Learn better. Grow faster.</div>
+          </footer>
         </section>
       </main>
     </div>
@@ -3593,7 +3610,7 @@ const compressStudyImage = async (file) => {
 
               stopSpeech();
             }}
-            placeholder="Paste your study content here..."
+            placeholder="Paste your study material here..."
           />
 
           {/* DIVIDER */}
@@ -3614,7 +3631,7 @@ const compressStudyImage = async (file) => {
 
             <strong>
               {processing
-                ? "Analyzing your files..."
+                ? "Processing selected files..."
                 : "Upload your documents or images"}
             </strong>
 
@@ -4252,47 +4269,16 @@ const compressStudyImage = async (file) => {
                 </div>
               </div>
 
-              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={handleGenerateFlashcards}
-                  disabled={flashcardsLoading}
-                >
-                  {flashcardsLoading
-                    ? "⏳ Generating..."
-                    : "🔄 Regenerate"}
-                </button>
-                <button
-                  type="button"
-                  className="generated-section-close-button"
-                  onClick={() => {
-                    setFlashcards([]);
-                    setFlashcardIndex(0);
-                    setFlashcardFlipped(false);
-                  }}
-                  aria-label="Close generated flashcards"
-                  title="Close flashcards"
-                  style={{
-                    flex: "0 0 32px",
-                    width: "32px",
-                    height: "32px",
-                    minWidth: "32px",
-                    padding: 0,
-                    display: "grid",
-                    placeItems: "center",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: "50%",
-                    background: "rgba(255,255,255,0.09)",
-                    color: "#ffffff",
-                    fontSize: "19px",
-                    lineHeight: 1,
-                    cursor: "pointer"
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={handleGenerateFlashcards}
+                disabled={flashcardsLoading}
+              >
+                {flashcardsLoading
+                  ? "⏳ Generating..."
+                  : "🔄 Regenerate"}
+              </button>
             </div>
 
             <div className="flashcard-progress">
@@ -4385,8 +4371,7 @@ const compressStudyImage = async (file) => {
                 <h2>Test concepts</h2>
                 <p>Timed multiple-choice questions generated from your study material.</p>
               </div>
-              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <button
+              <button
                 type="button"
                 className="secondary-button"
                 onClick={handleGenerateTest}
@@ -4394,42 +4379,6 @@ const compressStudyImage = async (file) => {
               >
                 {testLoading ? "Generating..." : "Regenerate test"}
               </button>
-                <button
-                  type="button"
-                  className="generated-section-close-button"
-                  onClick={() => {
-                    setTestQuestions([]);
-                    setTestAnswers({});
-                    setTestIndex(0);
-                    setTestStarted(false);
-                    setTestFinished(false);
-                    setTestTimeLeft(0);
-                    setTestTotalSeconds(0);
-                    setTestScore(0);
-                    testSubmissionRecordedRef.current = false;
-                  }}
-                  aria-label="Close generated test"
-                  title="Close test concepts"
-                  style={{
-                    flex: "0 0 32px",
-                    width: "32px",
-                    height: "32px",
-                    minWidth: "32px",
-                    padding: 0,
-                    display: "grid",
-                    placeItems: "center",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: "50%",
-                    background: "rgba(255,255,255,0.09)",
-                    color: "#ffffff",
-                    fontSize: "19px",
-                    lineHeight: 1,
-                    cursor: "pointer"
-                  }}
-                >
-                  ×
-                </button>
-              </div>
             </div>
 
             {!testStarted && !testFinished && (
