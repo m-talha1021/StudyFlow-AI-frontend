@@ -12587,9 +12587,10 @@ footer p {
 .public-footer strong {
     color: #ffffff;
     margin: 0;
-    padding: 0;
+    padding: 25px 18px;
 
-    font-size: 12px;
+    font-size: 17px;
+    font-weight: bold;
     line-height: 1.2;
     text-align: center;
 }
@@ -12602,12 +12603,13 @@ footer p {
 /* Mobile */
 @media (max-width: 600px) {
     .public-footer {
-        padding: 4px 8px;
+        padding: 15px 13px;
     }
 
     .public-footer p,
     .public-footer .public-footer-credit {
-        font-size: 11px ;
+        font-size: 17px;
+        font-weight: bold;
         line-height: 1.15;
     }
 }
