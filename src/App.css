@@ -12425,3 +12425,70 @@ textarea.transcription-output {
   }
 }
 
+
+
+
+
+/* Make StudyFlowAI feature boxes smaller */
+.feature-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+}
+
+.feature-grid > div {
+    padding: 16px 12px !important;
+    min-height: 150px !important;
+    height: auto !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+}
+
+.feature-grid > div span {
+    font-size: 28px !important;
+    margin-bottom: 8px !important;
+}
+
+.feature-grid > div strong {
+    font-size: 15px !important;
+    margin-bottom: 5px !important;
+}
+
+.feature-grid > div small {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .feature-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .feature-grid > div {
+        padding: 12px 8px !important;
+        min-height: 125px !important;
+    }
+
+    .feature-grid > div span {
+        font-size: 24px !important;
+    }
+
+    .feature-grid > div strong {
+        font-size: 14px !important;
+    }
+
+    .feature-grid > div small {
+        font-size: 11px !important;
+    }
+}
