@@ -12565,7 +12565,7 @@ footer p {
 /* Compact public footer */
 .public-footer {
     width: 100%;
-    padding: 5px 10px;
+    padding: 3px 7px;
     min-height: unset;
     height: auto;
 
@@ -12603,7 +12603,7 @@ footer p {
 /* Mobile */
 @media (max-width: 600px) {
     .public-footer {
-        padding: 10px 9px;
+        padding: 6px 7px;
     }
 
     .public-footer p,
