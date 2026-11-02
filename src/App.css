@@ -12618,65 +12618,63 @@ footer p {
 
 
 
-/* FIX: unwanted space below navbar on mobile */
+/* FIX: Restore vertical scrolling on mobile */
 @media (max-width: 768px) {
 
   html,
   body,
   #root {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
+    height: auto !important;
     min-height: 100% !important;
     overflow-x: hidden !important;
+    overflow-y: auto !important;
+    position: static !important;
+    touch-action: pan-y !important;
   }
 
   body {
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .auth-shell {
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
-    min-height: 100vh !important;
-    min-height: 100dvh !important;
+  }
+
+  .welcome-page {
+    flex: 0 0 auto !important;
     height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  .welcome-hero {
+    height: auto !important;
     overflow: visible !important;
   }
 
-  /* Mobile navbar */
   .public-navbar {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
-
-    width: 100% !important;
-    margin: 0 !important;
-    transform: none !important;
   }
 
-  /* Remove unwanted spacing below navbar */
-  .welcome-page {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    transform: none !important;
-  }
-
-  .welcome-hero {
-    margin-top: 0 !important;
-  }
-
-  /* Footer must remain in normal document flow */
   .public-footer {
     position: relative !important;
-    bottom: auto !important;
-    transform: none !important;
-    margin-top: auto !important;
+    margin-top: 20px !important;
+    flex-shrink: 0 !important;
   }
 }
+
 
 
 
