@@ -303,10 +303,10 @@ function WelcomePage({ onLogin, onSignup }) {
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
           </div>
         </section>
-        <div className="welcome-footer">
-          <p style="color: white; font-size: 18px;"><b>© StudyFlow AI • Learn better, Grow faster.</b></p>
-        </div>
       </main>
+      <footer className="public-footer">
+        <p>© StudyFlow AI · Learn better. Grow faster.</p>
+      </footer>
     </div>
   );
 }
