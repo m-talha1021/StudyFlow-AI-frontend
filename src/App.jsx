@@ -295,10 +295,11 @@ function WelcomePage({ onLogin, onSignup }) {
 
           <div className="feature-grid">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
+            <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
             <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
             <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
+            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from material</small></div>
           </div>
         </section>
       </main>
@@ -3592,7 +3593,7 @@ const compressStudyImage = async (file) => {
 
               stopSpeech();
             }}
-            placeholder="Paste your study material here..."
+            placeholder="Paste your study content here..."
           />
 
           {/* DIVIDER */}
@@ -3613,7 +3614,7 @@ const compressStudyImage = async (file) => {
 
             <strong>
               {processing
-                ? "Processing selected files..."
+                ? "Analyzing your files..."
                 : "Upload your documents or images"}
             </strong>
 
