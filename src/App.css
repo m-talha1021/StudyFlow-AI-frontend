@@ -12568,7 +12568,6 @@ footer p {
     margin-top: auto;
     padding: 12px 14px;
     text-align: center;
-    height: 65px;
     background: #08152b;
     border-top: 1px solid rgba(59, 130, 246, 0.25);
     color: white;
@@ -12592,4 +12591,38 @@ footer p {
         font-size: 14px;
     }
 }
+
+
+/* Reduce public footer height */
+.public-footer {
+    padding: 12px 13px !important;
+}
+
+.public-footer p {
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+    font-color: white;
+}
+
+.public-footer .public-footer-credit {
+    margin-top: 4px !important;
+    font-size: 16px !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .public-footer {
+        padding: 8px 10px !important;
+    }
+
+    .public-footer p {
+        font-size: 12px !important;
+    }
+
+    .public-footer .public-footer-credit {
+        margin-top: 2px !important;
+        font-size: 11px !important;
+    }
+}
+
 
