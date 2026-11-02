@@ -296,30 +296,10 @@ function WelcomePage({ onLogin, onSignup }) {
           <div className="feature-grid">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
             <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
+            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
             <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
-            <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
           </div>
-          <footer
-            className="public-page-footer"
-            style={{
-              width: "100%",
-              boxSizing: "border-box",
-              marginTop: "36px",
-              padding: "24px 16px",
-              textAlign: "center",
-              borderTop: "1px solid rgba(96, 165, 250, 0.28)",
-              color: "#f1f5f9",
-              background: "rgba(5, 15, 35, 0.38)",
-              fontSize: "clamp(14px, 2vw, 20px)",
-              fontWeight: 700,
-              lineHeight: 1.55,
-            }}
-          >
-            <div>© StudyFlow AI · Learn better. Grow faster.</div>
-          </footer>
         </section>
       </main>
     </div>
@@ -1618,31 +1598,31 @@ function App() {
   // PROCESS MULTIPLE FILES
   // ========================================================
 
-// Compress large camera/photos in the browser before uploading. This reduces
-// upload time and OCR latency; if the browser cannot decode the format, keep
-// the original file and let the backend handle it.
-const compressStudyImage = async (file) => {
-  if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
-  if (!("createImageBitmap" in window)) return file;
-  try {
-    const bitmap = await createImageBitmap(file);
-    const maxDimension = 2000;
-    const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    const context = canvas.getContext("2d", { alpha: false });
-    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close?.();
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
-    if (!blob || blob.size >= file.size) return file;
-    const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
-    return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
-  } catch (error) {
-    console.warn("Image compression skipped:", error);
-    return file;
-  }
-};
+  // Compress large camera/photos in the browser before uploading. This reduces
+  // upload time and OCR latency; if the browser cannot decode the format, keep
+  // the original file and let the backend handle it.
+  const compressStudyImage = async (file) => {
+    if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
+    if (!("createImageBitmap" in window)) return file;
+    try {
+      const bitmap = await createImageBitmap(file);
+      const maxDimension = 2000;
+      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      const context = canvas.getContext("2d", { alpha: false });
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close?.();
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+      if (!blob || blob.size >= file.size) return file;
+      const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
+      return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
+    } catch (error) {
+      console.warn("Image compression skipped:", error);
+      return file;
+    }
+  };
 
   const processFiles = async (selectedFiles) => {
     const validFiles = Array.from(selectedFiles || []).filter(Boolean);
@@ -3770,8 +3750,8 @@ const compressStudyImage = async (file) => {
             <button
               type="button"
               className={`chatbot-heading-button ${chatOpen
-                  ? "chatbot-heading-active"
-                  : ""
+                ? "chatbot-heading-active"
+                : ""
                 }`}
               onClick={toggleChat}
               aria-label={
@@ -4271,16 +4251,47 @@ const compressStudyImage = async (file) => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateFlashcards}
-                disabled={flashcardsLoading}
-              >
-                {flashcardsLoading
-                  ? "⏳ Generating..."
-                  : "🔄 Regenerate"}
-              </button>
+              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateFlashcards}
+                  disabled={flashcardsLoading}
+                >
+                  {flashcardsLoading
+                    ? "⏳ Generating..."
+                    : "🔄 Regenerate"}
+                </button>
+                <button
+                  type="button"
+                  className="generated-section-close-button"
+                  onClick={() => {
+                    setFlashcards([]);
+                    setFlashcardIndex(0);
+                    setFlashcardFlipped(false);
+                  }}
+                  aria-label="Close generated flashcards"
+                  title="Close flashcards"
+                  style={{
+                    flex: "0 0 32px",
+                    width: "32px",
+                    height: "32px",
+                    minWidth: "32px",
+                    padding: 0,
+                    display: "grid",
+                    placeItems: "center",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.09)",
+                    color: "#ffffff",
+                    fontSize: "19px",
+                    lineHeight: 1,
+                    cursor: "pointer"
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="flashcard-progress">
@@ -4373,14 +4384,51 @@ const compressStudyImage = async (file) => {
                 <h2>Test concepts</h2>
                 <p>Timed multiple-choice questions generated from your study material.</p>
               </div>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateTest}
-                disabled={testLoading}
-              >
-                {testLoading ? "Generating..." : "Regenerate test"}
-              </button>
+              <div className="generated-section-header-actions" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateTest}
+                  disabled={testLoading}
+                >
+                  {testLoading ? "Generating..." : "Regenerate test"}
+                </button>
+                <button
+                  type="button"
+                  className="generated-section-close-button"
+                  onClick={() => {
+                    setTestQuestions([]);
+                    setTestAnswers({});
+                    setTestIndex(0);
+                    setTestStarted(false);
+                    setTestFinished(false);
+                    setTestTimeLeft(0);
+                    setTestTotalSeconds(0);
+                    setTestScore(0);
+                    testSubmissionRecordedRef.current = false;
+                  }}
+                  aria-label="Close generated test"
+                  title="Close test concepts"
+                  style={{
+                    flex: "0 0 32px",
+                    width: "32px",
+                    height: "32px",
+                    minWidth: "32px",
+                    padding: 0,
+                    display: "grid",
+                    placeItems: "center",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.09)",
+                    color: "#ffffff",
+                    fontSize: "19px",
+                    lineHeight: 1,
+                    cursor: "pointer"
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             {!testStarted && !testFinished && (
