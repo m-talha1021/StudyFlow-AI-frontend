@@ -301,7 +301,7 @@ function WelcomePage({ onLogin, onSignup }) {
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
             <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
-            <div><span>📤</span><strong>Share content</strong><small>Share generated content with others</small></div>
+            <div><span>🔗</span><strong>Share content</strong><small>Share generated content with others</small></div>
           </div>
         </section>
       </main>
