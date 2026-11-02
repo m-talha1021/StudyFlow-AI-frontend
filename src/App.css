@@ -12388,40 +12388,40 @@ textarea.transcription-output {
 }
 
 
-/* Mobile: position close buttons in the top-right corner */
+
+/* Mobile: move generated section close buttons to top-right */
 @media (max-width: 768px) {
 
-    /* Flashcards section */
-    .flashcards-section {
-        position: relative !important;
-    }
+  /* Make both sections positioning containers */
+  #flashcards-section,
+  #test-concepts-section {
+    position: relative !important;
+  }
 
-    .flashcards-close-button {
-        position: absolute !important;
-        top: 18px !important;
-        right: 18px !important;
-        left: auto !important;
-        margin: 0 !important;
-        z-index: 20 !important;
-    }
+  /* Close buttons */
+  #flashcards-section .generated-section-close-button,
+  #test-concepts-section .generated-section-close-button {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
 
-    /* Test Concepts section */
-    .test-concepts-section {
-        position: relative !important;
-    }
+    left: auto !important;
+    bottom: auto !important;
 
-    .test-concepts-close-button {
-        position: absolute !important;
-        top: 18px !important;
-        right: 18px !important;
-        left: auto !important;
-        margin: 0 !important;
-        z-index: 20 !important;
-    }
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
 
-    /* Keep section headings clear of the close button */
-    .flashcards-header,
-    .test-concepts-header {
-        padding-right: 45px !important;
-    }
+    margin: 0 !important;
+    flex: none !important;
+
+    z-index: 9999 !important;
+  }
+
+  /* Add space so headings don't overlap the close button */
+  #flashcards-section h2,
+  #test-concepts-section h2 {
+    padding-right: 42px !important;
+  }
 }
+
