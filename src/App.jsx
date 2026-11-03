@@ -3775,7 +3775,7 @@ function App() {
               <span className="heading-robot-icon">
                 🤖
               </span>
-
+              Ask AI Agent
             </button>
 
           </div>
@@ -3946,30 +3946,30 @@ function App() {
 
           {/* GENERATE */}
 
-          
-<button
-  className="generate-button"
-  onClick={handleGenerate}
-  disabled={
-    processing ||
-    generating ||
-    flashcardsLoading ||
-    loading ||
-    oralExam.listening
-  }
->
-  {generating || flashcardsLoading || loading
-    ? mode === "test"
-      ? "⏳ Generating... test"
-      : "⏳ Generating..."
-    : mode === "flashcards"
-      ? "✨ Generate Flashcards"
-      : mode === "oral"
-        ? "🎙️ Start Oral Test"
-        : mode === "test"
-          ? "✨ Generate Test"
-          : `✨ Generate ${mode}`}
-</button>
+
+          <button
+            className="generate-button"
+            onClick={handleGenerate}
+            disabled={
+              processing ||
+              generating ||
+              flashcardsLoading ||
+              loading ||
+              oralExam.listening
+            }
+          >
+            {generating || flashcardsLoading || loading
+              ? mode === "test"
+                ? "⏳ Generating... Test"
+                : "⏳ Generating..."
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : mode === "oral"
+                  ? "🎙️ Start Oral Test"
+                  : mode === "test"
+                    ? "✨ Generate Test"
+                    : `✨ Generate ${mode}`}
+          </button>
 
         </section>
 
@@ -5003,7 +5003,7 @@ function App() {
 
       {showGoUp && (
         <button
-          className="go-up-button"
+          className="go-up-button"                      
           onClick={
             scrollToTop
           }
