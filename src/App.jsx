@@ -3946,7 +3946,6 @@ function App() {
 
           {/* GENERATE */}
 
-
           <button
             className="generate-button"
             onClick={handleGenerate}
@@ -3954,21 +3953,18 @@ function App() {
               processing ||
               generating ||
               flashcardsLoading ||
-              loading ||
               oralExam.listening
             }
           >
-            {generating || flashcardsLoading || loading
-              ? mode === "test"
-                ? "⏳ Generating... Test"
-                : "⏳ Generating..."
+
+            {generating || flashcardsLoading
+              ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
                 : mode === "oral"
                   ? "🎙️ Start Oral Test"
-                  : mode === "test"
-                    ? "✨ Generate Test"
-                    : `✨ Generate ${mode}`}
+                  : `✨ Generate ${mode}`}
+
           </button>
 
         </section>
@@ -5003,7 +4999,7 @@ function App() {
 
       {showGoUp && (
         <button
-          className="go-up-button"                      
+          className="go-up-button"
           onClick={
             scrollToTop
           }
