@@ -3775,7 +3775,7 @@ function App() {
               <span className="heading-robot-icon">
                 🤖
               </span>
-
+              Ask AI Agent
             </button>
 
           </div>
@@ -4280,7 +4280,7 @@ function App() {
                 title="Close flashcards"
                 style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
-                ×
+                X
               </button>
             </div>
 
@@ -4380,7 +4380,7 @@ function App() {
                 onClick={handleGenerateTest}
                 disabled={testLoading}
               >
-                {testLoading ? "Generating..." : "Regenerate test"}
+                {testLoading ? "⏳ Generating..." : "Regenerate test"}
               </button>
               <button
                 type="button"
@@ -4400,7 +4400,7 @@ function App() {
                 title="Close test concepts"
                 style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
-                ×
+                X
               </button>
             </div>
 
@@ -4757,7 +4757,7 @@ function App() {
               <div>
 
                 <strong>
-                  StudyFlow AI
+                  Ask StudyFlow AI
                 </strong>
 
                 <small>
