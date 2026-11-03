@@ -3775,9 +3775,8 @@ function App() {
               <span className="heading-robot-icon">
                 🤖
               </span>
-              Ask AI Agent
             </button>
-
+            Ask AI Agent
           </div>
 
           {/* MODE BUTTONS */}
