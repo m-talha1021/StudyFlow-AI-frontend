@@ -4245,9 +4245,20 @@ function App() {
 
         {flashcards.length > 0 && (
           <section
-            className="flashcards-section"
+            className="flashcards-section generated-section-with-close"
             id="flashcards-section"
           >
+            <button
+              type="button"
+              className="generated-section-close-button generated-section-close-top-right"
+              aria-label="Close flashcards"
+              title="Close flashcards"
+              onClick={() => {
+                setFlashcards([]);
+                setFlashcardIndex(0);
+                setFlashcardFlipped(false);
+              }}
+            >×</button>
 
             <div className="flashcards-header">
               <div>
@@ -4355,7 +4366,23 @@ function App() {
       ================================================== */}
 
         {testQuestions.length > 0 && (
-          <section className="test-concepts-section" id="test-concepts-section">
+          <section className="test-concepts-section generated-section-with-close" id="test-concepts-section">
+            <button
+              type="button"
+              className="generated-section-close-button generated-section-close-top-right"
+              aria-label="Close test concepts"
+              title="Close test concepts"
+              onClick={() => {
+                setTestQuestions([]);
+                setTestAnswers({});
+                setTestIndex(0);
+                setTestStarted(false);
+                setTestFinished(false);
+                setTestTimeLeft(0);
+                setTestTotalSeconds(0);
+                setTestScore(0);
+              }}
+            >×</button>
             <div className="test-concepts-header">
               <div>
                 <span className="section-kicker">EXAM SIMULATION</span>
