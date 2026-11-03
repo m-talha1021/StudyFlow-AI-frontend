@@ -3294,14 +3294,21 @@ function App() {
                                 </p>
                             </div>
 
-                         <button
-                        type="button"
-                        className="dashboard-history-close"
-                        onClick={closeDashboardHistory}
-                        aria-label="Close dashboard history"
-                      >
-                        ✕
-                      </button>
+                            <button
+                                type="button"
+                                className="dashboard-close-btn"
+                                onClick={() => {
+                                    setShowDashboard(false);
+                                    closeDashboardHistory();
+                                }}
+                                aria-label="Close dashboard"
+                                title="Close dashboard"
+                            >
+                                ×
+                            </button>
+
+
+
 
 
                         </div>
@@ -3438,15 +3445,11 @@ function App() {
 
                                             <button
                                                 type="button"
-                                                className="dashboard-close-btn"
-                                                onClick={() => {
-                                                    setShowDashboard(false);
-                                                    closeDashboardHistory();
-                                                }}
-                                                aria-label="Close dashboard"
-                                                title="Close dashboard"
+                                                className="dashboard-history-close"
+                                                onClick={closeDashboardHistory}
+                                                aria-label="Close dashboard history"
                                             >
-                                                ×
+                                                ✕
                                             </button>
                                         </div>
 
