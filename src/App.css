@@ -12681,11 +12681,11 @@ footer p {
 
 
 .dashboard-close-btn {
-    background-color: #a3adc4 !important;
-    height: 32px;
-    color: black;
-    width: 32px;
-    border-radius: 9px;
+    background-color: #4e07b8 !important;
+    height: 34px;
+    color: white;
+    width: 34px;
+    border-radius: 15px;
     border: 3px #5a2c96 solid;
     cursor: pointer;
 }
