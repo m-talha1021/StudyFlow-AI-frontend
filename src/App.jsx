@@ -2232,17 +2232,49 @@ function App() {
       });
 
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
-        throw new Error(data.error || "Could not generate the test.");
+        throw new Error(data.error || "Could not generate the test. Please try again.");
       }
 
-      setTestQuestions(data.questions);
+      // Validate and normalize the API payload before rendering. This prevents
+      // one malformed provider item from breaking the entire test UI.
+      const normalizedQuestions = data.questions
+        .map((item) => {
+          if (!item || typeof item !== "object") return null;
+          const question = String(item.question || item.prompt || "").trim();
+          const rawOptions = item.options || item.choices;
+          if (!question || !Array.isArray(rawOptions) || rawOptions.length !== 4) return null;
+          const options = rawOptions.map((option) =>
+            String(
+              option && typeof option === "object"
+                ? option.text || option.value || ""
+                : option ?? ""
+            ).trim()
+          );
+          if (options.some((option) => !option) || new Set(options).size !== 4) return null;
+
+          let answer = String(
+            item.answer || item.correct_answer || item.correct || ""
+          ).trim();
+          if (/^[A-D]$/i.test(answer)) {
+            answer = options[answer.toUpperCase().charCodeAt(0) - 65];
+          }
+          if (!options.includes(answer)) return null;
+          return { question, options, answer };
+        })
+        .filter(Boolean);
+
+      if (normalizedQuestions.length < 5) {
+        throw new Error("The generated test response was incomplete. Please generate the test again.");
+      }
+
+      setTestQuestions(normalizedQuestions);
       setTestAnswers({});
       setTestIndex(0);
       setTestScore(0);
       setTestFinished(false);
       testSubmissionRecordedRef.current = false;
-      setTestTotalSeconds(data.duration_seconds || data.questions.length * 60);
-      setTestTimeLeft(data.duration_seconds || data.questions.length * 60);
+      setTestTotalSeconds(normalizedQuestions.length * 60);
+      setTestTimeLeft(normalizedQuestions.length * 60);
       setTestStarted(false);
 
       setTimeout(() => {
