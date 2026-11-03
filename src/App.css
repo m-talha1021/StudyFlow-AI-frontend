@@ -12682,8 +12682,10 @@ footer p {
 
 .dashboard-close-btn {
     background-color: #1d1d52 !important;
-    height: 15px;
-    width: 15px;
+    height: 40px;
+    width: 40px;
+    border-radius: 10px;
+    border: 1px #6c6c70 solid;
 }
 
 
