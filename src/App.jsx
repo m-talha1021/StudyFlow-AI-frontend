@@ -4244,6 +4244,7 @@ function App() {
           <section
             className="flashcards-section"
             id="flashcards-section"
+            style={{ position: "relative" }}
           >
 
             <div className="flashcards-header">
@@ -4266,6 +4267,20 @@ function App() {
                 {flashcardsLoading
                   ? "⏳ Generating..."
                   : "🔄 Regenerate"}
+              </button>
+              <button
+                type="button"
+                className="generated-section-close-button"
+                onClick={() => {
+                  setFlashcards([]);
+                  setFlashcardIndex(0);
+                  setFlashcardFlipped(false);
+                }}
+                aria-label="Close generated flashcards"
+                title="Close flashcards"
+                style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+              >
+                ×
               </button>
             </div>
 
@@ -4352,7 +4367,7 @@ function App() {
       ================================================== */}
 
         {testQuestions.length > 0 && (
-          <section className="test-concepts-section" id="test-concepts-section">
+          <section className="test-concepts-section" id="test-concepts-section" style={{ position: "relative" }}>
             <div className="test-concepts-header">
               <div>
                 <span className="section-kicker">EXAM SIMULATION</span>
@@ -4366,6 +4381,26 @@ function App() {
                 disabled={testLoading}
               >
                 {testLoading ? "Generating..." : "Regenerate test"}
+              </button>
+              <button
+                type="button"
+                className="generated-section-close-button"
+                onClick={() => {
+                  setTestQuestions([]);
+                  setTestAnswers({});
+                  setTestIndex(0);
+                  setTestStarted(false);
+                  setTestFinished(false);
+                  setTestTimeLeft(0);
+                  setTestTotalSeconds(0);
+                  setTestScore(0);
+                  testSubmissionRecordedRef.current = false;
+                }}
+                aria-label="Close generated test"
+                title="Close test concepts"
+                style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+              >
+                ×
               </button>
             </div>
 
