@@ -3294,6 +3294,15 @@ function App() {
                                 </p>
                             </div>
 
+                         <button
+                        type="button"
+                        className="dashboard-history-close"
+                        onClick={closeDashboardHistory}
+                        aria-label="Close dashboard history"
+                      >
+                        ✕
+                      </button>
+
 
                         </div>
 
