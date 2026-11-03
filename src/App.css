@@ -12685,8 +12685,8 @@ footer p {
     height: 32px;
     color: black;
     width: 32px;
-    border-radius: 14px;
-    border: 1px #6c6c70 solid;
+    border-radius: 16px;
+    border: 1.5px #553991 solid;
     cursor: pointer;
 }
 
