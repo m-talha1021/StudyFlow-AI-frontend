@@ -3775,7 +3775,7 @@ function App() {
               <span className="heading-robot-icon">
                 🤖
               </span>
-              Ask AI Agent
+
             </button>
 
           </div>
@@ -3953,18 +3953,21 @@ function App() {
               processing ||
               generating ||
               flashcardsLoading ||
+              testLoading ||
               oralExam.listening
             }
           >
-
-            {generating || flashcardsLoading
+            {testLoading
               ? "⏳ Generating..."
-              : mode === "flashcards"
-                ? "✨ Generate Flashcards"
-                : mode === "oral"
-                  ? "🎙️ Start Oral Test"
-                  : `✨ Generate ${mode}`}
-
+              : generating || flashcardsLoading
+                ? "⏳ Generating..."
+                : mode === "flashcards"
+                  ? "✨ Generate Flashcards"
+                  : mode === "oral"
+                    ? "🎙️ Start Oral Test"
+                    : mode === "test"
+                      ? "✨ Generate Test"
+                      : `✨ Generate ${mode}`}
           </button>
 
         </section>
@@ -4244,7 +4247,6 @@ function App() {
           <section
             className="flashcards-section"
             id="flashcards-section"
-            style={{ position: "relative" }}
           >
 
             <div className="flashcards-header">
@@ -4267,20 +4269,6 @@ function App() {
                 {flashcardsLoading
                   ? "⏳ Generating..."
                   : "🔄 Regenerate"}
-              </button>
-              <button
-                type="button"
-                className="generated-section-close-button"
-                onClick={() => {
-                  setFlashcards([]);
-                  setFlashcardIndex(0);
-                  setFlashcardFlipped(false);
-                }}
-                aria-label="Close generated flashcards"
-                title="Close flashcards"
-                style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
-              >
-                X
               </button>
             </div>
 
@@ -4367,7 +4355,7 @@ function App() {
       ================================================== */}
 
         {testQuestions.length > 0 && (
-          <section className="test-concepts-section" id="test-concepts-section" style={{ position: "relative" }}>
+          <section className="test-concepts-section" id="test-concepts-section">
             <div className="test-concepts-header">
               <div>
                 <span className="section-kicker">EXAM SIMULATION</span>
@@ -4380,27 +4368,7 @@ function App() {
                 onClick={handleGenerateTest}
                 disabled={testLoading}
               >
-                {testLoading ? "⏳ Generating..." : "Regenerate test"}
-              </button>
-              <button
-                type="button"
-                className="generated-section-close-button"
-                onClick={() => {
-                  setTestQuestions([]);
-                  setTestAnswers({});
-                  setTestIndex(0);
-                  setTestStarted(false);
-                  setTestFinished(false);
-                  setTestTimeLeft(0);
-                  setTestTotalSeconds(0);
-                  setTestScore(0);
-                  testSubmissionRecordedRef.current = false;
-                }}
-                aria-label="Close generated test"
-                title="Close test concepts"
-                style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
-              >
-                X
+                {testLoading ? "Generating..." : "Regenerate test"}
               </button>
             </div>
 
@@ -4757,7 +4725,7 @@ function App() {
               <div>
 
                 <strong>
-                  Ask StudyFlow AI
+                  StudyFlow AI
                 </strong>
 
                 <small>
