@@ -3775,7 +3775,7 @@ function App() {
               <span className="heading-robot-icon">
                 🤖
               </span>
-              Ask AI Agent
+
             </button>
 
           </div>
@@ -3946,7 +3946,6 @@ function App() {
 
           {/* GENERATE */}
 
-
           <button
             className="generate-button"
             onClick={handleGenerate}
@@ -3954,21 +3953,18 @@ function App() {
               processing ||
               generating ||
               flashcardsLoading ||
-              loading ||
               oralExam.listening
             }
           >
-            {generating || flashcardsLoading || loading
-              ? mode === "test"
-                ? "⏳ Generating... Test"
-                : "⏳ Generating..."
+
+            {generating || flashcardsLoading
+              ? "⏳ Generating..."
               : mode === "flashcards"
                 ? "✨ Generate Flashcards"
                 : mode === "oral"
                   ? "🎙️ Start Oral Test"
-                  : mode === "test"
-                    ? "✨ Generate Test"
-                    : `✨ Generate ${mode}`}
+                  : `✨ Generate ${mode}`}
+
           </button>
 
         </section>
@@ -4284,7 +4280,7 @@ function App() {
                 title="Close flashcards"
                 style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
-                X
+                ×
               </button>
             </div>
 
@@ -4384,7 +4380,7 @@ function App() {
                 onClick={handleGenerateTest}
                 disabled={testLoading}
               >
-                {testLoading ? "⏳ Generating..." : "Regenerate test"}
+                {testLoading ? "Generating..." : "Regenerate test"}
               </button>
               <button
                 type="button"
@@ -4404,7 +4400,7 @@ function App() {
                 title="Close test concepts"
                 style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
-                X
+                ×
               </button>
             </div>
 
@@ -5003,7 +4999,7 @@ function App() {
 
       {showGoUp && (
         <button
-          className="go-up-button"                      
+          className="go-up-button"
           onClick={
             scrollToTop
           }
