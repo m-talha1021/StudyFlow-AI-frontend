@@ -12679,7 +12679,7 @@ footer p {
    color: white !important;
 }
 
-/* Beautiful circular dashboard close button */
+/* Beautiful circular dashboard close button 
 .dashboard-close-btn {
     position: absolute !important;
     top: 14px !important;
@@ -12734,7 +12734,7 @@ footer p {
     transform: scale(0.94) !important;
 }
 
-/* Mobile */
+ Mobile 
 @media (max-width: 600px) {
     .dashboard-close-btn {
         top: 10px !important;
@@ -12745,7 +12745,7 @@ footer p {
         font-size: 20px !important;
     }
 }
-
+*/
 
 
 
