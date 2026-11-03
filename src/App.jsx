@@ -295,13 +295,19 @@ function WelcomePage({ onLogin, onSignup }) {
 
           <div className="feature-grid">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
+            <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
+            <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
             <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
+            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
+            <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
+            <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
           </div>
         </section>
       </main>
+      <footer className="public-footer">
+        <p>© StudyFlow AI · Learn better. Grow faster.</p>
+      </footer>
     </div>
   );
 }
@@ -837,6 +843,7 @@ function App() {
   const [materialReady, setMaterialReady] =
     useState(false);
   const [processedMaterialText, setProcessedMaterialText] = useState("");
+  const getCurrentMaterialText = () => (processedMaterialText || text || "").trim();
 
   const [processing, setProcessing] =
     useState(false);
@@ -1597,31 +1604,31 @@ function App() {
   // PROCESS MULTIPLE FILES
   // ========================================================
 
-// Compress large camera/photos in the browser before uploading. This reduces
-// upload time and OCR latency; if the browser cannot decode the format, keep
-// the original file and let the backend handle it.
-const compressStudyImage = async (file) => {
-  if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
-  if (!("createImageBitmap" in window)) return file;
-  try {
-    const bitmap = await createImageBitmap(file);
-    const maxDimension = 2000;
-    const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    const context = canvas.getContext("2d", { alpha: false });
-    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close?.();
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
-    if (!blob || blob.size >= file.size) return file;
-    const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
-    return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
-  } catch (error) {
-    console.warn("Image compression skipped:", error);
-    return file;
-  }
-};
+  // Compress large camera/photos in the browser before uploading. This reduces
+  // upload time and OCR latency; if the browser cannot decode the format, keep
+  // the original file and let the backend handle it.
+  const compressStudyImage = async (file) => {
+    if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
+    if (!("createImageBitmap" in window)) return file;
+    try {
+      const bitmap = await createImageBitmap(file);
+      const maxDimension = 2000;
+      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      const context = canvas.getContext("2d", { alpha: false });
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close?.();
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+      if (!blob || blob.size >= file.size) return file;
+      const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
+      return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
+    } catch (error) {
+      console.warn("Image compression skipped:", error);
+      return file;
+    }
+  };
 
   const processFiles = async (selectedFiles) => {
     const validFiles = Array.from(selectedFiles || []).filter(Boolean);
@@ -1980,6 +1987,8 @@ const compressStudyImage = async (file) => {
   // ========================================================
 
   const handleGenerateFlashcards = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    if (!getCurrentMaterialText()) { alert("Please upload or paste study material first."); return; }
     setFlashcardsLoading(true);
     setResult("");
 
@@ -2015,6 +2024,7 @@ const compressStudyImage = async (file) => {
           method: "POST",
           body: JSON.stringify({
             count: 10,
+            materialText: getCurrentMaterialText(),
           }),
         }
       );
@@ -2196,6 +2206,8 @@ const compressStudyImage = async (file) => {
   };
 
   const handleGenerateTest = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    if (!getCurrentMaterialText() && !text.trim()) { alert("Please upload or paste study material first."); return; }
     setTestLoading(true);
     setResult("");
     stopSpeech();
@@ -2216,7 +2228,7 @@ const compressStudyImage = async (file) => {
 
       const data = await apiRequest("/api/test-concepts", {
         method: "POST",
-        body: JSON.stringify({ count: 20 }),
+        body: JSON.stringify({ count: 20, materialText: getCurrentMaterialText() }),
       });
 
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
@@ -2324,7 +2336,7 @@ const compressStudyImage = async (file) => {
         try {
           const data = await apiRequest("/api/oral-exam", {
             method: "POST",
-            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer })
+            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer, materialText: getCurrentMaterialText() })
           });
           if (!data.success) throw new Error(data.error || "Could not evaluate your answer.");
           setOralExam(p => ({
@@ -2390,7 +2402,7 @@ const compressStudyImage = async (file) => {
         alert("Please upload study material or paste your content first.");
         return;
       }
-      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start" }) });
+      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start", materialText: getCurrentMaterialText() }) });
       if (!data.success) throw new Error(data.error || "Could not start the oral test.");
       setOralExam({ active: true, sessionId: data.session_id, question: data.question, questionNumber: data.question_number || 1, totalQuestions: data.total_questions || 10, language: data.language || "english", status: "asking", feedback: "", score: 0, listening: false, supported: true });
       setTimeout(() => document.getElementById("oral-exam-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
@@ -2913,6 +2925,7 @@ const compressStudyImage = async (file) => {
 
                 history:
                   history,
+                materialText: getCurrentMaterialText(),
               }),
             }
           );
@@ -3284,43 +3297,7 @@ const compressStudyImage = async (file) => {
         </div>
 
         {showDashboard && (
-          <div className="dashboard-panel" style={{ position: "relative" }}>
-            <button
-              type="button"
-              className="dashboard-close-btn"
-              onClick={() => {
-                setShowDashboard(false);
-                closeDashboardHistory();
-              }}
-              aria-label="Close dashboard"
-              title="Close dashboard"
-              style={{
-                position: "absolute",
-                top: "14px",
-                right: "14px",
-                width: "36px",
-                height: "36px",
-                minWidth: "36px",
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid rgba(255,255,255,0.25)",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, rgba(59,130,246,0.30), rgba(139,92,246,0.30))",
-                color: "#fff",
-                fontSize: "24px",
-                fontWeight: 400,
-                lineHeight: 1,
-                cursor: "pointer",
-                zIndex: 100,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.22)",
-                backdropFilter: "blur(8px)"
-              }}
-            >
-              ×
-            </button>
-
+          <div className="dashboard-panel">
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
 
@@ -3330,6 +3307,17 @@ const compressStudyImage = async (file) => {
                 </p>
               </div>
 
+              <button
+                type="button"
+                className="dashboard-close-btn"
+                onClick={() => {
+                  setShowDashboard(false);
+                  closeDashboardHistory();
+                }}
+                aria-label="Close dashboard"
+              >
+                X
+              </button>
             </div>
 
             {dashboardLoading ? (
@@ -3631,7 +3619,7 @@ const compressStudyImage = async (file) => {
 
             <strong>
               {processing
-                ? "Processing selected files..."
+                ? "Analyzing selected files..."
                 : "Upload your documents or images"}
             </strong>
 
@@ -3768,8 +3756,8 @@ const compressStudyImage = async (file) => {
             <button
               type="button"
               className={`chatbot-heading-button ${chatOpen
-                  ? "chatbot-heading-active"
-                  : ""
+                ? "chatbot-heading-active"
+                : ""
                 }`}
               onClick={toggleChat}
               aria-label={
@@ -4256,6 +4244,7 @@ const compressStudyImage = async (file) => {
           <section
             className="flashcards-section"
             id="flashcards-section"
+            style={{ position: "relative" }}
           >
 
             <div className="flashcards-header">
@@ -4278,6 +4267,20 @@ const compressStudyImage = async (file) => {
                 {flashcardsLoading
                   ? "⏳ Generating..."
                   : "🔄 Regenerate"}
+              </button>
+              <button
+                type="button"
+                className="generated-section-close-button"
+                onClick={() => {
+                  setFlashcards([]);
+                  setFlashcardIndex(0);
+                  setFlashcardFlipped(false);
+                }}
+                aria-label="Close generated flashcards"
+                title="Close flashcards"
+                style={{ position: "conter", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+              >
+                X
               </button>
             </div>
 
@@ -4364,7 +4367,7 @@ const compressStudyImage = async (file) => {
       ================================================== */}
 
         {testQuestions.length > 0 && (
-          <section className="test-concepts-section" id="test-concepts-section">
+          <section className="test-concepts-section" id="test-concepts-section" style={{ position: "relative" }}>
             <div className="test-concepts-header">
               <div>
                 <span className="section-kicker">EXAM SIMULATION</span>
@@ -4378,6 +4381,26 @@ const compressStudyImage = async (file) => {
                 disabled={testLoading}
               >
                 {testLoading ? "Generating..." : "Regenerate test"}
+              </button>
+              <button
+                type="button"
+                className="generated-section-close-button"
+                onClick={() => {
+                  setTestQuestions([]);
+                  setTestAnswers({});
+                  setTestIndex(0);
+                  setTestStarted(false);
+                  setTestFinished(false);
+                  setTestTimeLeft(0);
+                  setTestTotalSeconds(0);
+                  setTestScore(0);
+                  testSubmissionRecordedRef.current = false;
+                }}
+                aria-label="Close generated test"
+                title="Close test concepts"
+                style={{ position: "center", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+              >
+                X
               </button>
             </div>
 
