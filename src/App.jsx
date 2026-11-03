@@ -295,19 +295,13 @@ function WelcomePage({ onLogin, onSignup }) {
 
           <div className="feature-grid">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
+            <div><span>💡</span><strong>Explain</strong><small>Understand difficult concepts</small></div>
+            <div><span>🧠</span><strong>Quizzes</strong><small>Test what you learned</small></div>
             <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
-            <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
-            <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
           </div>
         </section>
       </main>
-      <footer className="public-footer">
-        <p>© StudyFlow AI · Learn better. Grow faster.</p>
-      </footer>
     </div>
   );
 }
@@ -843,7 +837,6 @@ function App() {
   const [materialReady, setMaterialReady] =
     useState(false);
   const [processedMaterialText, setProcessedMaterialText] = useState("");
-  const getCurrentMaterialText = () => (processedMaterialText || text || "").trim();
 
   const [processing, setProcessing] =
     useState(false);
@@ -1604,31 +1597,31 @@ function App() {
   // PROCESS MULTIPLE FILES
   // ========================================================
 
-  // Compress large camera/photos in the browser before uploading. This reduces
-  // upload time and OCR latency; if the browser cannot decode the format, keep
-  // the original file and let the backend handle it.
-  const compressStudyImage = async (file) => {
-    if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
-    if (!("createImageBitmap" in window)) return file;
-    try {
-      const bitmap = await createImageBitmap(file);
-      const maxDimension = 2000;
-      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      const context = canvas.getContext("2d", { alpha: false });
-      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      bitmap.close?.();
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
-      if (!blob || blob.size >= file.size) return file;
-      const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
-      return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
-    } catch (error) {
-      console.warn("Image compression skipped:", error);
-      return file;
-    }
-  };
+// Compress large camera/photos in the browser before uploading. This reduces
+// upload time and OCR latency; if the browser cannot decode the format, keep
+// the original file and let the backend handle it.
+const compressStudyImage = async (file) => {
+  if (!file || !file.type?.startsWith("image/") || file.size < 1.2 * 1024 * 1024) return file;
+  if (!("createImageBitmap" in window)) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxDimension = 2000;
+    const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d", { alpha: false });
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+    if (!blob || blob.size >= file.size) return file;
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "study-image";
+    return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
+  } catch (error) {
+    console.warn("Image compression skipped:", error);
+    return file;
+  }
+};
 
   const processFiles = async (selectedFiles) => {
     const validFiles = Array.from(selectedFiles || []).filter(Boolean);
@@ -1987,8 +1980,6 @@ function App() {
   // ========================================================
 
   const handleGenerateFlashcards = async () => {
-    if (processing) { alert("Your study material is still processing. Please wait."); return; }
-    if (!getCurrentMaterialText()) { alert("Please upload or paste study material first."); return; }
     setFlashcardsLoading(true);
     setResult("");
 
@@ -2024,7 +2015,6 @@ function App() {
           method: "POST",
           body: JSON.stringify({
             count: 10,
-            materialText: getCurrentMaterialText(),
           }),
         }
       );
@@ -2206,8 +2196,6 @@ function App() {
   };
 
   const handleGenerateTest = async () => {
-    if (processing) { alert("Your study material is still processing. Please wait."); return; }
-    if (!getCurrentMaterialText() && !text.trim()) { alert("Please upload or paste study material first."); return; }
     setTestLoading(true);
     setResult("");
     stopSpeech();
@@ -2228,7 +2216,7 @@ function App() {
 
       const data = await apiRequest("/api/test-concepts", {
         method: "POST",
-        body: JSON.stringify({ count: 20, materialText: getCurrentMaterialText() }),
+        body: JSON.stringify({ count: 20 }),
       });
 
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
@@ -2336,7 +2324,7 @@ function App() {
         try {
           const data = await apiRequest("/api/oral-exam", {
             method: "POST",
-            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer, materialText: getCurrentMaterialText() })
+            body: JSON.stringify({ action: "evaluate", session_id: oralExam.sessionId, answer })
           });
           if (!data.success) throw new Error(data.error || "Could not evaluate your answer.");
           setOralExam(p => ({
@@ -2402,7 +2390,7 @@ function App() {
         alert("Please upload study material or paste your content first.");
         return;
       }
-      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start", materialText: getCurrentMaterialText() }) });
+      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start" }) });
       if (!data.success) throw new Error(data.error || "Could not start the oral test.");
       setOralExam({ active: true, sessionId: data.session_id, question: data.question, questionNumber: data.question_number || 1, totalQuestions: data.total_questions || 10, language: data.language || "english", status: "asking", feedback: "", score: 0, listening: false, supported: true });
       setTimeout(() => document.getElementById("oral-exam-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
@@ -2925,7 +2913,6 @@ function App() {
 
                 history:
                   history,
-                materialText: getCurrentMaterialText(),
               }),
             }
           );
@@ -3619,7 +3606,7 @@ function App() {
 
             <strong>
               {processing
-                ? "Analyzing selected files..."
+                ? "Processing selected files..."
                 : "Upload your documents or images"}
             </strong>
 
@@ -3756,8 +3743,8 @@ function App() {
             <button
               type="button"
               className={`chatbot-heading-button ${chatOpen
-                ? "chatbot-heading-active"
-                : ""
+                  ? "chatbot-heading-active"
+                  : ""
                 }`}
               onClick={toggleChat}
               aria-label={
@@ -3953,21 +3940,18 @@ function App() {
               processing ||
               generating ||
               flashcardsLoading ||
-              testLoading ||
               oralExam.listening
             }
           >
-            {testLoading
+
+            {generating || flashcardsLoading
               ? "⏳ Generating..."
-              : generating || flashcardsLoading
-                ? "⏳ Generating..."
-                : mode === "flashcards"
-                  ? "✨ Generate Flashcards"
-                  : mode === "oral"
-                    ? "🎙️ Start Oral Test"
-                    : mode === "test"
-                      ? "✨ Generate Test"
-                      : `✨ Generate ${mode}`}
+              : mode === "flashcards"
+                ? "✨ Generate Flashcards"
+                : mode === "oral"
+                  ? "🎙️ Start Oral Test"
+                  : `✨ Generate ${mode}`}
+
           </button>
 
         </section>
@@ -4245,20 +4229,45 @@ function App() {
 
         {flashcards.length > 0 && (
           <section
-            className="flashcards-section generated-section-with-close"
+            className="flashcards-section"
             id="flashcards-section"
+            style={{ position: "relative" }}
           >
             <button
               type="button"
-              className="generated-section-close-button generated-section-close-top-right"
-              aria-label="Close flashcards"
-              title="Close flashcards"
+              className="generated-section-close-button"
               onClick={() => {
                 setFlashcards([]);
                 setFlashcardIndex(0);
                 setFlashcardFlipped(false);
               }}
-            >×</button>
+              aria-label="Close flashcards"
+              title="Close flashcards"
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "12px",
+                zIndex: 20,
+                width: "36px",
+                height: "36px",
+                minWidth: "36px",
+                padding: 0,
+                display: "grid",
+                placeItems: "center",
+                border: "1px solid rgba(255,255,255,0.28)",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, rgba(59,130,246,0.30), rgba(15,23,42,0.85))",
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: 600,
+                lineHeight: 1,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                backdropFilter: "blur(8px)"
+              }}
+            >
+              ×
+            </button>
 
             <div className="flashcards-header">
               <div>
@@ -4366,12 +4375,14 @@ function App() {
       ================================================== */}
 
         {testQuestions.length > 0 && (
-          <section className="test-concepts-section generated-section-with-close" id="test-concepts-section">
+          <section
+            className="test-concepts-section"
+            id="test-concepts-section"
+            style={{ position: "relative" }}
+          >
             <button
               type="button"
-              className="generated-section-close-button generated-section-close-top-right"
-              aria-label="Close test concepts"
-              title="Close test concepts"
+              className="generated-section-close-button"
               onClick={() => {
                 setTestQuestions([]);
                 setTestAnswers({});
@@ -4381,8 +4392,36 @@ function App() {
                 setTestTimeLeft(0);
                 setTestTotalSeconds(0);
                 setTestScore(0);
+                testSubmissionRecordedRef.current = false;
               }}
-            >×</button>
+              aria-label="Close test concepts"
+              title="Close test concepts"
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "12px",
+                zIndex: 20,
+                width: "36px",
+                height: "36px",
+                minWidth: "36px",
+                padding: 0,
+                display: "grid",
+                placeItems: "center",
+                border: "1px solid rgba(255,255,255,0.28)",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, rgba(139,92,246,0.35), rgba(15,23,42,0.88))",
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: 600,
+                lineHeight: 1,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                backdropFilter: "blur(8px)"
+              }}
+            >
+              ×
+            </button>
+
             <div className="test-concepts-header">
               <div>
                 <span className="section-kicker">EXAM SIMULATION</span>
