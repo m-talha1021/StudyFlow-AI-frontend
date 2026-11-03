@@ -4278,7 +4278,7 @@ function App() {
                 }}
                 aria-label="Close generated flashcards"
                 title="Close flashcards"
-                style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+                style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
                 ×
               </button>
@@ -4398,7 +4398,7 @@ function App() {
                 }}
                 aria-label="Close generated test"
                 title="Close test concepts"
-                style={{ position: "absolute", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
+                style={{ position: "absolute", cursor: "pointer", top: "12px", right: "12px", zIndex: 10, width: "32px", height: "32px", minWidth: "32px", padding: 0, display: "grid", placeItems: "center", borderRadius: "50%" }}
               >
                 ×
               </button>
