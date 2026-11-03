@@ -12692,8 +12692,8 @@ footer p {
 
 @media (max-width: 700px) {
    .nav-link-button {
-      height: 32px;
-      width: 75px;
+      height: 40px;
+      width: 100px;
    }
 }
 
