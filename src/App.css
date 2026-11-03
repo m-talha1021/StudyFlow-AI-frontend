@@ -12679,73 +12679,16 @@ footer p {
    color: white !important;
 }
 
-/* Beautiful circular dashboard close button 
+
 .dashboard-close-btn {
-    position: absolute !important;
-    top: 14px !important;
-    right: 14px !important;
-
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    padding: 0 !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 50% !important;
-
-    background: linear-gradient(
-        135deg,
-        rgba(59, 130, 246, 0.28),
-        rgba(139, 92, 246, 0.28)
-    ) !important;
-
-    color: #ffffff !important;
-    font-size: 23px !important;
-    font-weight: 400 !important;
-    line-height: 1 !important;
-
-    cursor: pointer !important;
-    z-index: 50 !important;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22) !important;
-    backdrop-filter: blur(8px) !important;
-
-    transition: all 0.2s ease !important;
+    background-color: #1d1d52 !important;
+    height: 15px;
+    width: 15px;
 }
 
-.dashboard-close-btn:hover {
-    background: linear-gradient(
-        135deg,
-        #3b82f6,
-        #8b5cf6
-    ) !important;
 
-    border-color: rgba(255, 255, 255, 0.5) !important;
-    transform: scale(1.08) !important;
 
-    box-shadow: 0 5px 16px rgba(59, 130, 246, 0.4) !important;
-}
 
-.dashboard-close-btn:active {
-    transform: scale(0.94) !important;
-}
-
- Mobile 
-@media (max-width: 600px) {
-    .dashboard-close-btn {
-        top: 10px !important;
-        right: 10px !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        font-size: 20px !important;
-    }
-}
-*/
 
 
 
