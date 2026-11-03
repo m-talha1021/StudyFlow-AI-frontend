@@ -12690,7 +12690,12 @@ footer p {
     cursor: pointer;
 }
 
-
+@media (max-width: 700px) {
+   .nav-link-button {
+      height: 35px;
+      width: 50px;
+   }
+}
 
 
 
