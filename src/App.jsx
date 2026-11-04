@@ -3348,7 +3348,7 @@ function App() {
                 }}
                 aria-label="Close dashboard"
               >
-                X
+                ✖
               </button>
             </div>
 
