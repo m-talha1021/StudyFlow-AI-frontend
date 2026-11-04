@@ -12681,16 +12681,18 @@ footer p {
 
 
 .dashboard-close-btn {
-    background-color: #2b5fb3 !important;
+    background-color: #255d9c !important;
     height: 34px;
     color: white;
     width: 34px;
     border-radius: 8px;
-    border: 3px #5a2c96 solid;
+    border: 2px #5a2c96 solid;
     cursor: pointer;
 }
 
-
+.dashboard-close-btn:hover {
+    background-color: #1a406b !important;
+}
 
 
 
