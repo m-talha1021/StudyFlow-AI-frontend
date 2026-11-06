@@ -3613,22 +3613,46 @@ function App() {
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
 
-                <h2>{dashboardHistoryType === "generated" ? "Your Generated History" : "Your Dashboard"}</h2>
+                <h2>{dashboardHistoryType === "generated" ? "Your Generated History" : dashboardHistoryType === "previous-flashcards" ? "Previous Flashcards" : dashboardHistoryType === "previous-tests" ? "Previous Test Concepts" : "Your Dashboard"}</h2>
                 <p>
                   {dashboardHistoryType === "generated"
                     ? "Open any previous generated result from your study sessions."
-                    : "Your personal StudyFlow AI progress and activity."}
+                    : dashboardHistoryType === "previous-flashcards"
+                      ? "Open a previous flashcard set to review it again."
+                      : dashboardHistoryType === "previous-tests"
+                        ? "Open a previous test to attempt it again."
+                        : "Your personal StudyFlow AI progress and activity."}
                 </p>
               </div>
 
-              <button
-                type="button"
-                className="dashboard-history-close"
-                onClick={closeDashboardHistory}
-                aria-label="Close dashboard history"
-              >
-                ✖
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                {dashboardHistoryType === "generated" && (
+                  <>
+                    <button
+                      type="button"
+                      className="dashboard-history-open"
+                      onClick={() => setDashboardHistoryType("previous-flashcards")}
+                    >
+                      Flashcards
+                    </button>
+                    <button
+                      type="button"
+                      className="dashboard-history-open"
+                      onClick={() => setDashboardHistoryType("previous-tests")}
+                    >
+                      Test Concepts
+                    </button>
+                  </>
+                )}
+                <button
+                  type="button"
+                  className="dashboard-history-close"
+                  onClick={closeDashboardHistory}
+                  aria-label="Close dashboard history"
+                >
+                  ✖
+                </button>
+              </div>
             </div>
 
             {dashboardLoading ? (
@@ -3637,7 +3661,7 @@ function App() {
               </div>
             ) : (
               <>
-                {dashboardHistoryType !== "generated" && (
+                {!dashboardHistoryType && (
                   <div className="dashboard-stats-grid">
                     {[
                       {
@@ -3735,16 +3759,20 @@ function App() {
                         <h3>
                           {dashboardHistoryType === "materials"
                             ? "Uploaded Materials"
-                            : dashboardHistoryType === "flashcards"
+                            : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
                               ? "Previous Flashcard Sets"
-                              : "All Generated Content"}
+                              : dashboardHistoryType === "previous-tests"
+                                ? "Previous Test Concepts"
+                                : "All Generated Content"}
                         </h3>
                         <p>
                           {dashboardHistoryType === "materials"
                             ? "Files uploaded by your account."
-                            : dashboardHistoryType === "flashcards"
-                              ? "Flashcards generated from your previous study sessions."
-                              : "Open any previous result or download it as an individual PDF."}
+                            : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
+                              ? "Open a previous set to review the cards again."
+                              : dashboardHistoryType === "previous-tests"
+                                ? "Open a previous test to attempt the questions again."
+                                : "Open any previous result or download it as an individual PDF."}
                         </p>
                       </div>
 
@@ -3770,7 +3798,7 @@ function App() {
                           No uploaded files found yet.
                         </p>
                       )
-                    ) : dashboardHistoryType === "flashcards" && dashboardFlashcardHistory.length > 0 ? (
+                    ) : (dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards") && dashboardFlashcardHistory.length > 0 ? (
                       <div className="dashboard-flashcard-history">
                         {dashboardFlashcardHistory.map((historyItem, index) => (
                           <div
@@ -3798,15 +3826,45 @@ function App() {
                             <button
                               type="button"
                               className="dashboard-history-open"
-                              onClick={() => openPreviousFlashcards(historyItem)}
+                              onClick={() => openGeneratedHistoryItem({
+                                ...historyItem,
+                                kind: "flashcards",
+                                type: "Flashcards",
+                                content: { kind: "flashcards", cards: historyItem.cards || [] },
+                              })}
                             >
                               Open
                             </button>
                           </div>
                         ))}
                       </div>
-                    ) : dashboardHistoryType === "flashcards" ? (
+                    ) : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards" ? (
                       <p className="dashboard-history-empty">No previous flashcard sets found yet.</p>
+                    ) : dashboardHistoryType === "previous-tests" ? (
+                      dashboardGeneratedHistory.filter((item) => item.kind === "test" || item.content?.kind === "test").length > 0 ? (
+                        <div className="dashboard-flashcard-history">
+                          {dashboardGeneratedHistory
+                            .filter((item) => item.kind === "test" || item.content?.kind === "test")
+                            .map((historyItem) => (
+                              <div className="dashboard-flashcard-history-item" key={historyItem.id}>
+                                <div className="dashboard-flashcard-history-info">
+                                  <strong>{historyItem.title || "Test Concepts"}</strong>
+                                  <span>{historyItem.type || "Test Concepts"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
+                                  <small>Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}</small>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="dashboard-history-open"
+                                  onClick={() => openGeneratedHistoryItem(historyItem)}
+                                >
+                                  Open
+                                </button>
+                              </div>
+                            ))}
+                        </div>
+                      ) : (
+                        <p className="dashboard-history-empty">No previous test concepts found yet.</p>
+                      )
                     ) : dashboardGeneratedHistory.length > 0 ? (
                       <div className="dashboard-flashcard-history">
                         {dashboardGeneratedHistory
