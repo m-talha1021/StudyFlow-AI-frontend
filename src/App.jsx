@@ -3520,13 +3520,12 @@ function App() {
         </div>
 
         {showDashboard && (
-          <div className="dashboard-panel">
+          <div className="dashboard-panel history-only-panel">
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
-
-                <h2>Your Dashboard</h2>
+                <h2>Your History</h2>
                 <p>
-                  Your personal StudyFlow AI progress and activity.
+                  Reopen, copy, share, listen to, or download your previous generated study content.
                 </p>
               </div>
 
@@ -3537,176 +3536,51 @@ function App() {
                   setShowDashboard(false);
                   closeDashboardHistory();
                 }}
-                aria-label="Close dashboard"
+                aria-label="Close history"
               >
                 ✖
               </button>
             </div>
 
-            {dashboardLoading ? (
-              <div>
-                Loading your dashboard...
-              </div>
-            ) : (
-              <>
-                <div className="dashboard-stats-grid">
-                  {[
-                    {
-                      title: "Total Materials",
-                      value: dashboardStats.totalMaterials,
-                      text: "Files uploaded",
-                      icon: "📄",
-                      historyType: "materials",
-                    },
-                    {
-                      title: "Study Sessions",
-                      value: dashboardStats.studySessions,
-                      text: "Learning features",
-                      icon: "📚",
-                    },
-                    {
-                      title: `Level ${currentRank.level} • ${currentRank.name}`,
-                      value: currentRank.icon,
-                      text: nextRank
-                        ? `${rankProgress}% to Level ${nextRank.level}`
-                        : "Maximum rank reached",
-                      icon: "🏆",
-                      rankCard: true,
-                    },
-                  ].map((stat) => (
-                    <div
-                      key={stat.title}
-                      className={
-                        stat.rankCard
-                          ? "dashboard-stat-card dashboard-rank-card"
-                          : stat.historyType
-                            ? "dashboard-stat-card dashboard-stat-card-clickable"
-                            : "dashboard-stat-card"
-                      }
-                      role={stat.historyType ? "button" : undefined}
-                      tabIndex={stat.historyType ? 0 : undefined}
-                      onClick={
-                        stat.historyType
-                          ? () => toggleDashboardHistory(stat.historyType)
-                          : undefined
-                      }
-                      onKeyDown={
-                        stat.historyType
-                          ? (event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              toggleDashboardHistory(stat.historyType);
-                            }
-                          }
-                          : undefined
-                      }
-                    >
-                      <div className="dashboard-stat-top">
-                        <h3>{stat.title}</h3>
-
-                        <span
-                          aria-hidden="true"
-                          className="dashboard-stat-icon"
-                        >
-                          {stat.icon}
+            <div className="dashboard-history-panel">
+              {dashboardGeneratedHistory.length > 0 ? (
+                <div className="dashboard-flashcard-history">
+                  {dashboardGeneratedHistory.map((historyItem) => (
+                    <div className="dashboard-flashcard-history-item" key={historyItem.id}>
+                      <div className="dashboard-flashcard-history-info">
+                        <strong>{historyItem.title || historyItem.type || "Generated content"}</strong>
+                        <span>
+                          {historyItem.type || "Study content"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}
                         </span>
-                      </div>
-
-                      <strong>{stat.value}</strong>
-
-                      <p>{stat.text}</p>
-
-                      {stat.rankCard && nextRank && (
-                        <div className="dashboard-rank-progress">
-                          <div className="dashboard-rank-progress-track">
-                            <span style={{ width: `${rankProgress}%` }} />
-                          </div>
-                          <small>
-                            {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
-                          </small>
-                        </div>
-                      )}
-
-                      {stat.historyType && (
-                        <small className="dashboard-card-hint">
-                          {dashboardHistoryType === stat.historyType
-                            ? "Click to close"
-                            : "Click to view history"}
+                        <small>
+                          Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
                         </small>
-                      )}
+                      </div>
+                      <div className="dashboard-history-actions" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                        <button
+                          type="button"
+                          className="dashboard-history-open"
+                          onClick={() => openGeneratedHistoryItem(historyItem)}
+                        >
+                          Open
+                        </button>
+                        <button
+                          type="button"
+                          className="dashboard-history-open"
+                          onClick={() => downloadHistoryPdf(historyItem)}
+                        >
+                          Download PDF
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
-
-                {dashboardHistoryType && (
-                  <div className="dashboard-history-panel">
-                    <div className="dashboard-history-header">
-                      <div>
-                        <h3>
-                          {dashboardHistoryType === "materials"
-                            ? "Uploaded Materials"
-                            : "All Generated Content"}
-                        </h3>
-                        <p>
-                          {dashboardHistoryType === "materials"
-                            ? "Files uploaded by your account."
-                            : "Open any previous result, copy it, share it, read it aloud, or download it as an individual PDF."}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="dashboard-history-close"
-                        onClick={closeDashboardHistory}
-                        aria-label="Close dashboard history"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    {dashboardHistoryType === "materials" ? (
-                      dashboardMaterialsHistory.length > 0 ? (
-                        <ul className="dashboard-material-list">
-                          {dashboardMaterialsHistory.flatMap((historyItem, historyIndex) =>
-                            (Array.isArray(historyItem.fileNames) ? historyItem.fileNames : []).map(
-                              (fileName, fileIndex) => (
-                                <li key={`${historyItem.id}-${historyIndex}-${fileIndex}`}>
-                                  <span aria-hidden="true">📄</span>
-                                  <span>{fileName}</span>
-                                </li>
-                              )
-                            )
-                          )}
-                        </ul>
-                      ) : (
-                        <p className="dashboard-history-empty">
-                          No uploaded files found yet.
-                        </p>
-                      )
-                    ) : dashboardGeneratedHistory.length > 0 ? (
-                      <div className="dashboard-flashcard-history">
-                        {dashboardGeneratedHistory.map((historyItem) => (
-                          <div className="dashboard-flashcard-history-item" key={historyItem.id}>
-                            <div className="dashboard-flashcard-history-info">
-                              <strong>{historyItem.title || historyItem.type || "Generated content"}</strong>
-                              <span>{historyItem.type || "Study content"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
-                              <small>Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}</small>
-                            </div>
-                            <div className="dashboard-history-actions" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                              <button type="button" className="dashboard-history-open" onClick={() => openGeneratedHistoryItem(historyItem)}>Open</button>
-                              <button type="button" className="dashboard-history-open" onClick={() => downloadHistoryPdf(historyItem)}>Download PDF</button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="dashboard-history-empty">No generated content has been saved yet.</p>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-
+              ) : (
+                <p className="dashboard-history-empty">
+                  No generated content has been saved yet.
+                </p>
+              )}
+            </div>
           </div>
         )}
       </section>
