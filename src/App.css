@@ -12783,20 +12783,8 @@ footer p {
     width: 100% !important;
   }
 }
-
-
-
-
-@media (max-width: 768px) {
-
-  /* Show only first 6 cards */
-  .public-welcome-page .feature-card:nth-child(n + 7) {
-    display: none !important;
+.dashboard-heading-content h2 {
+    text-align: left !important;
+    width: 100% !important;
   }
 
-  /* Hide card descriptions on mobile */
-  .welcome-hero .feature-grid > small {
-    display: none !important;
-  }
-
-}
