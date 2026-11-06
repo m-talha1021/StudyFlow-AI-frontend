@@ -297,11 +297,12 @@ function WelcomePage({ onLogin, onSignup }) {
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
             <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
             <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
-            <div><span>🗂️</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
+            <div><span>📚</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
             <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
             <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
             <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
+            <div><span>🗂️</span><strong>Content History</strong><small>View content from history</small></div>
           </div>
         </section>
       </main>
