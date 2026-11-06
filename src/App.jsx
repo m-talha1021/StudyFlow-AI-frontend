@@ -326,7 +326,7 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
           className="nav-link-button"
           onClick={() => onModeChange("welcome")}
         >
-         Back
+          Back
         </button>
       </nav>
 
@@ -3414,23 +3414,6 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              setShowDashboard(true);
-              setDashboardHistoryType("generated");
-              requestAnimationFrame(() => {
-                document.getElementById("dashboard-section")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              });
-            }}
-          >
-            History
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
               document.getElementById("inputcard")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -3438,6 +3421,20 @@ function App() {
             }}
           >
             Upload material
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMode("summary");
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Features
           </button>
 
           <button
@@ -3453,32 +3450,22 @@ function App() {
             Transcribing
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setMode("flashcards");
-              setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Flashcards
-          </button>
 
           <button
             type="button"
             onClick={() => {
-              setMode("test");
               setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
+              setShowDashboard(true);
+              setDashboardHistoryType("generated");
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
               });
             }}
           >
-            Test Concepts
+            History
           </button>
 
           <button
@@ -3612,92 +3599,92 @@ function App() {
               <>
                 {dashboardHistoryType !== "generated" && (
                   <div className="dashboard-stats-grid">
-                  {[
-                    {
-                      title: "Total Materials",
-                      value: dashboardStats.totalMaterials,
-                      text: "Files uploaded",
-                      icon: "📄",
-                      historyType: "materials",
-                    },
-                    {
-                      title: "Study Sessions",
-                      value: dashboardStats.studySessions,
-                      text: "Learning features",
-                      icon: "📚",
-                    },
-                    {
-                      title: `Level ${currentRank.level} • ${currentRank.name}`,
-                      value: currentRank.icon,
-                      text: nextRank
-                        ? `${rankProgress}% to Level ${nextRank.level}`
-                        : "Maximum rank reached",
-                      icon: "🏆",
-                      rankCard: true,
-                    },
-                  ].map((stat) => (
-                    <div
-                      key={stat.title}
-                      className={
-                        stat.rankCard
-                          ? "dashboard-stat-card dashboard-rank-card"
-                          : stat.historyType
-                            ? "dashboard-stat-card dashboard-stat-card-clickable"
-                            : "dashboard-stat-card"
-                      }
-                      role={stat.historyType ? "button" : undefined}
-                      tabIndex={stat.historyType ? 0 : undefined}
-                      onClick={
-                        stat.historyType
-                          ? () => toggleDashboardHistory(stat.historyType)
-                          : undefined
-                      }
-                      onKeyDown={
-                        stat.historyType
-                          ? (event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              toggleDashboardHistory(stat.historyType);
+                    {[
+                      {
+                        title: "Total Materials",
+                        value: dashboardStats.totalMaterials,
+                        text: "Files uploaded",
+                        icon: "📄",
+                        historyType: "materials",
+                      },
+                      {
+                        title: "Study Sessions",
+                        value: dashboardStats.studySessions,
+                        text: "Learning features",
+                        icon: "📚",
+                      },
+                      {
+                        title: `Level ${currentRank.level} • ${currentRank.name}`,
+                        value: currentRank.icon,
+                        text: nextRank
+                          ? `${rankProgress}% to Level ${nextRank.level}`
+                          : "Maximum rank reached",
+                        icon: "🏆",
+                        rankCard: true,
+                      },
+                    ].map((stat) => (
+                      <div
+                        key={stat.title}
+                        className={
+                          stat.rankCard
+                            ? "dashboard-stat-card dashboard-rank-card"
+                            : stat.historyType
+                              ? "dashboard-stat-card dashboard-stat-card-clickable"
+                              : "dashboard-stat-card"
+                        }
+                        role={stat.historyType ? "button" : undefined}
+                        tabIndex={stat.historyType ? 0 : undefined}
+                        onClick={
+                          stat.historyType
+                            ? () => toggleDashboardHistory(stat.historyType)
+                            : undefined
+                        }
+                        onKeyDown={
+                          stat.historyType
+                            ? (event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                toggleDashboardHistory(stat.historyType);
+                              }
                             }
-                          }
-                          : undefined
-                      }
-                    >
-                      <div className="dashboard-stat-top">
-                        <h3>{stat.title}</h3>
+                            : undefined
+                        }
+                      >
+                        <div className="dashboard-stat-top">
+                          <h3>{stat.title}</h3>
 
-                        <span
-                          aria-hidden="true"
-                          className="dashboard-stat-icon"
-                        >
-                          {stat.icon}
-                        </span>
-                      </div>
-
-                      <strong>{stat.value}</strong>
-
-                      <p>{stat.text}</p>
-
-                      {stat.rankCard && nextRank && (
-                        <div className="dashboard-rank-progress">
-                          <div className="dashboard-rank-progress-track">
-                            <span style={{ width: `${rankProgress}%` }} />
-                          </div>
-                          <small>
-                            {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
-                          </small>
+                          <span
+                            aria-hidden="true"
+                            className="dashboard-stat-icon"
+                          >
+                            {stat.icon}
+                          </span>
                         </div>
-                      )}
 
-                      {stat.historyType && (
-                        <small className="dashboard-card-hint">
-                          {dashboardHistoryType === stat.historyType
-                            ? "Click to close"
-                            : "Click to view history"}
-                        </small>
-                      )}
-                    </div>
-                  ))}
+                        <strong>{stat.value}</strong>
+
+                        <p>{stat.text}</p>
+
+                        {stat.rankCard && nextRank && (
+                          <div className="dashboard-rank-progress">
+                            <div className="dashboard-rank-progress-track">
+                              <span style={{ width: `${rankProgress}%` }} />
+                            </div>
+                            <small>
+                              {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
+                            </small>
+                          </div>
+                        )}
+
+                        {stat.historyType && (
+                          <small className="dashboard-card-hint">
+                            {dashboardHistoryType === stat.historyType
+                              ? "Click to close"
+                              : "Click to view history"}
+                          </small>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
