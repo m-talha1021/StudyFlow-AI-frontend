@@ -1701,14 +1701,14 @@ function App() {
       wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 24px; width: 720px; box-sizing: border-box;";
 
       const heading = document.createElement("h1");
-      heading.textContent = historyItem.title || "StudyFlow AI Study Result";
-      heading.style.cssText = "font-size: 22px; margin: 0 0 12px; color: #163b75;";
+      heading.textContent = "StudyFlow AI";
+      heading.style.cssText = "text-align: center; font-size: 25px; margin: 0 0 12px; color: #0511b3;";
       wrapper.appendChild(heading);
 
       const metadata = document.createElement("p");
       const date = new Date(Number(historyItem.createdAt || Date.now()));
       metadata.textContent = `${historyItem.type || "Study content"} • ${date.toLocaleString()} • Source files: ${(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}`;
-      metadata.style.cssText = "font-size: 10px; color: #5b6475; border-bottom: 1px solid #dce3ef; padding-bottom: 12px; margin-bottom: 18px;";
+      metadata.style.cssText = "font-size: 13px; color: #5b6475; border-bottom: 1px solid #dce3ef; padding-bottom: 12px; margin-bottom: 18px;";
       wrapper.appendChild(metadata);
 
       const body = document.createElement("div");
