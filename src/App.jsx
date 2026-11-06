@@ -1701,9 +1701,9 @@ function App() {
       wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 24px; width: 720px; box-sizing: border-box;";
 
       // Website logo + name
-const brandHeader = document.createElement("div");
+      const brandHeader = document.createElement("div");
 
-brandHeader.style.cssText = `
+      brandHeader.style.cssText = `
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1712,39 +1712,39 @@ brandHeader.style.cssText = `
   width: 100%;
 `;
 
-const logo = document.createElement("img");
+      const logo = document.createElement("img");
 
-logo.src = `${window.location.origin}/favicon.png`;
-logo.alt = "StudyFlow AI Logo";
+      logo.src = `${window.location.origin}/favicon.png`;
+      logo.alt = "StudyFlow AI Logo";
 
-logo.style.cssText = `
+      logo.style.cssText = `
   width: 48px;
   height: 48px;
   object-fit: contain;
 `;
 
-const heading = document.createElement("h1");
+      const heading = document.createElement("h1");
 
-heading.textContent = "StudyFlow AI";
+      heading.textContent = "StudyFlow AI";
 
-heading.style.cssText = `
+      heading.style.cssText = `
   font-size: 28px;
   font-weight: 700;
   margin: 0;
   color: #0511b3;
 `;
 
-brandHeader.appendChild(logo);
-brandHeader.appendChild(heading);
+      brandHeader.appendChild(logo);
+      brandHeader.appendChild(heading);
 
-wrapper.appendChild(brandHeader);
+      wrapper.appendChild(brandHeader);
 
-// Ensure logo loads before PDF generation
-try {
-  await logo.decode();
-} catch (error) {
-  console.warn("Could not load StudyFlow AI logo:", error);
-}
+      // Ensure logo loads before PDF generation
+      try {
+        await logo.decode();
+      } catch (error) {
+        console.warn("Could not load StudyFlow AI logo:", error);
+      }
       const metadata = document.createElement("p");
       const date = new Date(Number(historyItem.createdAt || Date.now()));
       metadata.textContent = `${historyItem.type || "Study content"} • ${date.toLocaleString()} • Source files: ${(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}`;
@@ -1759,7 +1759,7 @@ try {
 
       await html2pdf().set({
         margin: [10, 10, 12, 10],
-       filename: `StudyFlow AI ${historyItem.type || "Generated Content"}`.replace(/[^a-z0-9-_ ]+/gi, "").trim(),
+        filename: `StudyFlow AI ${historyItem.type || "Generated Content"}`.replace(/[^a-z0-9-_ ]+/gi, "").trim(),
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -2963,7 +2963,7 @@ try {
       link.href = url;
 
       link.download =
-        `studyflow_${mode}.pdf`;
+        `StudyFlow AI ${mode}.pdf`;
 
       document.body.appendChild(
         link
@@ -3748,7 +3748,7 @@ try {
                         </p>
                       </div>
 
-                      
+
                     </div>
 
                     {dashboardHistoryType === "materials" ? (
