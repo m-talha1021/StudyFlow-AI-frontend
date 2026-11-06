@@ -793,6 +793,7 @@ function App() {
   const [dashboardMaterialsHistory, setDashboardMaterialsHistory] = useState([]);
   const [dashboardFlashcardHistory, setDashboardFlashcardHistory] = useState([]);
   const [dashboardGeneratedHistory, setDashboardGeneratedHistory] = useState([]);
+  const [activeHistoryTitle, setActiveHistoryTitle] = useState("");
 
   // ========================================================
   // GUESS THE WORD GAME
@@ -1697,47 +1698,21 @@ function App() {
   };
 
   const openGeneratedHistoryItem = (historyItem) => {
-    const value = historyItem?.content;
-    setDashboardHistoryType(null);
+    if (!historyItem) return;
+
     stopSpeech();
-
-    if (historyItem.kind === "flashcards" || value?.kind === "flashcards") {
-      const cards = value?.cards || value;
-      if (!Array.isArray(cards)) return;
-      setFlashcards(cards);
-      setFlashcardIndex(0);
-      setFlashcardFlipped(false);
-      setTimeout(() => document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
-      return;
-    }
-
-    if (historyItem.kind === "test" || value?.kind === "test") {
-      const questions = value?.questions || [];
-      if (!questions.length) return;
-      setTestQuestions(questions);
-      setTestAnswers({});
-      setTestIndex(0);
-      setTestScore(0);
-      setTestFinished(false);
-      setTestStarted(false);
-      testSubmissionRecordedRef.current = false;
-      setTestTotalSeconds(questions.length * 60);
-      setTestTimeLeft(questions.length * 60);
-      setTimeout(() => document.getElementById("test-concepts-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
-      return;
-    }
-
-    if (historyItem.kind === "transcription" || value?.kind === "transcription") {
-      setTranscriptionText(value?.text || "");
-      setTranscriptionLanguage(historyItem.language || "unknown");
-      setTimeout(() => document.getElementById("transcribing-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
-      return;
-    }
-
+    setActiveHistoryTitle(historyItem.title || historyItem.type || "Previous study result");
     setMode(historyItem.mode || "summary");
-    setResult(typeof value === "string" ? value : value?.text || historyContentAsText(historyItem));
+    setResult(historyContentAsText(historyItem));
     setResultLanguage(historyItem.language || "english");
-    setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setDashboardHistoryType(null);
+
+    setTimeout(() => {
+      document.getElementById("result-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   };
 
   const openPreviousFlashcards = (historyItem) => {
@@ -2784,7 +2759,7 @@ function App() {
         result,
         mode,
         language: resultLanguage || "english",
-        title: mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary",
+        title: activeHistoryTitle || (mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary"),
         createdAt: serverTimestamp(),
       });
       const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(shareId)}`;
@@ -3377,6 +3352,23 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
+              setShowDashboard(true);
+              setDashboardHistoryType("generated");
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              });
+            }}
+          >
+            History
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
               document.getElementById("inputcard")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -3573,32 +3565,6 @@ function App() {
                       icon: "📚",
                     },
                     {
-                      title: "Completed Quizzes",
-                      value: dashboardStats.completedQuizzes,
-                      text: "Quizzes completed",
-                      icon: "📝",
-                    },
-                    {
-                      title: "Average Quiz Score",
-                      value: `${dashboardStats.averageQuizScore}%`,
-                      text: "Across all quizzes",
-                      icon: "📈",
-                    },
-                    {
-                      title: "Flashcards Created",
-                      value: dashboardStats.flashcardsCreated,
-                      text: "Concepts to remember",
-                      icon: "🗂️",
-                      historyType: "flashcards",
-                    },
-                    {
-                      title: "Generated History",
-                      value: dashboardGeneratedHistory.length,
-                      text: "Saved study results",
-                      icon: "🗃️",
-                      historyType: "generated",
-                    },
-                    {
                       title: `Level ${currentRank.level} • ${currentRank.name}`,
                       value: currentRank.icon,
                       text: nextRank
@@ -3679,16 +3645,12 @@ function App() {
                         <h3>
                           {dashboardHistoryType === "materials"
                             ? "Uploaded Materials"
-                            : dashboardHistoryType === "flashcards"
-                              ? "Previous Flashcard Sets"
-                              : "All Generated Content"}
+                            : "All Generated Content"}
                         </h3>
                         <p>
                           {dashboardHistoryType === "materials"
                             ? "Files uploaded by your account."
-                            : dashboardHistoryType === "flashcards"
-                              ? "Flashcards generated from your previous study sessions."
-                              : "Open any previous result or download it as an individual PDF."}
+                            : "Open any previous result, copy it, share it, read it aloud, or download it as an individual PDF."}
                         </p>
                       </div>
 
@@ -3721,43 +3683,6 @@ function App() {
                           No uploaded files found yet.
                         </p>
                       )
-                    ) : dashboardHistoryType === "flashcards" && dashboardFlashcardHistory.length > 0 ? (
-                      <div className="dashboard-flashcard-history">
-                        {dashboardFlashcardHistory.map((historyItem, index) => (
-                          <div
-                            className="dashboard-flashcard-history-item"
-                            key={historyItem.id || index}
-                          >
-                            <div className="dashboard-flashcard-history-info">
-                              <strong>
-                                Flashcard Set {dashboardFlashcardHistory.length - index}
-                              </strong>
-                              <span>
-                                {Array.isArray(historyItem.cards)
-                                  ? `${historyItem.cards.length} cards`
-                                  : "Flashcards"}
-                              </span>
-                              <small>
-                                Files: {
-                                  Array.isArray(historyItem.fileNames) && historyItem.fileNames.length
-                                    ? historyItem.fileNames.join(", ")
-                                    : "Pasted study material"
-                                }
-                              </small>
-                            </div>
-
-                            <button
-                              type="button"
-                              className="dashboard-history-open"
-                              onClick={() => openPreviousFlashcards(historyItem)}
-                            >
-                              Open
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : dashboardHistoryType === "flashcards" ? (
-                      <p className="dashboard-history-empty">No previous flashcard sets found yet.</p>
                     ) : dashboardGeneratedHistory.length > 0 ? (
                       <div className="dashboard-flashcard-history">
                         {dashboardGeneratedHistory.map((historyItem) => (
@@ -4366,11 +4291,11 @@ function App() {
 
                   <h2>
 
-                    {mode === "summary"
+                    {activeHistoryTitle || (mode === "summary"
                       ? "Summary"
                       : mode === "explain"
                         ? "Explanation"
-                        : "Quiz"}
+                        : "Quiz")}
 
                   </h2>
 
@@ -4447,7 +4372,7 @@ function App() {
                 <button
                   type="button"
                   className="close-result-button"
-                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); }}
+                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); setActiveHistoryTitle(""); }}
                   title="Close result"
                   aria-label="Close result"
                 >
