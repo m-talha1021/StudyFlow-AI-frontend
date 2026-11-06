@@ -12756,7 +12756,6 @@ footer p {
     grid-row: 1 !important;
     justify-self: end !important;
   }
-
   .dashboard-heading-content {
     grid-column: 1 / -1 !important;
     width: 100% !important;
@@ -12769,5 +12768,18 @@ footer p {
     max-width: 100% !important;
     white-space: normal !important;
     text-align: center !important;
+  }
+}
+
+
+@media screen and (max-width: 600px) {
+  .dashboard-heading-content {
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  .dashboard-heading-content h2 {
+    text-align: left !important;
+    width: 100% !important;
   }
 }
