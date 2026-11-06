@@ -12694,29 +12694,41 @@ footer p {
     background-color: #1a406b !important;
 }
 
+/* Fix History header layout on mobile */
+@media screen and (max-width: 600px) {
 
-
-
-/* History header buttons - mobile layout */
-@media (max-width: 600px) {
-  .dashboard-history-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+  .dashboard-heading {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: 10px !important;
   }
 
-  .dashboard-history-header > div {
-    display: flex;
+  .dashboard-heading-content {
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  .dashboard-heading > div:last-child {
+    display: flex !important;
     flex-direction: row !important;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-    gap: 8px;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 5px !important;
+    width: max-content !important;
+    min-width: 0 !important;
   }
 
-  .dashboard-history-close {
-    flex-shrink: 0;
+  .dashboard-heading > div:last-child .dashboard-history-open {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 9px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .dashboard-heading > div:last-child .dashboard-history-close {
+    flex-shrink: 0 !important;
+    margin: 0 !important;
   }
 }
