@@ -3294,11 +3294,6 @@ function App() {
           className={`app-nav-links ${mobileMenuOpen ? "mobile-open" : ""}`}
           aria-label="Main navigation"
         >
-
-         
-
-          
-
           <button
             type="button"
             onClick={() => {
@@ -3624,14 +3619,12 @@ function App() {
             )}
           </div>
         )}n")
-                .map(
-                  (line, index) => (
-                    <p key={index}>
-                      {line ||
-                        "\u00A0"}
-                    </p>
-                  )
-                )}
+                .split(/\r?\n/)
+  .map((line, index) => (
+    <p key={index}>
+      {line || "\u00A0"}
+    </p>
+  ))}
 
             </div>
 
