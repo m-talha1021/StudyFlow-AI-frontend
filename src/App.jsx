@@ -793,6 +793,7 @@ function App() {
   const [dashboardMaterialsHistory, setDashboardMaterialsHistory] = useState([]);
   const [dashboardFlashcardHistory, setDashboardFlashcardHistory] = useState([]);
   const [dashboardGeneratedHistory, setDashboardGeneratedHistory] = useState([]);
+  const [openedFromHistory, setOpenedFromHistory] = useState(false);
 
   // ========================================================
   // GUESS THE WORD GAME
@@ -1589,7 +1590,41 @@ function App() {
   };
 
   const closeDashboardHistory = () => {
+    // Closing the History page returns to the main study workspace.
+    // It must not reveal the Dashboard cards as a side effect.
     setDashboardHistoryType(null);
+    setShowDashboard(false);
+  };
+
+  const closeOpenedHistoryContent = () => {
+    stopSpeech();
+    setResult("");
+    setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setTestQuestions([]);
+    setTestAnswers({});
+    setTestIndex(0);
+    setTestStarted(false);
+    setTestFinished(false);
+    setTestTimeLeft(0);
+    setTestTotalSeconds(0);
+    setTestScore(0);
+    setTranscriptionText("");
+    setTranscriptionLanguage("");
+
+    if (openedFromHistory) {
+      setOpenedFromHistory(false);
+      setShowDashboard(true);
+      setDashboardHistoryType("generated");
+      requestAnimationFrame(() => {
+        document.getElementById("dashboard-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+    }
   };
 
   // Save every successful generated result in the signed-in user's private
@@ -1698,6 +1733,7 @@ function App() {
 
   const openGeneratedHistoryItem = (historyItem) => {
     const value = historyItem?.content;
+    setOpenedFromHistory(true);
     setDashboardHistoryType(null);
     setShowDashboard(false);
     stopSpeech();
@@ -3561,10 +3597,7 @@ function App() {
               <button
                 type="button"
                 className="dashboard-close-btn"
-                onClick={() => {
-                  setShowDashboard(false);
-                  closeDashboardHistory();
-                }}
+                onClick={closeDashboardHistory}
                 aria-label="Close dashboard"
               >
                 ✖
@@ -4443,7 +4476,15 @@ function App() {
                 <button
                   type="button"
                   className="close-result-button"
-                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); }}
+                  onClick={() => {
+                    if (openedFromHistory) {
+                      closeOpenedHistoryContent();
+                    } else {
+                      stopSpeech();
+                      setResult("");
+                      setResultLanguage("");
+                    }
+                  }}
                   title="Close result"
                   aria-label="Close result"
                 >
@@ -4532,9 +4573,13 @@ function App() {
                 backdropFilter: "blur(8px)"
               }}
               onClick={() => {
-                setFlashcards([]);
-                setFlashcardIndex(0);
-                setFlashcardFlipped(false);
+                if (openedFromHistory) {
+                  closeOpenedHistoryContent();
+                } else {
+                  setFlashcards([]);
+                  setFlashcardIndex(0);
+                  setFlashcardFlipped(false);
+                }
               }}
             >×</button>
 
@@ -4674,14 +4719,18 @@ function App() {
                 backdropFilter: "blur(8px)"
               }}
               onClick={() => {
-                setTestQuestions([]);
-                setTestAnswers({});
-                setTestIndex(0);
-                setTestStarted(false);
-                setTestFinished(false);
-                setTestTimeLeft(0);
-                setTestTotalSeconds(0);
-                setTestScore(0);
+                if (openedFromHistory) {
+                  closeOpenedHistoryContent();
+                } else {
+                  setTestQuestions([]);
+                  setTestAnswers({});
+                  setTestIndex(0);
+                  setTestStarted(false);
+                  setTestFinished(false);
+                  setTestTimeLeft(0);
+                  setTestTotalSeconds(0);
+                  setTestScore(0);
+                }
               }}
             >×</button>
             <div className="test-concepts-header">
