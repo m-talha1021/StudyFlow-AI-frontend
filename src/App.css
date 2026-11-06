@@ -12783,3 +12783,20 @@ footer p {
     width: 100% !important;
   }
 }
+
+
+
+
+@media (max-width: 768px) {
+
+  /* Show only first 6 cards */
+  .public-welcome-page .feature-card:nth-child(n + 7) {
+    display: none !important;
+  }
+
+  /* Hide card descriptions on mobile */
+  .public-welcome-page .feature-card p {
+    display: none !important;
+  }
+
+}
