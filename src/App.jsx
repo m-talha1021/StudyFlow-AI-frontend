@@ -3892,12 +3892,9 @@ function App() {
                                   {historyItem.title || historyItem.type || "Generated content"}
                                 </strong>
 
-                                <span>
-                                  {historyItem.type || "Study content"} ·{" "}
-                                  {new Date(
-                                    Number(historyItem.createdAt)
-                                  ).toLocaleString()}
-                                </span>
+                               <span>
+                                   {historyItem.type || "Study content"}
+                               </span>
                               </div>
 
                               <div
