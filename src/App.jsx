@@ -3448,7 +3448,7 @@ function App() {
               });
             }}
           >
-            Dashboard
+          Dashboard
           </button>
 
           <button
@@ -3506,7 +3506,7 @@ function App() {
               });
             }}
           >
-            History
+           Content History
           </button>
 
           <button
@@ -4312,7 +4312,7 @@ function App() {
             >
 
               <span>
-                🗂️
+                📚
               </span>
 
               <div>
@@ -4719,7 +4719,7 @@ function App() {
 
             <div className="flashcards-header">
               <div>
-                <span className="result-icon">🗂️</span>
+                <span className="result-icon">📚</span>
                 <div>
                   <h2>Flashcards</h2>
                   <small>
