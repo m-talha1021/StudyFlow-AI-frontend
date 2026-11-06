@@ -12743,3 +12743,31 @@ footer p {
     padding-top: 0 !important;
   }
 }
+@media screen and (max-width: 600px) {
+
+  .dashboard-heading {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .dashboard-heading > div:last-child {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+  }
+
+  .dashboard-heading-content {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  .dashboard-heading-content p {
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+}
