@@ -3755,26 +3755,24 @@ function App() {
                 {dashboardHistoryType && (
                   <div className="dashboard-history-panel">
                     <div className="dashboard-history-header">
-                      <div>
-                        <h3>
-                          {dashboardHistoryType === "materials"
-                            ? "Uploaded Materials"
-                            : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
-                              ? "Previous Flashcard Sets"
-                              : dashboardHistoryType === "previous-tests"
-                                ? "Previous Test Concepts"
-                                : "All Generated Content"}
-                        </h3>
-                        <p>
-                          {dashboardHistoryType === "materials"
-                            ? "Files uploaded by your account."
-                            : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
-                              ? "Open a previous set to review the cards again."
-                              : dashboardHistoryType === "previous-tests"
-                                ? "Open a previous test to attempt the questions again."
-                                : "Open any previous result or download it as an individual PDF."}
-                        </p>
-                      </div>
+                      {dashboardHistoryType !== "generated" && (
+                        <div>
+                          <h3>
+                            {dashboardHistoryType === "materials"
+                              ? "Uploaded Materials"
+                              : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
+                                ? "Previous Flashcard Sets"
+                                : "Previous Test Concepts"}
+                          </h3>
+                          <p>
+                            {dashboardHistoryType === "materials"
+                              ? "Files uploaded by your account."
+                              : dashboardHistoryType === "flashcards" || dashboardHistoryType === "previous-flashcards"
+                                ? "Open a previous set to review the cards again."
+                                : "Open a previous test to attempt the questions again."}
+                          </p>
+                        </div>
+                      )}
 
 
                     </div>
@@ -3890,14 +3888,21 @@ function App() {
                             >
                               <div className="dashboard-flashcard-history-info">
                                 <strong>
-                                  {historyItem.title || historyItem.type || "Generated content"}
+                                  {historyItem.type || historyItem.mode || "Study content"}
                                 </strong>
 
                                 <span>
-                                  {historyItem.type || "Study content"} ·{" "}
                                   {new Date(
-                                    Number(historyItem.createdAt)
-                                  ).toLocaleString()}
+                                    Number(historyItem.createdAt || Date.now())
+                                  ).toLocaleString("en-US", {
+                                    month: "numeric",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true,
+                                  })}
                                 </span>
                               </div>
 
