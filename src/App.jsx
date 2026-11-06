@@ -3613,7 +3613,7 @@ function App() {
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
 
-                <h2>{dashboardHistoryType === "generated" ? "Your Generated History" : dashboardHistoryType === "previous-flashcards" ? "Previous Flashcards" : dashboardHistoryType === "previous-tests" ? "Previous Test Concepts" : "Your Dashboard"}</h2>
+                <h2>{dashboardHistoryType === "generated" ? "Your History" : dashboardHistoryType === "previous-flashcards" ? "Previous Flashcards" : dashboardHistoryType === "previous-tests" ? "Previous Test Concepts" : "Your Dashboard"}</h2>
                 <p>
                   {dashboardHistoryType === "generated"
                     ? "Open any previous generated result from your study sessions."
@@ -3807,20 +3807,22 @@ function App() {
                           >
                             <div className="dashboard-flashcard-history-info">
                               <strong>
-                                Flashcard Set {dashboardFlashcardHistory.length - index}
+                                {historyItem.type || "Study content"}
                               </strong>
+
                               <span>
-                                {Array.isArray(historyItem.cards)
-                                  ? `${historyItem.cards.length} cards`
-                                  : "Flashcards"}
+                                {new Date(
+                                  Number(historyItem.createdAt || Date.now())
+                                ).toLocaleString("en-US", {
+                                  month: "numeric",
+                                  day: "numeric",
+                                  year: "numeric",
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                  hour12: true
+                                })}
                               </span>
-                              <small>
-                                Files: {
-                                  Array.isArray(historyItem.fileNames) && historyItem.fileNames.length
-                                    ? historyItem.fileNames.join(", ")
-                                    : "Pasted study material"
-                                }
-                              </small>
                             </div>
 
                             <button
