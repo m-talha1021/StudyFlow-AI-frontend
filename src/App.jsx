@@ -1699,6 +1699,7 @@ function App() {
   const openGeneratedHistoryItem = (historyItem) => {
     const value = historyItem?.content;
     setDashboardHistoryType(null);
+    setShowDashboard(false);
     stopSpeech();
 
     if (historyItem.kind === "flashcards" || value?.kind === "flashcards") {
@@ -3377,6 +3378,23 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
+              setShowDashboard(true);
+              setDashboardHistoryType("generated");
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              });
+            }}
+          >
+            History
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
               document.getElementById("inputcard")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -3528,13 +3546,15 @@ function App() {
         </div>
 
         {showDashboard && (
-          <div className="dashboard-panel">
+          <div className="dashboard-panel" id="dashboard-section">
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
 
-                <h2>Your Dashboard</h2>
+                <h2>{dashboardHistoryType === "generated" ? "Your Generated History" : "Your Dashboard"}</h2>
                 <p>
-                  Your personal StudyFlow AI progress and activity.
+                  {dashboardHistoryType === "generated"
+                    ? "Open any previous generated result from your study sessions."
+                    : "Your personal StudyFlow AI progress and activity."}
                 </p>
               </div>
 
@@ -3557,7 +3577,8 @@ function App() {
               </div>
             ) : (
               <>
-                <div className="dashboard-stats-grid">
+                {dashboardHistoryType !== "generated" && (
+                  <div className="dashboard-stats-grid">
                   {[
                     {
                       title: "Total Materials",
@@ -3644,7 +3665,8 @@ function App() {
                       )}
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
 
                 {dashboardHistoryType && (
                   <div className="dashboard-history-panel">
