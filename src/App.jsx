@@ -1719,7 +1719,7 @@ function App() {
 
       await html2pdf().set({
         margin: [10, 10, 12, 10],
-        filename: `${(historyItem.title || "StudyFlowAI-Result").replace(/[^a-z0-9-_]+/gi, "-").slice(0, 70)}.pdf`,
+       filename: `StudyFlow AI ${historyItem.type || "Generated Content"}`.replace(/[^a-z0-9-_ ]+/gi, "").trim(),
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
