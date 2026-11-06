@@ -12697,3 +12697,26 @@ footer p {
 
 
 
+/* History header buttons - mobile layout */
+@media (max-width: 600px) {
+  .dashboard-history-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .dashboard-history-header > div {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .dashboard-history-close {
+    flex-shrink: 0;
+  }
+}
