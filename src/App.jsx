@@ -3898,10 +3898,6 @@ function App() {
                                     Number(historyItem.createdAt || Date.now())
                                   ).toLocaleString()}
                                 </span>
-
-                                <small>
-                                  Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
-                                </small>
                               </div>
 
                               <div
