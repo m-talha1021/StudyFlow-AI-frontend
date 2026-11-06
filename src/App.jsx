@@ -3205,43 +3205,6 @@ function App() {
   // USER RANK / LEVEL
   // ========================================================
 
-  const RANK_LEVELS = [
-    { level: 0, name: "Beginner", icon: "🔰", sessions: 0, materials: 0 },
-    { level: 1, name: "Learner", icon: "📚", sessions: 50, materials: 50 },
-    { level: 2, name: "Scholar", icon: "🧠", sessions: 150, materials: 100 },
-    { level: 3, name: "Dedicated", icon: "🎯", sessions: 300, materials: 200 },
-    { level: 4, name: "Expert", icon: "🔥", sessions: 500, materials: 350 },
-    { level: 5, name: "Master", icon: "✨", sessions: 750, materials: 500 },
-    { level: 6, name: "Grand Master", icon: "👑", sessions: 1000, materials: 750 },
-    { level: 7, name: "Elite", icon: "💎", sessions: 1500, materials: 1000 },
-    { level: 8, name: "Legend", icon: "⚡", sessions: 2500, materials: 1500 },
-  ];
-
-  const currentRank =
-    [...RANK_LEVELS].reverse().find(
-      (rank) =>
-        dashboardStats.studySessions >= rank.sessions &&
-        dashboardStats.totalMaterials >= rank.materials
-    ) || RANK_LEVELS[0];
-
-  const nextRank = RANK_LEVELS.find(
-    (rank) => rank.level === currentRank.level + 1
-  ) || null;
-
-  const rankProgress = nextRank
-    ? Math.max(
-      0,
-      Math.min(
-        100,
-        Math.round(
-          Math.min(
-            dashboardStats.studySessions / nextRank.sessions,
-            dashboardStats.totalMaterials / nextRank.materials
-          ) * 100
-        )
-      )
-    )
-    : 100;
 
   // ========================================================
   // AUTH GATE
@@ -3332,23 +3295,46 @@ function App() {
           aria-label="Main navigation"
         >
 
+         
+
+          
+
           <button
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              setDashboardHistoryType(null);
-              setShowDashboard(true);
-              requestAnimationFrame(() => {
-                document.getElementById("dashboard-section")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
+              document.getElementById("inputcard")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
               });
             }}
           >
-            Dashboard
+            Upload material
           </button>
-
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Features
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("transcribing-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Transcribing
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -3365,61 +3351,6 @@ function App() {
           >
             History
           </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("inputcard")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Upload material
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("transcribing-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Transcribing
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMode("flashcards");
-              setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Flashcards
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMode("test");
-              setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Test Concepts
-          </button>
-
           <button
             type="button"
             onClick={() => {
@@ -3429,7 +3360,7 @@ function App() {
           >
             Fun Zone
           </button>
-
+         
           <button
             type="button"
             className="feedback-nav-link"
