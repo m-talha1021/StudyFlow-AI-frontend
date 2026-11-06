@@ -286,7 +286,7 @@ function WelcomePage({ onLogin, onSignup }) {
 
           <div className="welcome-actions">
             <button type="button" className="primary-auth-button" onClick={onSignup}>
-              Get Started
+              Sign Up
             </button>
             <button type="button" className="secondary-auth-button" onClick={onLogin}>
               I already have an account
