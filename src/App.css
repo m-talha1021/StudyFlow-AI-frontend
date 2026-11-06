@@ -12732,3 +12732,14 @@ footer p {
     margin: 0 !important;
   }
 }
+@media screen and (max-width: 600px) {
+  .dashboard-heading {
+    align-items: start !important;
+  }
+
+  .dashboard-heading > div:last-child {
+    align-self: start !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
