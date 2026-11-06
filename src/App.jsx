@@ -3895,7 +3895,7 @@ function App() {
                                 <span>
                                   {historyItem.type || "Study content"} ·{" "}
                                   {new Date(
-                                    Number(historyItem.createdAt || Date.now())
+                                    Number(historyItem.createdAt)
                                   ).toLocaleString()}
                                 </span>
                               </div>
