@@ -12777,7 +12777,9 @@ footer p {
     text-align: left !important;
     align-items: flex-start !important;
   }
-
+.chatbot-popup-header {
+   background-color: #2563eb !important;
+}
   .dashboard-heading-content h2 {
     text-align: left !important;
     width: 100% !important;
@@ -12787,4 +12789,7 @@ footer p {
     text-align: left !important;
     width: 100% !important;
   }
+.chatbot-popup-header {
+   background-color: #2563eb !important;
+}
 
