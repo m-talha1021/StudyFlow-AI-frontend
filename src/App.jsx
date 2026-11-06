@@ -1700,11 +1700,51 @@ function App() {
       const wrapper = document.createElement("div");
       wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 24px; width: 720px; box-sizing: border-box;";
 
-      const heading = document.createElement("h1");
-      heading.textContent = "StudyFlow AI";
-      heading.style.cssText = "text-align: center; font-size: 25px; margin: 0 0 12px; color: #0511b3;";
-      wrapper.appendChild(heading);
+      // Website logo + name
+const brandHeader = document.createElement("div");
 
+brandHeader.style.cssText = `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  width: 100%;
+`;
+
+const logo = document.createElement("img");
+
+logo.src = `${window.location.origin}/favicon.png`;
+logo.alt = "StudyFlow AI Logo";
+
+logo.style.cssText = `
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+`;
+
+const heading = document.createElement("h1");
+
+heading.textContent = "StudyFlow AI";
+
+heading.style.cssText = `
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #0511b3;
+`;
+
+brandHeader.appendChild(logo);
+brandHeader.appendChild(heading);
+
+wrapper.appendChild(brandHeader);
+
+// Ensure logo loads before PDF generation
+try {
+  await logo.decode();
+} catch (error) {
+  console.warn("Could not load StudyFlow AI logo:", error);
+}
       const metadata = document.createElement("p");
       const date = new Date(Number(historyItem.createdAt || Date.now()));
       metadata.textContent = `${historyItem.type || "Study content"} • ${date.toLocaleString()} • Source files: ${(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}`;
