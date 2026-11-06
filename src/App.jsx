@@ -3807,9 +3807,8 @@ function App() {
                           >
                             <div className="dashboard-flashcard-history-info">
                               <strong>
-                                {historyItem.type || "Study content"}
+                                {historyItem.type || historyItem.mode || "Study content"}
                               </strong>
-
                               <span>
                                 {new Date(
                                   Number(historyItem.createdAt || Date.now())
