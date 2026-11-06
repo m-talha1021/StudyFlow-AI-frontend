@@ -3618,20 +3618,155 @@ function App() {
               </div>
             )}
           </div>
-        )}n")
-                .split(/\r?\n/)
-  .map((line, index) => (
-    <p key={index}>
-      {line || "\u00A0"}
-    </p>
-  ))}
+        )}
+      </section>
+
+      {/* GENERATED RESULT */}
+      {result && (
+          <section
+            className="result-section"
+            id="result-section"
+          >
+
+            <div className="result-header">
+
+              <div>
+
+                <span className="result-icon">
+
+                  {mode === "summary"
+                    ? "📝"
+                    : mode === "explain"
+                      ? "💡"
+                      : "🧠"}
+
+                </span>
+
+                <div>
+
+                  <h2>
+
+                    {activeHistoryTitle || (mode === "summary"
+                      ? "Summary"
+                      : mode === "explain"
+                        ? "Explanation"
+                        : "Quiz")}
+
+                  </h2>
+
+                  <small>
+
+                    {resultLanguage ===
+                      "arabic"
+                      ? "العربية"
+                      : resultLanguage ===
+                        "urdu"
+                        ? "Urdu"
+                        : resultLanguage ===
+                          "mixed"
+                          ? "Mixed language"
+                          : "English"}
+
+                  </small>
+
+                </div>
+
+              </div>
+
+              {/* RESULT ACTIONS */}
+
+              <div className="result-actions">
+
+                <button
+                  onClick={
+                    handleCopy
+                  }
+                  className="secondary-button"
+                  title="Copy result"
+                >
+                  📋 Copy
+                </button>
+
+                <button
+                  onClick={
+                    handleDownloadPDF
+                  }
+                  className="download-button"
+                  title="Download PDF"
+                >
+                  📄 Download PDF
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleShareResult}
+                  className="share-button"
+                  title="Copy a shareable link"
+                >
+                  🔗 Share
+                </button>
+
+                <button
+                  onClick={
+                    handleReadAloud
+                  }
+                  className="read-aloud-button"
+                  title={
+                    isSpeaking
+                      ? "Stop reading"
+                      : "Read result aloud"
+                  }
+                >
+
+                  {isSpeaking
+                    ? "⏹ Stop"
+                    : "🔊 Read Aloud"}
+
+                </button>
+
+                <button
+                  type="button"
+                  className="close-result-button"
+                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); setActiveHistoryTitle(""); }}
+                  title="Close result"
+                  aria-label="Close result"
+                >
+                  ✕ Close
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* RESULT CONTENT */}
+
+            <div
+              className="result-content"
+              dir={
+                resultLanguage ===
+                  "arabic" ||
+                  resultLanguage ===
+                  "urdu"
+                  ? "rtl"
+                  : "ltr"
+              }
+            >
+
+              {result
+                .split("\n")
+                .map(
+                  (line, index) => (
+                    <p key={index}>
+                      {line ||
+                        "\u00A0"}
+                    </p>
+                  )
+                )}
 
             </div>
 
           </section>
-        )}
-
-      </main>
+      )}
 
       {/* ==================================================
           GENERATED STUDY SECTIONS
