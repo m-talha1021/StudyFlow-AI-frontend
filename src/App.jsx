@@ -3808,19 +3808,71 @@ function App() {
                     ) : dashboardHistoryType === "flashcards" ? (
                       <p className="dashboard-history-empty">No previous flashcard sets found yet.</p>
                     ) : dashboardGeneratedHistory.length > 0 ? (
-                      <div className="dashboard-flashcard-history">
-                        {dashboardGeneratedHistory.map((historyItem) => (
-                          <div className="dashboard-flashcard-history-item" key={historyItem.id}>
-                            <div className="dashboard-flashcard-history-info">
-                              <strong>{historyItem.title || historyItem.type || "Generated content"}</strong>
-                              <span>{historyItem.type || "Study content"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
-                              <small>Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}</small>
-                            </div>
-                            <div className="dashboard-history-actions" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                              <button type="button" className="dashboard-history-open" onClick={() => openGeneratedHistoryItem(historyItem)}>Open</button>
-                              <button type="button" className="dashboard-history-open" onClick={() => downloadHistoryPdf(historyItem)}>Download PDF</button>
-                            </div>
-                          </div>
+                     <div className="dashboard-flashcard-history">
+  {dashboardGeneratedHistory
+    .filter((historyItem) => {
+      const type = (
+        historyItem.type ||
+        historyItem.mode ||
+        ""
+      ).toLowerCase().trim();
+
+      return [
+        "summary",
+        "explain",
+        "explanation",
+        "quiz"
+      ].includes(type);
+    })
+    .map((historyItem) => (
+      <div
+        className="dashboard-flashcard-history-item"
+        key={historyItem.id}
+      >
+        <div className="dashboard-flashcard-history-info">
+          <strong>
+            {historyItem.title || historyItem.type || "Generated content"}
+          </strong>
+
+          <span>
+            {historyItem.type || "Study content"} ·{" "}
+            {new Date(
+              Number(historyItem.createdAt || Date.now())
+            ).toLocaleString()}
+          </span>
+
+          <small>
+            Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
+          </small>
+        </div>
+
+        <div
+          className="dashboard-history-actions"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px"
+          }}
+        >
+          <button
+            type="button"
+            className="dashboard-history-open"
+            onClick={() => openGeneratedHistoryItem(historyItem)}
+          >
+            Open
+          </button>
+
+          <button
+            type="button"
+            className="dashboard-history-open"
+            onClick={() => downloadHistoryPdf(historyItem)}
+          >
+            Download PDF
+          </button>
+        </div>
+      </div>
+    ))}
+</div>
                         ))}
                       </div>
                     ) : (
