@@ -793,7 +793,6 @@ function App() {
   const [dashboardMaterialsHistory, setDashboardMaterialsHistory] = useState([]);
   const [dashboardFlashcardHistory, setDashboardFlashcardHistory] = useState([]);
   const [dashboardGeneratedHistory, setDashboardGeneratedHistory] = useState([]);
-  const [activeHistoryTitle, setActiveHistoryTitle] = useState("");
 
   // ========================================================
   // GUESS THE WORD GAME
@@ -1698,21 +1697,47 @@ function App() {
   };
 
   const openGeneratedHistoryItem = (historyItem) => {
-    if (!historyItem) return;
-
-    stopSpeech();
-    setActiveHistoryTitle(historyItem.title || historyItem.type || "Previous study result");
-    setMode(historyItem.mode || "summary");
-    setResult(historyContentAsText(historyItem));
-    setResultLanguage(historyItem.language || "english");
+    const value = historyItem?.content;
     setDashboardHistoryType(null);
+    stopSpeech();
 
-    setTimeout(() => {
-      document.getElementById("result-section")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100);
+    if (historyItem.kind === "flashcards" || value?.kind === "flashcards") {
+      const cards = value?.cards || value;
+      if (!Array.isArray(cards)) return;
+      setFlashcards(cards);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+      setTimeout(() => document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    if (historyItem.kind === "test" || value?.kind === "test") {
+      const questions = value?.questions || [];
+      if (!questions.length) return;
+      setTestQuestions(questions);
+      setTestAnswers({});
+      setTestIndex(0);
+      setTestScore(0);
+      setTestFinished(false);
+      setTestStarted(false);
+      testSubmissionRecordedRef.current = false;
+      setTestTotalSeconds(questions.length * 60);
+      setTestTimeLeft(questions.length * 60);
+      setTimeout(() => document.getElementById("test-concepts-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    if (historyItem.kind === "transcription" || value?.kind === "transcription") {
+      setTranscriptionText(value?.text || "");
+      setTranscriptionLanguage(historyItem.language || "unknown");
+      setTimeout(() => document.getElementById("transcribing-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    setMode(historyItem.mode || "summary");
+    setResult(typeof value === "string" ? value : value?.text || historyContentAsText(historyItem));
+    setResultLanguage(historyItem.language || "english");
+    setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
   };
 
   const openPreviousFlashcards = (historyItem) => {
@@ -2759,7 +2784,7 @@ function App() {
         result,
         mode,
         language: resultLanguage || "english",
-        title: activeHistoryTitle || (mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary"),
+        title: mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary",
         createdAt: serverTimestamp(),
       });
       const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(shareId)}`;
@@ -3205,6 +3230,43 @@ function App() {
   // USER RANK / LEVEL
   // ========================================================
 
+  const RANK_LEVELS = [
+    { level: 0, name: "Beginner", icon: "🔰", sessions: 0, materials: 0 },
+    { level: 1, name: "Learner", icon: "📚", sessions: 50, materials: 50 },
+    { level: 2, name: "Scholar", icon: "🧠", sessions: 150, materials: 100 },
+    { level: 3, name: "Dedicated", icon: "🎯", sessions: 300, materials: 200 },
+    { level: 4, name: "Expert", icon: "🔥", sessions: 500, materials: 350 },
+    { level: 5, name: "Master", icon: "✨", sessions: 750, materials: 500 },
+    { level: 6, name: "Grand Master", icon: "👑", sessions: 1000, materials: 750 },
+    { level: 7, name: "Elite", icon: "💎", sessions: 1500, materials: 1000 },
+    { level: 8, name: "Legend", icon: "⚡", sessions: 2500, materials: 1500 },
+  ];
+
+  const currentRank =
+    [...RANK_LEVELS].reverse().find(
+      (rank) =>
+        dashboardStats.studySessions >= rank.sessions &&
+        dashboardStats.totalMaterials >= rank.materials
+    ) || RANK_LEVELS[0];
+
+  const nextRank = RANK_LEVELS.find(
+    (rank) => rank.level === currentRank.level + 1
+  ) || null;
+
+  const rankProgress = nextRank
+    ? Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(
+          Math.min(
+            dashboardStats.studySessions / nextRank.sessions,
+            dashboardStats.totalMaterials / nextRank.materials
+          ) * 100
+        )
+      )
+    )
+    : 100;
 
   // ========================================================
   // AUTH GATE
@@ -3298,6 +3360,23 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
+              setShowDashboard(true);
+              setDashboardHistoryType(null);
+              requestAnimationFrame(() => {
+                document.getElementById("dashboard-section")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              });
+            }}
+          >
+            Dashboard
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
               document.getElementById("inputcard")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
@@ -3306,18 +3385,7 @@ function App() {
           >
             Upload material
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("action-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Features
-          </button>
+
           <button
             type="button"
             onClick={() => {
@@ -3330,22 +3398,35 @@ function App() {
           >
             Transcribing
           </button>
+
           <button
             type="button"
             onClick={() => {
+              setMode("flashcards");
               setMobileMenuOpen(false);
-              setShowDashboard(true);
-              setDashboardHistoryType("generated");
-              requestAnimationFrame(() => {
-                document.getElementById("dashboard-section")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
               });
             }}
           >
-            History
+            Flashcards
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMode("test");
+              setMobileMenuOpen(false);
+              document.getElementById("action-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Test Concepts
+          </button>
+
           <button
             type="button"
             onClick={() => {
@@ -3355,7 +3436,7 @@ function App() {
           >
             Fun Zone
           </button>
-         
+
           <button
             type="button"
             className="feedback-nav-link"
@@ -3447,14 +3528,13 @@ function App() {
         </div>
 
         {showDashboard && (
-          <div className="dashboard-panel" id="dashboard-section">
+          <div className="dashboard-panel">
             <div className="dashboard-heading">
               <div className="dashboard-heading-content">
-                <h2>{dashboardHistoryType === "generated" ? "Your Generated History" : "Your Dashboard"}</h2>
+
+                <h2>Your Dashboard</h2>
                 <p>
-                  {dashboardHistoryType === "generated"
-                    ? "Open, copy, share, read aloud, or download any of your previous generated results."
-                    : "Your personal StudyFlow AI progress and activity."}
+                  Your personal StudyFlow AI progress and activity.
                 </p>
               </div>
 
@@ -3472,157 +3552,771 @@ function App() {
             </div>
 
             {dashboardLoading ? (
-              <div>{dashboardHistoryType === "generated" ? "Loading your generated history..." : "Loading your dashboard..."}</div>
-            ) : dashboardHistoryType === "generated" ? (
-              <div className="dashboard-history-panel">
-                <div className="dashboard-history-header">
-                  <div>
-                    <h3>All Generated Content</h3>
-                    <p>Open any previous result, copy it, share it, read it aloud, or download it as an individual PDF.</p>
-                  </div>
-                </div>
-
-                {dashboardGeneratedHistory.length > 0 ? (
-                  <div className="dashboard-flashcard-history">
-                    {dashboardGeneratedHistory.map((historyItem) => (
-                      <div className="dashboard-flashcard-history-item" key={historyItem.id}>
-                        <div className="dashboard-flashcard-history-info">
-                          <strong>{historyItem.title || historyItem.type || "Generated content"}</strong>
-                          <span>
-                            {historyItem.type || "Study content"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}
-                          </span>
-                          <small>
-                            Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
-                          </small>
-                        </div>
-                        <div className="dashboard-history-actions" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                          <button
-                            type="button"
-                            className="dashboard-history-open"
-                            onClick={() => openGeneratedHistoryItem(historyItem)}
-                          >
-                            Open
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-history-open"
-                            onClick={() => downloadHistoryPdf(historyItem)}
-                          >
-                            Download PDF
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="dashboard-history-empty">No generated content has been saved yet.</p>
-                )}
+              <div>
+                Loading your dashboard...
               </div>
             ) : (
-              <div className="dashboard-stats-grid">
-                {[
-                  {
-                    title: "Total Materials",
-                    value: dashboardStats.totalMaterials,
-                    text: "Files uploaded",
-                    icon: "📄",
-                    historyType: "materials",
-                  },
-                  {
-                    title: "Study Sessions",
-                    value: dashboardStats.studySessions,
-                    text: "Learning features",
-                    icon: "📚",
-                  },
-                  {
-                    title: `Level ${currentRank.level} • ${currentRank.name}`,
-                    value: currentRank.icon,
-                    text: nextRank
-                      ? `${rankProgress}% to Level ${nextRank.level}`
-                      : "Maximum rank reached",
-                    icon: "🏆",
-                    rankCard: true,
-                  },
-                ].map((stat) => (
-                  <div
-                    key={stat.title}
-                    className={
-                      stat.rankCard
-                        ? "dashboard-stat-card dashboard-rank-card"
-                        : stat.historyType
-                          ? "dashboard-stat-card dashboard-stat-card-clickable"
-                          : "dashboard-stat-card"
-                    }
-                    role={stat.historyType ? "button" : undefined}
-                    tabIndex={stat.historyType ? 0 : undefined}
-                    onClick={stat.historyType ? () => toggleDashboardHistory(stat.historyType) : undefined}
-                    onKeyDown={stat.historyType ? (event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        toggleDashboardHistory(stat.historyType);
+              <>
+                <div className="dashboard-stats-grid">
+                  {[
+                    {
+                      title: "Total Materials",
+                      value: dashboardStats.totalMaterials,
+                      text: "Files uploaded",
+                      icon: "📄",
+                      historyType: "materials",
+                    },
+                    {
+                      title: "Study Sessions",
+                      value: dashboardStats.studySessions,
+                      text: "Learning features",
+                      icon: "📚",
+                    },
+                    {
+                      title: `Level ${currentRank.level} • ${currentRank.name}`,
+                      value: currentRank.icon,
+                      text: nextRank
+                        ? `${rankProgress}% to Level ${nextRank.level}`
+                        : "Maximum rank reached",
+                      icon: "🏆",
+                      rankCard: true,
+                    },
+                  ].map((stat) => (
+                    <div
+                      key={stat.title}
+                      className={
+                        stat.rankCard
+                          ? "dashboard-stat-card dashboard-rank-card"
+                          : stat.historyType
+                            ? "dashboard-stat-card dashboard-stat-card-clickable"
+                            : "dashboard-stat-card"
                       }
-                    } : undefined}
-                  >
-                    <div className="dashboard-stat-top">
-                      <h3>{stat.title}</h3>
-                      <span aria-hidden="true" className="dashboard-stat-icon">{stat.icon}</span>
-                    </div>
-                    <strong>{stat.value}</strong>
-                    <p>{stat.text}</p>
-                    {stat.rankCard && nextRank && (
-                      <div className="dashboard-rank-progress">
-                        <div className="dashboard-rank-progress-track">
-                          <span style={{ width: `${rankProgress}%` }} />
-                        </div>
-                        <small>
-                          {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
-                        </small>
+                      role={stat.historyType ? "button" : undefined}
+                      tabIndex={stat.historyType ? 0 : undefined}
+                      onClick={
+                        stat.historyType
+                          ? () => toggleDashboardHistory(stat.historyType)
+                          : undefined
+                      }
+                      onKeyDown={
+                        stat.historyType
+                          ? (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              toggleDashboardHistory(stat.historyType);
+                            }
+                          }
+                          : undefined
+                      }
+                    >
+                      <div className="dashboard-stat-top">
+                        <h3>{stat.title}</h3>
+
+                        <span
+                          aria-hidden="true"
+                          className="dashboard-stat-icon"
+                        >
+                          {stat.icon}
+                        </span>
                       </div>
-                    )}
-                    {stat.historyType && (
-                      <small className="dashboard-card-hint">
-                        {dashboardHistoryType === stat.historyType ? "Click to close" : "Click to view history"}
-                      </small>
+
+                      <strong>{stat.value}</strong>
+
+                      <p>{stat.text}</p>
+
+                      {stat.rankCard && nextRank && (
+                        <div className="dashboard-rank-progress">
+                          <div className="dashboard-rank-progress-track">
+                            <span style={{ width: `${rankProgress}%` }} />
+                          </div>
+                          <small>
+                            {dashboardStats.studySessions}/{nextRank.sessions} sessions • {dashboardStats.totalMaterials}/{nextRank.materials} materials
+                          </small>
+                        </div>
+                      )}
+
+                      {stat.historyType && (
+                        <small className="dashboard-card-hint">
+                          {dashboardHistoryType === stat.historyType
+                            ? "Click to close"
+                            : "Click to view history"}
+                        </small>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {dashboardHistoryType && (
+                  <div className="dashboard-history-panel">
+                    <div className="dashboard-history-header">
+                      <div>
+                        <h3>
+                          {dashboardHistoryType === "materials"
+                            ? "Uploaded Materials"
+                            : dashboardHistoryType === "flashcards"
+                              ? "Previous Flashcard Sets"
+                              : "All Generated Content"}
+                        </h3>
+                        <p>
+                          {dashboardHistoryType === "materials"
+                            ? "Files uploaded by your account."
+                            : dashboardHistoryType === "flashcards"
+                              ? "Flashcards generated from your previous study sessions."
+                              : "Open any previous result or download it as an individual PDF."}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="dashboard-history-close"
+                        onClick={closeDashboardHistory}
+                        aria-label="Close dashboard history"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {dashboardHistoryType === "materials" ? (
+                      dashboardMaterialsHistory.length > 0 ? (
+                        <ul className="dashboard-material-list">
+                          {dashboardMaterialsHistory.flatMap((historyItem, historyIndex) =>
+                            (Array.isArray(historyItem.fileNames) ? historyItem.fileNames : []).map(
+                              (fileName, fileIndex) => (
+                                <li key={`${historyItem.id}-${historyIndex}-${fileIndex}`}>
+                                  <span aria-hidden="true">📄</span>
+                                  <span>{fileName}</span>
+                                </li>
+                              )
+                            )
+                          )}
+                        </ul>
+                      ) : (
+                        <p className="dashboard-history-empty">
+                          No uploaded files found yet.
+                        </p>
+                      )
+                    ) : dashboardHistoryType === "flashcards" && dashboardFlashcardHistory.length > 0 ? (
+                      <div className="dashboard-flashcard-history">
+                        {dashboardFlashcardHistory.map((historyItem, index) => (
+                          <div
+                            className="dashboard-flashcard-history-item"
+                            key={historyItem.id || index}
+                          >
+                            <div className="dashboard-flashcard-history-info">
+                              <strong>
+                                Flashcard Set {dashboardFlashcardHistory.length - index}
+                              </strong>
+                              <span>
+                                {Array.isArray(historyItem.cards)
+                                  ? `${historyItem.cards.length} cards`
+                                  : "Flashcards"}
+                              </span>
+                              <small>
+                                Files: {
+                                  Array.isArray(historyItem.fileNames) && historyItem.fileNames.length
+                                    ? historyItem.fileNames.join(", ")
+                                    : "Pasted study material"
+                                }
+                              </small>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="dashboard-history-open"
+                              onClick={() => openPreviousFlashcards(historyItem)}
+                            >
+                              Open
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : dashboardHistoryType === "flashcards" ? (
+                      <p className="dashboard-history-empty">No previous flashcard sets found yet.</p>
+                    ) : dashboardGeneratedHistory.length > 0 ? (
+                      <div className="dashboard-flashcard-history">
+                        {dashboardGeneratedHistory.map((historyItem) => (
+                          <div className="dashboard-flashcard-history-item" key={historyItem.id}>
+                            <div className="dashboard-flashcard-history-info">
+                              <strong>{historyItem.title || historyItem.type || "Generated content"}</strong>
+                              <span>{historyItem.type || "Study content"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
+                              <small>Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}</small>
+                            </div>
+                            <div className="dashboard-history-actions" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                              <button type="button" className="dashboard-history-open" onClick={() => openGeneratedHistoryItem(historyItem)}>Open</button>
+                              <button type="button" className="dashboard-history-open" onClick={() => downloadHistoryPdf(historyItem)}>Download PDF</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="dashboard-history-empty">No generated content has been saved yet.</p>
                     )}
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
 
-            {dashboardHistoryType === null && dashboardMaterialsHistory.length > 0 && (
-              <div className="dashboard-history-panel">
-                <div className="dashboard-history-header">
-                  <div>
-                    <h3>Uploaded Materials</h3>
-                    <p>Files uploaded by your account.</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="dashboard-history-close"
-                    onClick={closeDashboardHistory}
-                    aria-label="Close uploaded materials history"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <ul className="dashboard-material-list">
-                  {dashboardMaterialsHistory.flatMap((historyItem, historyIndex) =>
-                    (Array.isArray(historyItem.fileNames) ? historyItem.fileNames : []).map((fileName, fileIndex) => (
-                      <li key={`${historyItem.id}-${historyIndex}-${fileIndex}`}>
-                        <span aria-hidden="true">📄</span>
-                        <span>{fileName}</span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </div>
-            )}
           </div>
         )}
       </section>
 
-      {/* GENERATED RESULT */}
-      {result && (
+      <main className="container">
+
+
+        {/* =================================================
+            HERO
+        ================================================= */}
+
+        <section className="hero" id="heroclass">
+
+          <h1>
+            Study smarter,
+            <br />
+
+            <span className="spann">
+              Understand faster.
+            </span>
+          </h1>
+
+          <p>
+            Upload your study material or paste
+            your notes, then let AI help you learn.
+          </p>
+
+        </section>
+
+        {/* =================================================
+            MATERIAL INPUT
+        ================================================= */}
+
+        <section
+          className="input-card"
+          id="inputcard"
+        >
+
+          <div className="card-header">
+
+            <h2>
+              Study Material
+            </h2>
+
+            <p>
+              Paste your notes or upload a
+              document or image.
+            </p>
+
+          </div>
+
+          {/* TEXTAREA */}
+
+          <textarea
+            value={text}
+            onChange={(event) => {
+              setText(
+                event.target.value
+              );
+
+              setFile(null);
+              setFiles([]);
+              setMaterialReady(false);
+              setResult("");
+              setResultLanguage("");
+              setFlashcards([]);
+              setFlashcardIndex(0);
+              setFlashcardFlipped(false);
+
+              setChatMessages([]);
+              setChatQuestion("");
+
+              stopSpeech();
+            }}
+            placeholder="Paste your study material here..."
+          />
+
+          {/* DIVIDER */}
+
+          <div className="divider">
+            <span>
+              OR
+            </span>
+          </div>
+
+          {/* UPLOAD */}
+
+          <label className="upload-box">
+
+            <span className="upload-icon">
+              📄
+            </span>
+
+            <strong>
+              {processing
+                ? "Analyzing selected files..."
+                : "Upload your documents or images"}
+            </strong>
+
+            <small>
+              Select multiple PDF, DOCX, PPTX,
+              JPG, PNG, WEBP, HEIC or HEIF files
+            </small>
+
+            <input
+              type="file"
+              multiple
+              accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.webp,.heic,.heif"
+              onChange={
+                handleFileChange
+              }
+              disabled={processing}
+            />
+
+          </label>
+
+          {/* MOBILE CAMERA */}
+
+          {/* MOBILE CAMERA */}
+          <div className="camera-upload">
+            <button
+              type="button"
+              className="camera-button camera-button-large"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openCamera();
+              }}
+              disabled={processing}
+              title="Take a photo"
+              aria-label="Take a photo"
+            >
+              <span className="camera-icon-wrap">
+                <svg
+                  className="camera-svg"
+                  viewBox="0 0 100 100"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    className="camera-corner"
+                    d="M12 30V12H30 M70 12H88V30 M88 70V88H70 M30 88H12V70"
+                  />
+
+                  <rect
+                    className="camera-body"
+                    x="25"
+                    y="32"
+                    width="50"
+                    height="40"
+                    rx="8"
+                  />
+
+                  <circle
+                    className="camera-lens"
+                    cx="50"
+                    cy="52"
+                    r="11"
+                  />
+
+                  <circle
+                    className="camera-dot"
+                    cx="65"
+                    cy="41"
+                    r="3"
+                  />
+                </svg>
+              </span>
+
+              <span className="camera-text">
+                Take Photo
+              </span>
+            </button>
+
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleCameraCapture}
+              disabled={processing}
+              style={{ display: "none" }}
+            />
+          </div>
+
+          {/* SELECTED FILE */}
+
+          {files.length > 0 && (
+            <div className="selected-file selected-files">
+
+              <div className="selected-files-header">
+                📎 Selected {files.length} file{files.length === 1 ? "" : "s"}
+              </div>
+
+              <div className="selected-files-list">
+                {files.map((selectedFile, index) => (
+                  <div className="selected-file-item" key={`${selectedFile.name}-${selectedFile.lastModified}-${index}`}>
+                    <span>📄</span>
+                    <strong title={selectedFile.name}>
+                      {selectedFile.name}
+                    </strong>
+                    <small>
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </small>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
+        </section>
+
+
+
+        {/* =================================================
+            ACTION SECTION
+        ================================================= */}
+
+        <section className="action-section" id="action-section">
+
+          {/* HEADING + CHATBOT ICON */}
+
+          <div className="action-heading-row">
+
+            <h2>
+              What would you like to do?
+            </h2>
+
+            <button
+              type="button"
+              className={`chatbot-heading-button ${chatOpen
+                ? "chatbot-heading-active"
+                : ""
+                }`}
+              onClick={toggleChat}
+              aria-label={
+                chatOpen
+                  ? "Close AI chatbot"
+                  : "Open AI chatbot"
+              }
+              title={
+                chatOpen
+                  ? "Close AI chatbot"
+                  : "Ask StudyFlow AI"
+              }
+            >
+
+              <span className="heading-robot-icon">
+                🤖
+              </span>
+
+            </button>
+
+          </div>
+
+          {/* MODE BUTTONS */}
+
+          <div className="mode-buttons">
+
+            {/* SUMMARY */}
+
+            <button type="button"
+              className={
+                mode === "summary"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("summary")
+              }
+            >
+
+              <span>
+                📝
+              </span>
+
+              <div>
+
+                <strong>
+                  Summary
+                </strong>
+
+                <small>
+                  Key points from your material
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* EXPLAIN */}
+
+            <button type="button"
+              className={
+                mode === "explain"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("explain")
+              }
+            >
+
+              <span>
+                💡
+              </span>
+
+              <div>
+
+                <strong>
+                  Explanation
+                </strong>
+
+                <small>
+                  Understand difficult concepts
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* QUIZ */}
+
+            <button type="button"
+              className={
+                mode === "quiz"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("quiz")
+              }
+            >
+
+              <span>
+                🧠
+              </span>
+
+              <div>
+
+                <strong>
+                  Quiz
+                </strong>
+
+                <small>
+                  Test your knowledge
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* FLASHCARDS */}
+
+            <button type="button"
+              className={
+                mode === "flashcards"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() =>
+                setMode("flashcards")
+              }
+            >
+
+              <span>
+                🗂️
+              </span>
+
+              <div>
+
+                <strong>
+                  Flashcards
+                </strong>
+
+                <small>
+                  Review key concepts quickly
+                </small>
+
+              </div>
+
+            </button>
+
+            {/* TEST CONCEPTS */}
+
+            <button type="button"
+              className={
+                mode === "test"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("test")}
+            >
+              <span>⏱️</span>
+              <div>
+                <strong>Test concepts</strong>
+                <small>MCQ's test from your material</small>
+              </div>
+            </button>
+
+            {/* ORAL TEST */}
+
+            <button type="button"
+              className={
+                mode === "oral"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("oral")}
+            >
+              <span>🎙️</span>
+              <div>
+                <strong>Oral Test</strong>
+                <small>Answer questions by speaking</small>
+              </div>
+            </button>
+
+          </div>
+
+          {/* GENERATE */}
+
+          <button
+            className="generate-button"
+            onClick={handleGenerate}
+            disabled={
+              processing ||
+              generating ||
+              flashcardsLoading ||
+              testLoading ||
+              oralExam.listening
+            }
+          >
+            {testLoading
+              ? "⏳ Generating..."
+              : generating || flashcardsLoading
+                ? "⏳ Generating..."
+                : mode === "flashcards"
+                  ? "✨ Generate Flashcards"
+                  : mode === "oral"
+                    ? "🎙️ Start Oral Test"
+                    : mode === "test"
+                      ? "✨ Generate Test"
+                      : `✨ Generate ${mode}`}
+          </button>
+
+        </section>
+
+
+        {/* =================================================
+            LECTURE TRANSCRIPTION
+        ================================================= */}
+        <section className="transcription-section" id="transcribing-section">
+          <div className="transcription-heading">
+            <span className="transcription-kicker">AUDIO TO TEXT</span>
+            <h2>🎙️ Lecture Transcribing</h2>
+            <p>Upload audio/video/recording file & convert it into text.</p>
+          </div>
+          <div className="transcription-card">
+            <input
+              ref={transcriptionInputRef}
+              className="transcription-file-input"
+              type="file"
+              accept=".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac,audio/*,video/mp4,video/webm"
+              onChange={handleTranscriptionFileChange}
+              disabled={transcriptionLoading}
+            />
+            <button type="button" className="transcription-choose-button" onClick={() => transcriptionInputRef.current?.click()} disabled={transcriptionLoading}>
+              <span aria-hidden="true">📁</span>
+              {transcriptionFile ? "Choose another file" : "Choose audio or video"}
+            </button>
+            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 100MB size.</p>
+
+            <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 10px" }}>
+              <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Select language:</label>
+              <select
+                id="transcription-language"
+                value={transcriptionSourceLanguage}
+                onChange={(event) => setTranscriptionSourceLanguage(event.target.value)}
+                disabled={transcriptionLoading}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  background: "#0f1b3d",
+                  color: "#e8eeff",
+                  fontSize: "0.9rem",
+                  width: "250px",
+                  maxWidth: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
+                <option value="auto">Auto-detect</option>
+                <option value="urdu">Urdu</option>
+                <option value="english">English</option>
+                <option value="arabic">Arabic</option>
+                <option value="hindi">Hindi</option>
+                <option value="mixed">Mixed languages</option>
+              </select>
+            </div>
+
+            {transcriptionFile && (
+              <div className="transcription-selected-file">
+                <span aria-hidden="true">🎧</span>
+                <div>
+                  <strong>{transcriptionFile.name}</strong>
+                  <small>{(transcriptionFile.size / (1024 * 1024)).toFixed(2)} MB</small>
+                </div>
+                <button type="button" onClick={() => {
+                  setTranscriptionFile(null);
+                  setTranscriptionError("");
+                  setTranscriptionNotice("");
+                  setTranscriptionText("");
+                  setTranscriptionLanguage("");
+                  setTranscriptionProgress("");
+                }} disabled={transcriptionLoading} aria-label="Remove selected file">×</button>
+              </div>
+            )}
+
+            <button type="button" className="transcription-submit-button" onClick={transcribeLecture} disabled={!transcriptionFile || transcriptionLoading}>
+              {transcriptionLoading ? "Transcribing..." : "Transcribe"}
+            </button>
+            {transcriptionLoading && (
+              <div className="transcription-progress" role="status">
+                <span className="transcription-spinner" />
+                <span>{transcriptionProgress || "Recognizing speech and detecting transcript language…"}</span>
+              </div>
+            )}
+            {transcriptionError && <div className="transcription-message error" role="alert">{transcriptionError}</div>}
+            {transcriptionNotice && <div className="transcription-message success" role="status">{transcriptionNotice}</div>}
+
+            {transcriptionText && (
+              <div className="transcription-result">
+                <div className="transcription-result-header">
+                  <div>
+                    <span className="transcription-kicker">YOUR TRANSCRIPT</span>
+                    <h3>Transcript is ready:</h3>
+                  </div>
+                  <div className="transcription-result-actions">
+                    <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy📋</button>
+                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}>Download TXT</button>
+                  </div>
+                </div>
+                <textarea
+                  className="transcription-output"
+                  value={transcriptionText}
+                  onChange={(event) => setTranscriptionText(event.target.value)}
+                  aria-label="Editable lecture transcript"
+                  dir={RTL_TRANSCRIPTION_LANGUAGES.includes(transcriptionLanguage) ? "rtl" : "auto"}
+                  spellCheck="false"
+                />
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* =================================================
+            GENERATED RESULT
+        ================================================= */}
+
+        {result && (
           <section
             className="result-section"
             id="result-section"
@@ -3646,11 +4340,11 @@ function App() {
 
                   <h2>
 
-                    {activeHistoryTitle || (mode === "summary"
+                    {mode === "summary"
                       ? "Summary"
                       : mode === "explain"
                         ? "Explanation"
-                        : "Quiz")}
+                        : "Quiz"}
 
                   </h2>
 
@@ -3727,7 +4421,7 @@ function App() {
                 <button
                   type="button"
                   className="close-result-button"
-                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); setActiveHistoryTitle(""); }}
+                  onClick={() => { stopSpeech(); setResult(""); setResultLanguage(""); }}
                   title="Close result"
                   aria-label="Close result"
                 >
@@ -3766,7 +4460,9 @@ function App() {
             </div>
 
           </section>
-      )}
+        )}
+
+      </main>
 
       {/* ==================================================
           GENERATED STUDY SECTIONS
