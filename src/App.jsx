@@ -3808,75 +3808,75 @@ function App() {
                     ) : dashboardHistoryType === "flashcards" ? (
                       <p className="dashboard-history-empty">No previous flashcard sets found yet.</p>
                     ) : dashboardGeneratedHistory.length > 0 ? (
-                     <div className="dashboard-flashcard-history">
-  {dashboardGeneratedHistory
-    .filter((historyItem) => {
-      const type = (
-        historyItem.type ||
-        historyItem.mode ||
-        ""
-      ).toLowerCase().trim();
+                      <div className="dashboard-flashcard-history">
+                        {dashboardGeneratedHistory
+                          .filter((historyItem) => {
+                            const type = (
+                              historyItem.type ||
+                              historyItem.mode ||
+                              ""
+                            ).toLowerCase().trim();
 
-      return [
-        "summary",
-        "explain",
-        "explanation",
-        "quiz"
-      ].includes(type);
-    })
-    .map((historyItem) => (
-      <div
-        className="dashboard-flashcard-history-item"
-        key={historyItem.id}
-      >
-        <div className="dashboard-flashcard-history-info">
-          <strong>
-            {historyItem.title || historyItem.type || "Generated content"}
-          </strong>
+                            return [
+                              "summary",
+                              "explain",
+                              "explanation",
+                              "quiz"
+                            ].includes(type);
+                          })
+                          .map((historyItem) => (
+                            <div
+                              className="dashboard-flashcard-history-item"
+                              key={historyItem.id}
+                            >
+                              <div className="dashboard-flashcard-history-info">
+                                <strong>
+                                  {historyItem.title || historyItem.type || "Generated content"}
+                                </strong>
 
-          <span>
-            {historyItem.type || "Study content"} ·{" "}
-            {new Date(
-              Number(historyItem.createdAt || Date.now())
-            ).toLocaleString()}
-          </span>
+                                <span>
+                                  {historyItem.type || "Study content"} ·{" "}
+                                  {new Date(
+                                    Number(historyItem.createdAt || Date.now())
+                                  ).toLocaleString()}
+                                </span>
 
-          <small>
-            Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
-          </small>
-        </div>
+                                <small>
+                                  Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}
+                                </small>
+                              </div>
 
-        <div
-          className="dashboard-history-actions"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "8px"
-          }}
-        >
-          <button
-            type="button"
-            className="dashboard-history-open"
-            onClick={() => openGeneratedHistoryItem(historyItem)}
-          >
-            Open
-          </button>
+                              <div
+                                className="dashboard-history-actions"
+                                style={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: "8px"
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  className="dashboard-history-open"
+                                  onClick={() => openGeneratedHistoryItem(historyItem)}
+                                >
+                                  Open
+                                </button>
 
-          <button
-            type="button"
-            className="dashboard-history-open"
-            onClick={() => downloadHistoryPdf(historyItem)}
-          >
-            Download PDF
-          </button>
-        </div>
-      </div>
-    ))}
-</div>
-                        ))}
+                                <button
+                                  type="button"
+                                  className="dashboard-history-open"
+                                  onClick={() => downloadHistoryPdf(historyItem)}
+                                >
+                                  Download PDF
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     ) : (
-                      <p className="dashboard-history-empty">No generated content has been saved yet.</p>
+                      <p className="dashboard-history-empty">
+                        No generated content has been saved yet.
+                      </p>
                     )}
                   </div>
                 )}
@@ -3884,8 +3884,9 @@ function App() {
             )}
 
           </div>
-        )}
-      </section>
+        )
+        }
+      </section >
 
       <main className="container">
 
@@ -4920,462 +4921,468 @@ function App() {
           GAMES PANEL
       ================================================== */}
 
-      {gamesOpen && (
-        <div className="games-overlay" role="dialog" aria-modal="true" aria-label="StudyFlow games">
-          <div className="games-panel">
-            <button
-              type="button"
-              className="games-panel-close"
-              onClick={() => {
-                setGamesOpen(false);
-                setGuessGameStarted(false);
-                setBalloonGameStarted(false);
-                setBalloons([]);
-              }}
-              aria-label="Close games"
-              title="Close games"
-            >
-              ×
-            </button>
+      {
+        gamesOpen && (
+          <div className="games-overlay" role="dialog" aria-modal="true" aria-label="StudyFlow games">
+            <div className="games-panel">
+              <button
+                type="button"
+                className="games-panel-close"
+                onClick={() => {
+                  setGamesOpen(false);
+                  setGuessGameStarted(false);
+                  setBalloonGameStarted(false);
+                  setBalloons([]);
+                }}
+                aria-label="Close games"
+                title="Close games"
+              >
+                ×
+              </button>
 
-            <div className="games-panel-heading">
-              <span className="section-kicker">FUN ZONE</span>
-              <h2>🎮 StudyFlow Games</h2>
-              <p>Take a quick break and have some fun while learning.</p>
-            </div>
+              <div className="games-panel-heading">
+                <span className="section-kicker">FUN ZONE</span>
+                <h2>🎮 StudyFlow Games</h2>
+                <p>Take a quick break and have some fun while learning.</p>
+              </div>
 
-            <div className="games-grid">
+              <div className="games-grid">
 
-              <section className="guess-word-game" id="guess-word-game">
-                <button
-                  type="button"
-                  className="guess-word-close-button"
-                  onClick={() => {
-                    setGuessGameStarted(false);
-                    setGuessGameStatus("idle");
-                    setGuessMessage("");
-                    setGuessInput("");
-                    setGuessedLetters([]);
-                  }}
-                  aria-label="Close Guess the Word game"
-                  title="Close game"
-                >
-                  ×
-                </button>
-
-                <div className="guess-word-game-header">
-                  <span className="section-kicker">FUN ZONE</span>
-                  <h2>🎯 Guess the Word</h2>
-                  <p>Guess the hidden word one character at a time.</p>
-                </div>
-
-                <div className="guess-word-board">
-                  <div className="guess-word-blanks" aria-label="Hidden word">
-                    {guessGameStarted ? guessWord.split("").map((character, index) => (
-                      <span key={`${character}-${index}`} className="guess-word-letter">
-                        {guessedLetters.includes(character) ? character : "_"}
-                      </span>
-                    )) : "_ _ _ _ _"}
-                  </div>
-
-                  <div className="guess-word-tries">
-                    {guessGameStarted ? `Tries: ${guessTries}` : "Start a game to begin"}
-                  </div>
-
-                  <button type="button" className="guess-word-start-button" onClick={startGuessWordGame}>
-                    {guessGameStarted ? "🔄 New Word" : "▶ Start Game"}
+                <section className="guess-word-game" id="guess-word-game">
+                  <button
+                    type="button"
+                    className="guess-word-close-button"
+                    onClick={() => {
+                      setGuessGameStarted(false);
+                      setGuessGameStatus("idle");
+                      setGuessMessage("");
+                      setGuessInput("");
+                      setGuessedLetters([]);
+                    }}
+                    aria-label="Close Guess the Word game"
+                    title="Close game"
+                  >
+                    ×
                   </button>
 
-                  {guessGameStarted && guessGameStatus === "playing" && (
-                    <button
-                      type="button"
-                      className="guess-word-reveal-button"
-                      onClick={handleRevealGuessWord}
-                    >
-                      👀 Reveal Word
+                  <div className="guess-word-game-header">
+                    <span className="section-kicker">FUN ZONE</span>
+                    <h2>🎯 Guess the Word</h2>
+                    <p>Guess the hidden word one character at a time.</p>
+                  </div>
+
+                  <div className="guess-word-board">
+                    <div className="guess-word-blanks" aria-label="Hidden word">
+                      {guessGameStarted ? guessWord.split("").map((character, index) => (
+                        <span key={`${character}-${index}`} className="guess-word-letter">
+                          {guessedLetters.includes(character) ? character : "_"}
+                        </span>
+                      )) : "_ _ _ _ _"}
+                    </div>
+
+                    <div className="guess-word-tries">
+                      {guessGameStarted ? `Tries: ${guessTries}` : "Start a game to begin"}
+                    </div>
+
+                    <button type="button" className="guess-word-start-button" onClick={startGuessWordGame}>
+                      {guessGameStarted ? "🔄 New Word" : "▶ Start Game"}
                     </button>
-                  )}
 
-                  {guessGameStarted && guessGameStatus === "playing" && (
-                    <>
-                      <label className="guess-word-input-label" htmlFor="guess-word-input">Enter a character</label>
-                      <div className="guess-word-input-row">
-                        <input id="guess-word-input" type="text" inputMode="lowercase" autoComplete="off" maxLength={1} value={guessInput}
-                          onChange={(event) => setGuessInput(event.target.value.toLowerCase().replace(/[^a-z]/g, ""))}
-                          onKeyDown={handleGuessInputKeyDown} placeholder="a" aria-label="Enter one lowercase English character" />
-                        <button type="button" className="guess-word-submit-button" onClick={handleGuessLetter} disabled={!guessInput}>Guess</button>
-                      </div>
-                    </>
-                  )}
+                    {guessGameStarted && guessGameStatus === "playing" && (
+                      <button
+                        type="button"
+                        className="guess-word-reveal-button"
+                        onClick={handleRevealGuessWord}
+                      >
+                        👀 Reveal Word
+                      </button>
+                    )}
 
-                  {guessMessage && <div className={`guess-word-message ${guessGameStatus}`} role="status">{guessMessage}</div>}
+                    {guessGameStarted && guessGameStatus === "playing" && (
+                      <>
+                        <label className="guess-word-input-label" htmlFor="guess-word-input">Enter a character</label>
+                        <div className="guess-word-input-row">
+                          <input id="guess-word-input" type="text" inputMode="lowercase" autoComplete="off" maxLength={1} value={guessInput}
+                            onChange={(event) => setGuessInput(event.target.value.toLowerCase().replace(/[^a-z]/g, ""))}
+                            onKeyDown={handleGuessInputKeyDown} placeholder="a" aria-label="Enter one lowercase English character" />
+                          <button type="button" className="guess-word-submit-button" onClick={handleGuessLetter} disabled={!guessInput}>Guess</button>
+                        </div>
+                      </>
+                    )}
 
-                  {(guessGameStatus === "won" || guessGameStatus === "lost") && (
-                    <button type="button" className="guess-word-play-again" onClick={startGuessWordGame}>🎮 Play Again</button>
-                  )}
-                </div>
-              </section>
+                    {guessMessage && <div className={`guess-word-message ${guessGameStatus}`} role="status">{guessMessage}</div>}
+
+                    {(guessGameStatus === "won" || guessGameStatus === "lost") && (
+                      <button type="button" className="guess-word-play-again" onClick={startGuessWordGame}>🎮 Play Again</button>
+                    )}
+                  </div>
+                </section>
 
 
-              {/* ==================================================
+                {/* ==================================================
           BALLOON LETTER GAME
       ================================================== */}
 
-              <section
-                className="balloon-letter-game"
-                id="balloon-letter-game"
-              >
-                <div className="balloon-game-header">
-                  <span className="section-kicker">FUN ZONE</span>
-                  <h2>🎈 Catch the Letter</h2>
-                  <p>Click the balloon that matches the target letter.</p>
-                </div>
-
-                {!balloonGameStarted ? (
-                  <div className="balloon-game-start-panel">
-                    <div className="balloon-preview">🎈 🎈 🎈</div>
-
-                    <button
-                      type="button"
-                      className="balloon-start-button"
-                      onClick={startBalloonGame}
-                    >
-                      ▶ Start Game
-                    </button>
+                <section
+                  className="balloon-letter-game"
+                  id="balloon-letter-game"
+                >
+                  <div className="balloon-game-header">
+                    <span className="section-kicker">FUN ZONE</span>
+                    <h2>🎈 Catch the Letter</h2>
+                    <p>Click the balloon that matches the target letter.</p>
                   </div>
-                ) : (
-                  <div className="balloon-game-board">
-                    <button
-                      type="button"
-                      className="balloon-close-button"
-                      onClick={closeBalloonGame}
-                      aria-label="Close Catch the Letter game"
-                      title="Close game"
-                    >
-                      ×
-                    </button>
 
-                    <div className="balloon-game-top">
-                      <div>
-                        <span className="balloon-target-label">TARGET</span>
-                        <strong className="balloon-target-letter">
-                          {balloonTargetLetter.toUpperCase()}
-                        </strong>
+                  {!balloonGameStarted ? (
+                    <div className="balloon-game-start-panel">
+                      <div className="balloon-preview">🎈 🎈 🎈</div>
+
+                      <button
+                        type="button"
+                        className="balloon-start-button"
+                        onClick={startBalloonGame}
+                      >
+                        ▶ Start Game
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="balloon-game-board">
+                      <button
+                        type="button"
+                        className="balloon-close-button"
+                        onClick={closeBalloonGame}
+                        aria-label="Close Catch the Letter game"
+                        title="Close game"
+                      >
+                        ×
+                      </button>
+
+                      <div className="balloon-game-top">
+                        <div>
+                          <span className="balloon-target-label">TARGET</span>
+                          <strong className="balloon-target-letter">
+                            {balloonTargetLetter.toUpperCase()}
+                          </strong>
+                        </div>
+
+                        <div className="balloon-score">
+                          ⭐ {balloonScore}
+                        </div>
                       </div>
 
-                      <div className="balloon-score">
-                        ⭐ {balloonScore}
+                      <div
+                        className="balloon-falling-area"
+                        onAnimationEnd={handleBalloonRoundEnd}
+                      >
+                        <div className="balloon-bottom-line" />
+
+                        {balloons.map((balloon) => (
+                          <button
+                            key={balloon.id}
+                            type="button"
+                            className={`falling-balloon ${balloon.status}`}
+                            style={{
+                              left: `${balloon.left}%`,
+                              animationDelay: `${balloon.delay}s`,
+                              animationDuration: `${balloon.duration}s`,
+                            }}
+                            onClick={() => handleBalloonClick(balloon)}
+                            disabled={balloon.status !== "falling"}
+                            aria-label={`Balloon letter ${balloon.letter}`}
+                          >
+                            {balloon.status === "wrong"
+                              ? "×"
+                              : balloon.letter.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="balloon-game-message">
+                        {balloonGameMessage ||
+                          `Find the ${balloonTargetLetter.toUpperCase()} balloon!`}
                       </div>
                     </div>
+                  )}
+                </section>
 
-                    <div
-                      className="balloon-falling-area"
-                      onAnimationEnd={handleBalloonRoundEnd}
-                    >
-                      <div className="balloon-bottom-line" />
-
-                      {balloons.map((balloon) => (
-                        <button
-                          key={balloon.id}
-                          type="button"
-                          className={`falling-balloon ${balloon.status}`}
-                          style={{
-                            left: `${balloon.left}%`,
-                            animationDelay: `${balloon.delay}s`,
-                            animationDuration: `${balloon.duration}s`,
-                          }}
-                          onClick={() => handleBalloonClick(balloon)}
-                          disabled={balloon.status !== "falling"}
-                          aria-label={`Balloon letter ${balloon.letter}`}
-                        >
-                          {balloon.status === "wrong"
-                            ? "×"
-                            : balloon.letter.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="balloon-game-message">
-                      {balloonGameMessage ||
-                        `Find the ${balloonTargetLetter.toUpperCase()} balloon!`}
-                    </div>
-                  </div>
-                )}
-              </section>
-
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* ==================================================
           AI ORAL EXAM
       ================================================== */}
 
-      {oralExam.active && (
-        <section className="oral-exam-section" id="oral-exam-section">
-          <div className="oral-exam-header">
-            <div>
-              <span className="section-kicker">AI ORAL TEST</span>
-              <h2>🎙️ Oral Exam</h2>
-              <p>Listen to the question, then answer naturally using your voice. There is no text answer box.</p>
-            </div>
-            <button type="button" className="oral-close-button" onClick={handleStopOralExam} aria-label="Close oral exam">✕</button>
-          </div>
-
-          <div className="oral-exam-card">
-            <div className="oral-exam-progress">
-              <span>Question {oralExam.questionNumber} of {oralExam.totalQuestions}</span>
-              <strong>Score: {oralExam.score}</strong>
+      {
+        oralExam.active && (
+          <section className="oral-exam-section" id="oral-exam-section">
+            <div className="oral-exam-header">
+              <div>
+                <span className="section-kicker">AI ORAL TEST</span>
+                <h2>🎙️ Oral Exam</h2>
+                <p>Listen to the question, then answer naturally using your voice. There is no text answer box.</p>
+              </div>
+              <button type="button" className="oral-close-button" onClick={handleStopOralExam} aria-label="Close oral exam">✕</button>
             </div>
 
-            <div className="oral-question-box">
-              <span className="oral-ai-icon">🤖</span>
-              <p dir={oralExam.language === "arabic" || oralExam.language === "urdu" ? "rtl" : "ltr"}>{oralExam.question}</p>
-            </div>
+            <div className="oral-exam-card">
+              <div className="oral-exam-progress">
+                <span>Question {oralExam.questionNumber} of {oralExam.totalQuestions}</span>
+                <strong>Score: {oralExam.score}</strong>
+              </div>
 
-            <div className="oral-status">
-              {oralExam.status === "listening" && <><span className="oral-mic-pulse">🎙️</span><strong>Listening to your answer...</strong></>}
-              {oralExam.status === "evaluating" && <><span>🧠</span><strong>AI is checking your answer...</strong></>}
-              {oralExam.status === "feedback" && <><span>💬</span><strong>{oralExam.feedback}</strong></>}
-              {oralExam.status === "waiting" && <><span>🎙️</span><strong>Your turn — speak your answer.</strong></>}
-              {oralExam.status === "error" && <><span>⚠️</span><strong>Microphone recognition stopped. Try again.</strong></>}
-            </div>
+              <div className="oral-question-box">
+                <span className="oral-ai-icon">🤖</span>
+                <p dir={oralExam.language === "arabic" || oralExam.language === "urdu" ? "rtl" : "ltr"}>{oralExam.question}</p>
+              </div>
 
-            <div className="oral-exam-controls">
-              <button type="button" className={oralExam.listening ? "oral-mic-button listening" : "oral-mic-button"} onClick={startOralListening} disabled={oralExam.listening || oralExam.status === "evaluating"}>
-                {oralExam.listening ? "🎙️ Listening..." : "🎙️ Speak Answer"}
-              </button>
-              <button type="button" className="secondary-button" onClick={handleRepeatOralQuestion} disabled={oralExam.listening || oralExam.status === "evaluating"}>🔊 Repeat Question</button>
-            </div>
+              <div className="oral-status">
+                {oralExam.status === "listening" && <><span className="oral-mic-pulse">🎙️</span><strong>Listening to your answer...</strong></>}
+                {oralExam.status === "evaluating" && <><span>🧠</span><strong>AI is checking your answer...</strong></>}
+                {oralExam.status === "feedback" && <><span>💬</span><strong>{oralExam.feedback}</strong></>}
+                {oralExam.status === "waiting" && <><span>🎙️</span><strong>Your turn — speak your answer.</strong></>}
+                {oralExam.status === "error" && <><span>⚠️</span><strong>Microphone recognition stopped. Try again.</strong></>}
+              </div>
 
-            <small className="oral-exam-language">Language: {oralExam.language === "urdu" ? "Urdu" : oralExam.language === "arabic" ? "Arabic" : oralExam.language === "mixed" ? "Mixed" : "English"}</small>
-          </div>
-        </section>
-      )}
+              <div className="oral-exam-controls">
+                <button type="button" className={oralExam.listening ? "oral-mic-button listening" : "oral-mic-button"} onClick={startOralListening} disabled={oralExam.listening || oralExam.status === "evaluating"}>
+                  {oralExam.listening ? "🎙️ Listening..." : "🎙️ Speak Answer"}
+                </button>
+                <button type="button" className="secondary-button" onClick={handleRepeatOralQuestion} disabled={oralExam.listening || oralExam.status === "evaluating"}>🔊 Repeat Question</button>
+              </div>
+
+              <small className="oral-exam-language">Language: {oralExam.language === "urdu" ? "Urdu" : oralExam.language === "arabic" ? "Arabic" : oralExam.language === "mixed" ? "Mixed" : "English"}</small>
+            </div>
+          </section>
+        )
+      }
 
       {/* ==================================================
           CHAT POPUP
       ================================================== */}
 
-      {chatOpen && (
-        <div className="chatbot-popup">
+      {
+        chatOpen && (
+          <div className="chatbot-popup">
 
-          {/* CHAT HEADER */}
+            {/* CHAT HEADER */}
 
-          <div className="chatbot-popup-header">
+            <div className="chatbot-popup-header">
 
-            <div className="chatbot-popup-title">
+              <div className="chatbot-popup-title">
 
-              <span className="popup-robot-icon">
-                🤖
-              </span>
+                <span className="popup-robot-icon">
+                  🤖
+                </span>
 
-              <div>
+                <div>
 
-                <strong>
-                  StudyFlow AI
-                </strong>
+                  <strong>
+                    StudyFlow AI
+                  </strong>
 
-                <small>
-                  Ask from your material
-                </small>
+                  <small>
+                    Ask from your material
+                  </small>
+
+                </div>
 
               </div>
 
+              <button
+                type="button"
+                className="chatbot-close-button"
+                onClick={() =>
+                  setChatOpen(false)
+                }
+                aria-label="Close chatbot"
+              >
+                ×
+              </button>
+
             </div>
 
-            <button
-              type="button"
-              className="chatbot-close-button"
-              onClick={() =>
-                setChatOpen(false)
+            {/* MATERIAL STATUS */}
+
+            <div
+              className={
+                materialReady
+                  ? "chat-material-status ready"
+                  : "chat-material-status"
               }
-              aria-label="Close chatbot"
             >
-              ×
-            </button>
 
-          </div>
+              {materialReady
+                ? "✓ Study material is ready"
+                : "Upload or paste study material first"}
 
-          {/* MATERIAL STATUS */}
+            </div>
 
-          <div
-            className={
-              materialReady
-                ? "chat-material-status ready"
-                : "chat-material-status"
-            }
-          >
+            {/* CHAT MESSAGES */}
 
-            {materialReady
-              ? "✓ Study material is ready"
-              : "Upload or paste study material first"}
+            <div
+              className="chat-messages"
+              ref={chatMessagesRef}
+            >
 
-          </div>
+              {chatMessages.length ===
+                0 && (
+                  <div className="chat-welcome">
 
-          {/* CHAT MESSAGES */}
+                    <div className="chat-welcome-icon">
+                      ✨
+                    </div>
 
-          <div
-            className="chat-messages"
-            ref={chatMessagesRef}
-          >
+                    <h3>
+                      Ask me anything
+                    </h3>
 
-            {chatMessages.length ===
-              0 && (
-                <div className="chat-welcome">
+                    <p>
+                      Hi! I'm StudyFlow AI,
+                      your AI-powered study
+                      assistant. You can ask me
+                      questions about your
+                      uploaded or pasted study
+                      material, and I'll do my
+                      best to help you
+                      understand it better.
+                    </p>
 
-                  <div className="chat-welcome-icon">
-                    ✨
+                  </div>
+                )}
+
+              {chatMessages.map(
+                (message, index) => {
+                  const isRTL =
+                    message.language ===
+                    "urdu" ||
+                    message.language ===
+                    "arabic";
+
+                  return (
+                    <div
+                      key={index}
+                      className={
+                        message.role ===
+                          "user"
+                          ? "chat-message user-message"
+                          : "chat-message assistant-message"
+                      }
+                      dir={
+                        isRTL
+                          ? "rtl"
+                          : "ltr"
+                      }
+                    >
+
+                      <div className="message-avatar">
+
+                        {message.role ===
+                          "user"
+                          ? "👤"
+                          : "🤖"}
+
+                      </div>
+
+                      <div className="message-content">
+
+                        {message.content
+                          .split("\n")
+                          .map(
+                            (
+                              line,
+                              lineIndex
+                            ) => (
+                              <p
+                                key={
+                                  lineIndex
+                                }
+                              >
+                                {line ||
+                                  "\u00A0"}
+                              </p>
+                            )
+                          )}
+
+                      </div>
+
+                    </div>
+                  );
+                }
+              )}
+
+              {/* THINKING */}
+
+              {chatLoading && (
+                <div className="chat-message assistant-message">
+
+                  <div className="message-avatar">
+                    🤖
                   </div>
 
-                  <h3>
-                    Ask me anything
-                  </h3>
+                  <div className="message-content">
 
-                  <p>
-                    Hi! I'm StudyFlow AI,
-                    your AI-powered study
-                    assistant. You can ask me
-                    questions about your
-                    uploaded or pasted study
-                    material, and I'll do my
-                    best to help you
-                    understand it better.
-                  </p>
+                    <p>
+                      Thinking...
+                    </p>
+
+                  </div>
 
                 </div>
               )}
 
-            {chatMessages.map(
-              (message, index) => {
-                const isRTL =
-                  message.language ===
-                  "urdu" ||
-                  message.language ===
-                  "arabic";
+            </div>
 
-                return (
-                  <div
-                    key={index}
-                    className={
-                      message.role ===
-                        "user"
-                        ? "chat-message user-message"
-                        : "chat-message assistant-message"
-                    }
-                    dir={
-                      isRTL
-                        ? "rtl"
-                        : "ltr"
-                    }
-                  >
+            {/* CHAT INPUT */}
 
-                    <div className="message-avatar">
-
-                      {message.role ===
-                        "user"
-                        ? "👤"
-                        : "🤖"}
-
-                    </div>
-
-                    <div className="message-content">
-
-                      {message.content
-                        .split("\n")
-                        .map(
-                          (
-                            line,
-                            lineIndex
-                          ) => (
-                            <p
-                              key={
-                                lineIndex
-                              }
-                            >
-                              {line ||
-                                "\u00A0"}
-                            </p>
-                          )
-                        )}
-
-                    </div>
-
-                  </div>
-                );
-              }
-            )}
-
-            {/* THINKING */}
-
-            {chatLoading && (
-              <div className="chat-message assistant-message">
-
-                <div className="message-avatar">
-                  🤖
-                </div>
-
-                <div className="message-content">
-
-                  <p>
-                    Thinking...
-                  </p>
-
-                </div>
-
-              </div>
-            )}
-
-          </div>
-
-          {/* CHAT INPUT */}
-
-          <form
-            className="chat-input-form"
-            onSubmit={
-              handleChatSubmit
-            }
-          >
-
-            <input
-              type="text"
-              value={chatQuestion}
-              onChange={(event) =>
-                setChatQuestion(
-                  event.target.value
-                )
-              }
-              placeholder={
-                materialReady
-                  ? "Ask a question..."
-                  : "Upload material first..."
-              }
-              disabled={
-                !materialReady ||
-                chatLoading
-              }
-            />
-
-            <button
-              type="submit"
-              disabled={
-                !materialReady ||
-                chatLoading ||
-                !chatQuestion.trim()
+            <form
+              className="chat-input-form"
+              onSubmit={
+                handleChatSubmit
               }
             >
 
-              {chatLoading
-                ? "..."
-                : "➤"}
+              <input
+                type="text"
+                value={chatQuestion}
+                onChange={(event) =>
+                  setChatQuestion(
+                    event.target.value
+                  )
+                }
+                placeholder={
+                  materialReady
+                    ? "Ask a question..."
+                    : "Upload material first..."
+                }
+                disabled={
+                  !materialReady ||
+                  chatLoading
+                }
+              />
 
-            </button>
+              <button
+                type="submit"
+                disabled={
+                  !materialReady ||
+                  chatLoading ||
+                  !chatQuestion.trim()
+                }
+              >
 
-          </form>
+                {chatLoading
+                  ? "..."
+                  : "➤"}
 
-        </div>
-      )}
+              </button>
+
+            </form>
+
+          </div>
+        )
+      }
       <CookieConsent />
 
 
@@ -5414,20 +5421,22 @@ function App() {
 
       </footer>
 
-      {showGoUp && (
-        <button
-          className="go-up-button"
-          onClick={
-            scrollToTop
-          }
-          aria-label="Go to top"
-          title="Go to top"
-        >
-          ⇧
-        </button>
-      )}
+      {
+        showGoUp && (
+          <button
+            className="go-up-button"
+            onClick={
+              scrollToTop
+            }
+            aria-label="Go to top"
+            title="Go to top"
+          >
+            ⇧
+          </button>
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 
