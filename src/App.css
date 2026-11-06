@@ -12795,7 +12795,7 @@ footer p {
   }
 
   /* Hide card descriptions on mobile */
-  .welcome-hero .feature-grid p {
+  .welcome-hero .feature-grid > small {
     display: none !important;
   }
 
