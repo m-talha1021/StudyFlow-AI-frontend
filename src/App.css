@@ -12782,10 +12782,6 @@ footer p {
    {
       text-align: left !important;
    }
-   
-.chatbot-popup-header {
-   background-color: #2563eb !important;
-}
   .dashboard-heading-content h2 {
     text-align: left !important;
     width: 100% !important;
@@ -12795,8 +12791,7 @@ footer p {
     text-align: left !important;
     width: 100% !important;
   }
-.dashboard-heading-content h2 {
-    text-align: left !important;
-    width: 100% !important;
-  }
-
+ .dashboard-flashcard-history-info strong
+   {
+      text-align: left !important;
+   }
