@@ -842,6 +842,7 @@ function App() {
   const [mode, setMode] = useState("summary");
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -2045,6 +2046,50 @@ function App() {
 
     // Allow selecting the same files again later.
     event.target.value = "";
+  };
+
+  // Drag-and-drop uses the same processing pipeline as the file picker.
+  const handleUploadDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!processing) {
+      event.dataTransfer.dropEffect = "copy";
+      setIsDraggingFiles(true);
+    } else {
+      event.dataTransfer.dropEffect = "none";
+    }
+  };
+
+  const handleUploadDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Ignore transitions between children inside the upload drop zone.
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsDraggingFiles(false);
+    }
+  };
+
+  const handleUploadDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingFiles(false);
+
+    if (processing) return;
+
+    const droppedFiles = Array.from(event.dataTransfer?.files || []);
+    if (!droppedFiles.length) return;
+
+    const allowedFile = /\.(pdf|docx|pptx|png|jpe?g|webp|heic|heif)$/i;
+    const validFiles = droppedFiles.filter((droppedFile) => allowedFile.test(droppedFile.name));
+    const rejectedCount = droppedFiles.length - validFiles.length;
+
+    if (rejectedCount > 0) {
+      alert("Some files were skipped. Supported formats: PDF, DOCX, PPTX, JPG, PNG, WEBP, HEIC and HEIF.");
+    }
+    if (!validFiles.length) return;
+
+    setText("");
+    processFiles(validFiles);
   };
 
   // ========================================================
@@ -4032,7 +4077,14 @@ function App() {
 
           {/* UPLOAD */}
 
-          <label className="upload-box">
+          <label
+            className={`upload-box${isDraggingFiles ? " upload-box-dragging" : ""}`}
+            onDragEnter={handleUploadDragOver}
+            onDragOver={handleUploadDragOver}
+            onDragLeave={handleUploadDragLeave}
+            onDrop={handleUploadDrop}
+            aria-label="Upload documents or images. Drag and drop files here or click to browse."
+          >
 
             <span className="upload-icon">
               📄
@@ -4045,7 +4097,7 @@ function App() {
             </strong>
 
             <small>
-              Select multiple PDF, DOCX, PPTX,
+              Drag and drop files here, or click to browse. Select multiple PDF, DOCX, PPTX,
               JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
