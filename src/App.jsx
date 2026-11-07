@@ -4097,7 +4097,7 @@ function App() {
             </strong>
 
             <small>
-              Drag and drop files here, or click to browse. Select multiple PDF, DOCX, PPTX,
+             Drag & drop or click to browse multiple PDF, DOCX, PPTX,
               JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
