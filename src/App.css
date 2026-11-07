@@ -12795,15 +12795,18 @@ footer p {
    {
       text-align: left !important;
    }
+/* Reduce StudyFlow mobile navigation drawer width */
+@media screen and (max-width: 768px) {
 
-/* Reduce opened sidebar width on mobile */
-@media screen and (max-width: 600px) {
-  .sidebar,
-  .navbar,
-  .mobile-sidebar {
-    width: 75% !important;
-    max-width: 290px !important;
+  .app-navbar .app-nav-links.mobile-open {
+    width: 280px !important;
+    max-width: 78vw !important;
     min-width: 0 !important;
+
     box-sizing: border-box !important;
+
+    left: auto !important;
+    right: 0 !important;
   }
+
 }
