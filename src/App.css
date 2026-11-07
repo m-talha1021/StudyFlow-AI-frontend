@@ -12796,13 +12796,14 @@ footer p {
       text-align: left !important;
    }
 
-
-/* Reduce mobile navbar width */
+/* Reduce opened sidebar width on mobile */
 @media screen and (max-width: 600px) {
-  .navbar {
+  .sidebar,
+  .navbar,
+  .mobile-sidebar {
     width: 75% !important;
-    max-width: 280px !important;
-    left: auto !important;
-    right: 0 !important;
+    max-width: 290px !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 }
