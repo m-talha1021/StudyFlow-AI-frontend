@@ -12795,3 +12795,14 @@ footer p {
    {
       text-align: left !important;
    }
+
+
+/* Reduce mobile navbar width */
+@media screen and (max-width: 600px) {
+  .navbar {
+    width: 75% !important;
+    max-width: 280px !important;
+    left: auto !important;
+    right: 0 !important;
+  }
+}
