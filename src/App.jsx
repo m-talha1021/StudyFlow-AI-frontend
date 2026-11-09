@@ -856,6 +856,9 @@ function App() {
 
   const [generating, setGenerating] =
     useState(false);
+  // Allows the active generation request to be cancelled when the final
+  // selected source file is removed.
+  const generationAbortControllerRef = useRef(null);
 
   const [result, setResult] = useState("");
   const [resultLanguage, setResultLanguage] =
@@ -2009,6 +2012,18 @@ function App() {
     const remainingFiles = files.filter((_, index) => index !== removeIndex);
 
     if (!remainingFiles.length) {
+      // Stop generation only when the final selected file is removed.
+      // Removing one of several files must leave the current generation running.
+      generationAbortControllerRef.current?.abort();
+      generationAbortControllerRef.current = null;
+      setGenerating(false);
+      setFlashcardsLoading(false);
+      setTestLoading(false);
+      oralRecognitionActiveRef.current = false;
+      try { oralRecognitionRef.current?.abort(); } catch { }
+      window.speechSynthesis?.cancel();
+      setOralExam((previous) => ({ ...previous, active: false, listening: false, status: "idle" }));
+
       // Invalidate any analysis currently running for the removed selection.
       materialRequestIdRef.current += 1;
       setProcessing(false);
@@ -2325,6 +2340,9 @@ function App() {
   const handleGenerateFlashcards = async () => {
     if (processing) { alert("Your study material is still processing. Please wait."); return; }
     if (!getCurrentMaterialText()) { alert("Please upload or paste study material first."); return; }
+    generationAbortControllerRef.current?.abort();
+    const generationController = new AbortController();
+    generationAbortControllerRef.current = generationController;
     setFlashcardsLoading(true);
     setResult("");
 
@@ -2362,9 +2380,11 @@ function App() {
             count: 10,
             materialText: getCurrentMaterialText(),
           }),
+          signal: generationController.signal,
         }
       );
 
+      if (generationController.signal.aborted) return;
       if (!data.success || !Array.isArray(data.cards)) {
         throw new Error(
           data.error || "Could not generate flashcards."
@@ -2443,17 +2463,14 @@ function App() {
       }, 100);
 
     } catch (error) {
-      console.error(
-        "Flashcards error:",
-        error
-      );
-
-      alert(
-        error.message ||
-        "Could not generate flashcards."
-      );
-
+      if (error.name !== "AbortError") {
+        console.error("Flashcards error:", error);
+        alert(error.message || "Could not generate flashcards.");
+      }
     } finally {
+      if (generationAbortControllerRef.current === generationController) {
+        generationAbortControllerRef.current = null;
+      }
       setFlashcardsLoading(false);
     }
   };
@@ -2553,6 +2570,9 @@ function App() {
   const handleGenerateTest = async () => {
     if (processing) { alert("Your study material is still processing. Please wait."); return; }
     if (!getCurrentMaterialText() && !text.trim()) { alert("Please upload or paste study material first."); return; }
+    generationAbortControllerRef.current?.abort();
+    const generationController = new AbortController();
+    generationAbortControllerRef.current = generationController;
     setTestLoading(true);
     setResult("");
     stopSpeech();
@@ -2574,8 +2594,10 @@ function App() {
       const data = await apiRequest("/api/test-concepts", {
         method: "POST",
         body: JSON.stringify({ count: 20, materialText: getCurrentMaterialText() }),
+        signal: generationController.signal,
       });
 
+      if (generationController.signal.aborted) return;
       if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
         throw new Error(data.error || "Could not generate the test. Please try again.");
       }
@@ -2638,9 +2660,14 @@ function App() {
         });
       }, 100);
     } catch (error) {
-      console.error("Test concepts error:", error);
-      alert(error.message || "Could not generate the test.");
+      if (error.name !== "AbortError") {
+        console.error("Test concepts error:", error);
+        alert(error.message || "Could not generate the test.");
+      }
     } finally {
+      if (generationAbortControllerRef.current === generationController) {
+        generationAbortControllerRef.current = null;
+      }
       setTestLoading(false);
     }
   };
@@ -2768,6 +2795,9 @@ function App() {
   };
 
   const handleStartOralExam = async () => {
+    generationAbortControllerRef.current?.abort();
+    const generationController = new AbortController();
+    generationAbortControllerRef.current = generationController;
     setGenerating(true);
     setResult("");
     stopSpeech();
@@ -2788,15 +2818,23 @@ function App() {
         alert("Please upload study material or paste your content first.");
         return;
       }
-      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start", materialText: getCurrentMaterialText() }) });
+      const data = await apiRequest("/api/oral-exam", { method: "POST", body: JSON.stringify({ action: "start", materialText: getCurrentMaterialText() }), signal: generationController.signal });
+      if (generationController.signal.aborted) return;
       if (!data.success) throw new Error(data.error || "Could not start the oral test.");
       setOralExam({ active: true, sessionId: data.session_id, question: data.question, questionNumber: data.question_number || 1, totalQuestions: data.total_questions || 10, language: data.language || "english", status: "asking", feedback: "", score: 0, listening: false, supported: true });
       setTimeout(() => document.getElementById("oral-exam-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       speakOralText(data.question, data.language || "english", () => setTimeout(startOralListening, 450));
     } catch (error) {
-      console.error("Oral exam start error:", error);
-      alert(error.message || "Could not start the oral test.");
-    } finally { setGenerating(false); }
+      if (error.name !== "AbortError") {
+        console.error("Oral exam start error:", error);
+        alert(error.message || "Could not start the oral test.");
+      }
+    } finally {
+      if (generationAbortControllerRef.current === generationController) {
+        generationAbortControllerRef.current = null;
+      }
+      setGenerating(false);
+    }
   };
 
   const handleRepeatOralQuestion = () => {
@@ -2836,6 +2874,9 @@ function App() {
       return;
     }
 
+    generationAbortControllerRef.current?.abort();
+    const generationController = new AbortController();
+    generationAbortControllerRef.current = generationController;
     setGenerating(true);
     setResult("");
 
@@ -2882,9 +2923,11 @@ function App() {
             mode: mode,
             materialText: processedMaterialText || (text.trim() ? text.trim() : ""),
           }),
+          signal: generationController.signal,
         }
       );
 
+      if (generationController.signal.aborted) return;
       if (!data.success) {
         throw new Error(
           data.error ||
@@ -2922,17 +2965,14 @@ function App() {
       }, 100);
 
     } catch (error) {
-      console.error(
-        "Generate error:",
-        error
-      );
-
-      alert(
-        error.message ||
-        "Could not generate the result."
-      );
-
+      if (error.name !== "AbortError") {
+        console.error("Generate error:", error);
+        alert(error.message || "Could not generate the result.");
+      }
     } finally {
+      if (generationAbortControllerRef.current === generationController) {
+        generationAbortControllerRef.current = null;
+      }
       setGenerating(false);
     }
   };
