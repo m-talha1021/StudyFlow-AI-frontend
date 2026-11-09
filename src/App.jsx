@@ -851,6 +851,8 @@ function App() {
 
   const [processing, setProcessing] =
     useState(false);
+  // Ensures only the most recent file-analysis request can update the UI.
+  const materialRequestIdRef = useRef(0);
 
   const [generating, setGenerating] =
     useState(false);
@@ -1870,6 +1872,7 @@ function App() {
   };
 
   const processFiles = async (selectedFiles, options = {}) => {
+    const requestId = ++materialRequestIdRef.current;
     const incomingFiles = Array.from(selectedFiles || []).filter(Boolean);
     const replaceExisting = options.replace === true;
 
@@ -1931,6 +1934,7 @@ function App() {
       // Re-submit the complete selection so the backend's materialText always
       // represents every file the user currently wants to study.
       const uploadFiles = await Promise.all(combinedFiles.map(compressStudyImage));
+      if (requestId !== materialRequestIdRef.current) return;
       uploadFiles.forEach((selectedFile) => formData.append("files", selectedFile));
 
       const data = await apiRequest("/api/material", {
@@ -1941,13 +1945,14 @@ function App() {
       if (!data.success) {
         throw new Error(data.error || "Could not process the selected files.");
       }
+      if (requestId !== materialRequestIdRef.current) return;
 
       setProcessedMaterialText(data.materialText || "");
       setMaterialReady(true);
 
       // Count and save only newly added files. Reprocessing after removing a
       // file must not inflate the user's upload statistics.
-      if (newlyAddedFiles.length && user?.uid) {
+      if (requestId === materialRequestIdRef.current && newlyAddedFiles.length && user?.uid) {
         const userRef = doc(db, "users", user.uid);
         await setDoc(
           userRef,
@@ -1983,6 +1988,7 @@ function App() {
         }
       }
     } catch (error) {
+      if (requestId !== materialRequestIdRef.current) return;
       console.error("File processing error:", error);
       alert(error.message || "Could not process the uploaded files.");
       // Keep the previous selection visible if adding/removing files fails.
@@ -1993,15 +1999,19 @@ function App() {
         setMaterialReady(false);
       }
     } finally {
-      setProcessing(false);
+      if (requestId === materialRequestIdRef.current) {
+        setProcessing(false);
+      }
     }
   };
 
   const handleRemoveSelectedFile = async (removeIndex) => {
-    if (processing) return;
     const remainingFiles = files.filter((_, index) => index !== removeIndex);
 
     if (!remainingFiles.length) {
+      // Invalidate any analysis currently running for the removed selection.
+      materialRequestIdRef.current += 1;
+      setProcessing(false);
       setFiles([]);
       setFile(null);
       setProcessedMaterialText("");
@@ -4237,7 +4247,6 @@ function App() {
                       type="button"
                       className="selected-file-remove"
                       onClick={() => handleRemoveSelectedFile(index)}
-                      disabled={processing}
                       aria-label={`Remove ${selectedFile.name}`}
                       title="Remove file"
                       style={{
@@ -4253,7 +4262,7 @@ function App() {
                         flexShrink: 0,
                         lineHeight: 1,
                         fontSize: "16px",
-                        cursor: processing ? "not-allowed" : "pointer",
+                        cursor: "pointer",
                       }}
                     >
                       ×
