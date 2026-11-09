@@ -1869,21 +1869,52 @@ function App() {
     }
   };
 
-  const processFiles = async (selectedFiles) => {
-    const validFiles = Array.from(selectedFiles || []).filter(Boolean);
+  const processFiles = async (selectedFiles, options = {}) => {
+    const incomingFiles = Array.from(selectedFiles || []).filter(Boolean);
+    const replaceExisting = options.replace === true;
 
-    if (!validFiles.length) {
+    if (!incomingFiles.length) return;
+
+    // New selections are added to the current selection instead of replacing it.
+    const previousFiles = files;
+    const sameFile = (first, second) =>
+      first.name === second.name &&
+      first.size === second.size &&
+      first.lastModified === second.lastModified;
+
+    const newlyAddedFiles = replaceExisting
+      ? []
+      : incomingFiles.filter(
+          (candidate) => !previousFiles.some((existing) => sameFile(existing, candidate))
+        );
+
+    const combinedFiles = replaceExisting
+      ? incomingFiles
+      : [...previousFiles, ...newlyAddedFiles];
+
+    if (!newlyAddedFiles.length && !replaceExisting) {
+      alert("These files are already selected.");
       return;
     }
 
-    if (validFiles.length > 10) {
-      alert("Please select a maximum of 10 files at a time.");
+    if (combinedFiles.length > 10) {
+      alert(`You can select up to 10 files in total. You currently have ${previousFiles.length} selected.`);
+      return;
+    }
+
+    if (!combinedFiles.length) {
+      setFiles([]);
+      setFile(null);
+      setProcessedMaterialText("");
+      setMaterialReady(false);
+      setResult("");
+      setFlashcards([]);
       return;
     }
 
     setProcessing(true);
-    setFiles(validFiles);
-    setFile(validFiles[0]);
+    setFiles(combinedFiles);
+    setFile(combinedFiles[0] || null);
     setResult("");
     setResultLanguage("");
     setMaterialReady(false);
@@ -1891,46 +1922,37 @@ function App() {
     setFlashcards([]);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
-
     setChatMessages([]);
     setChatQuestion("");
-
     stopSpeech();
 
     try {
       const formData = new FormData();
+      // Re-submit the complete selection so the backend's materialText always
+      // represents every file the user currently wants to study.
+      const uploadFiles = await Promise.all(combinedFiles.map(compressStudyImage));
+      uploadFiles.forEach((selectedFile) => formData.append("files", selectedFile));
 
-      const uploadFiles = await Promise.all(validFiles.map(compressStudyImage));
-      uploadFiles.forEach((selectedFile) => {
-        formData.append("files", selectedFile);
+      const data = await apiRequest("/api/material", {
+        method: "POST",
+        body: formData,
       });
 
-      const data = await apiRequest(
-        "/api/material",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
       if (!data.success) {
-        throw new Error(
-          data.error ||
-          "Could not process the selected files."
-        );
+        throw new Error(data.error || "Could not process the selected files.");
       }
 
       setProcessedMaterialText(data.materialText || "");
       setMaterialReady(true);
 
-      // Save this user's material and study-session activity.
-      if (user?.uid) {
+      // Count and save only newly added files. Reprocessing after removing a
+      // file must not inflate the user's upload statistics.
+      if (newlyAddedFiles.length && user?.uid) {
         const userRef = doc(db, "users", user.uid);
-
         await setDoc(
           userRef,
           {
-            totalMaterials: increment(validFiles.length),
+            totalMaterials: increment(newlyAddedFiles.length),
             studySessions: increment(1),
             updatedAt: serverTimestamp(),
           },
@@ -1939,52 +1961,62 @@ function App() {
 
         setDashboardStats((previous) => ({
           ...previous,
-          totalMaterials: previous.totalMaterials + validFiles.length,
+          totalMaterials: previous.totalMaterials + newlyAddedFiles.length,
           studySessions: previous.studySessions + 1,
         }));
 
         try {
           const materialHistoryItem = {
-            fileNames: validFiles.map((selectedFile) => selectedFile.name),
+            fileNames: newlyAddedFiles.map((selectedFile) => selectedFile.name),
             createdAt: Date.now(),
           };
-
           const historyDoc = await addDoc(
             collection(db, "users", user.uid, "materialHistory"),
             materialHistoryItem
           );
-
           setDashboardMaterialsHistory((previous) => [
-            {
-              id: historyDoc.id,
-              ...materialHistoryItem,
-            },
+            { id: historyDoc.id, ...materialHistoryItem },
             ...previous,
           ]);
         } catch (historyError) {
           console.error("Could not save material history:", historyError);
         }
       }
-
     } catch (error) {
-      console.error(
-        "File processing error:",
-        error
-      );
+      console.error("File processing error:", error);
+      alert(error.message || "Could not process the uploaded files.");
+      // Keep the previous selection visible if adding/removing files fails.
+      setFiles(previousFiles);
+      setFile(previousFiles[0] || null);
+      if (!previousFiles.length) {
+        setProcessedMaterialText("");
+        setMaterialReady(false);
+      }
+    } finally {
+      setProcessing(false);
+    }
+  };
 
-      alert(
-        error.message ||
-        "Could not process the uploaded files."
-      );
+  const handleRemoveSelectedFile = async (removeIndex) => {
+    if (processing) return;
+    const remainingFiles = files.filter((_, index) => index !== removeIndex);
 
+    if (!remainingFiles.length) {
       setFiles([]);
       setFile(null);
       setProcessedMaterialText("");
       setMaterialReady(false);
-
-    } finally {
-      setProcessing(false);
+      setResult("");
+      setResultLanguage("");
+      setFlashcards([]);
+      setFlashcardIndex(0);
+      setFlashcardFlipped(false);
+      setChatMessages([]);
+      setChatQuestion("");
+      return;
     }
+
+    await processFiles(remainingFiles, { replace: true });
   };
 
   // Keep the single-file helper for the camera workflow.
@@ -4201,6 +4233,31 @@ function App() {
                     <small>
                       {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                     </small>
+                    <button
+                      type="button"
+                      className="selected-file-remove"
+                      onClick={() => handleRemoveSelectedFile(index)}
+                      disabled={processing}
+                      aria-label={`Remove ${selectedFile.name}`}
+                      title="Remove file"
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        minWidth: "22px",
+                        padding: 0,
+                        marginLeft: "8px",
+                        borderRadius: "50%",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        lineHeight: 1,
+                        fontSize: "16px",
+                        cursor: processing ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
                 ))}
               </div>
