@@ -66,7 +66,13 @@ const apiRequest = async (endpoint, options = {}) => {
         },
       }
     );
-  } catch {
+  } catch (error) {
+    // Preserve intentional request cancellation. Do not turn an AbortError
+    // into a misleading network-connection error.
+    if (error?.name === "AbortError" || options.signal?.aborted) {
+      throw new DOMException("The request was cancelled.", "AbortError");
+    }
+
     // A rejected fetch (CORS, oversized upload, or offline) surfaces
     // in the browser only as "Failed to fetch".
     throw new Error(
@@ -2014,7 +2020,18 @@ function App() {
     if (!remainingFiles.length) {
       // Stop generation only when the final selected file is removed.
       // Removing one of several files must leave the current generation running.
+      const wasGenerationRunning = Boolean(
+        generationAbortControllerRef.current &&
+        !generationAbortControllerRef.current.signal.aborted
+      );
+
       generationAbortControllerRef.current?.abort();
+
+      if (wasGenerationRunning) {
+        alert(
+          "Cancelled, File(s) removed."
+        );
+      }
       generationAbortControllerRef.current = null;
       setGenerating(false);
       setFlashcardsLoading(false);
