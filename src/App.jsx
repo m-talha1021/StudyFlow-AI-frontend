@@ -2265,7 +2265,7 @@ function App() {
       setTranscriptionNotice("Transcript copied.");
       setTranscriptionError("");
     } catch {
-      setTranscriptionError("Clipboard access was blocked. Select the transcript and copy it manually.");
+      setTranscriptionError("Copy transcript manually.");
     }
   };
 
@@ -2382,7 +2382,7 @@ function App() {
 
       if (!ready && !file && !text.trim()) {
         alert(
-          "Please upload a document/image or paste your study material."
+          "Please upload document(s)/image(s) or paste your study content."
         );
 
         setFlashcardsLoading(false);
