@@ -778,12 +778,6 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [gamesOpen, setGamesOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [convertersMenuOpen, setConvertersMenuOpen] = useState(false);
-  const [activeConverter, setActiveConverter] = useState("");
-  const [converterFile, setConverterFile] = useState(null);
-  const [converterBusy, setConverterBusy] = useState(false);
-  const [converterMessage, setConverterMessage] = useState("");
-  const [converterError, setConverterError] = useState("");
 
   // ========================================================
   // DASHBOARD
@@ -3556,152 +3550,6 @@ function App() {
   }
 
   // ========================================================
-  // FILE CONVERTERS (client-side; outputs are never saved to history)
-  // ========================================================
-
-  const converterOptions = [
-    { id: "image-to-pdf", label: "Image to PDF", accept: ".png,.jpg,.jpeg,.webp", multiple: true },
-    { id: "pdf-to-image", label: "PDF to Image", accept: ".pdf,application/pdf", multiple: false },
-    { id: "word-to-pdf", label: "Word to PDF", accept: ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document", multiple: false },
-    { id: "pdf-to-word", label: "PDF to Word", accept: ".pdf,application/pdf", multiple: false },
-  ];
-
-  const activeConverterOption = converterOptions.find((item) => item.id === activeConverter);
-
-  const chooseConverter = (converterId) => {
-    setActiveConverter(converterId);
-    setConverterFile(null);
-    setConverterMessage("");
-    setConverterError("");
-    setConvertersMenuOpen(false);
-    setMobileMenuOpen(false);
-    setShowDashboard(false);
-    setDashboardHistoryType(null);
-    requestAnimationFrame(() => document.getElementById("converters-section")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  };
-
-  const downloadBlob = (blob, filename) => {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
-  };
-
-  const safeDownloadBase = (name) => name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9-_]+/gi, "-").replace(/^-+|-+$/g, "") || "converted-file";
-
-  const runFileConversion = async () => {
-    if (!activeConverter || !converterFile) {
-      setConverterError("Please select a file first.");
-      return;
-    }
-    setConverterBusy(true);
-    setConverterError("");
-    setConverterMessage("Converting your file...");
-    try {
-      const sourceName = Array.isArray(converterFile) ? converterFile[0]?.name : converterFile.name;
-      const baseName = safeDownloadBase(sourceName || "converted-file");
-
-      if (activeConverter === "image-to-pdf") {
-        const { jsPDF } = await import("jspdf");
-        const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const selectedFiles = Array.isArray(converterFile) ? converterFile : [converterFile];
-        for (let index = 0; index < selectedFiles.length; index += 1) {
-          const imageFile = selectedFiles[index];
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(new Error(`Could not read ${imageFile.name}.`));
-            reader.readAsDataURL(imageFile);
-          });
-          const image = new Image();
-          image.src = dataUrl;
-          await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; });
-          if (index > 0) pdf.addPage();
-          const scale = Math.min((pageWidth - 48) / image.width, (pageHeight - 48) / image.height);
-          const width = image.width * scale;
-          const height = image.height * scale;
-          const format = imageFile.type === "image/png" ? "PNG" : "JPEG";
-          pdf.addImage(dataUrl, format, (pageWidth - width) / 2, (pageHeight - height) / 2, width, height);
-        }
-        pdf.save(`${baseName}.pdf`);
-      } else if (activeConverter === "pdf-to-image") {
-        const pdfjs = await import("pdfjs-dist");
-        pdfjs.GlobalWorkerOptions.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-        const pdf = await pdfjs.getDocument({ data: await converterFile.arrayBuffer() }).promise;
-        const JSZip = (await import("jszip")).default;
-        const zip = new JSZip();
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          setConverterMessage(`Rendering page ${pageNumber} of ${pdf.numPages}...`);
-          const page = await pdf.getPage(pageNumber);
-          const viewport = page.getViewport({ scale: 2 });
-          const canvas = document.createElement("canvas");
-          canvas.width = Math.ceil(viewport.width);
-          canvas.height = Math.ceil(viewport.height);
-          await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
-          const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-          if (!blob) throw new Error(`Could not export page ${pageNumber}.`);
-          zip.file(`${baseName}-page-${pageNumber}.png`, blob);
-          canvas.width = 0;
-          canvas.height = 0;
-        }
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        downloadBlob(zipBlob, `${baseName}-images.zip`);
-      } else if (activeConverter === "word-to-pdf") {
-        const mammoth = await import("mammoth");
-        const html2pdfModule = await import("html2pdf.js");
-        const html2pdf = html2pdfModule.default || html2pdfModule;
-        const converted = await mammoth.convertToHtml({ arrayBuffer: await converterFile.arrayBuffer() });
-        const wrapper = document.createElement("div");
-        wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 28px; width: 720px; box-sizing: border-box; line-height: 1.55;";
-        const title = document.createElement("h1");
-        title.textContent = "StudyFlow AI · Converted Document";
-        title.style.cssText = "font-size: 18px; color: #163b75; margin: 0 0 20px;";
-        wrapper.appendChild(title);
-        const content = document.createElement("div");
-        content.innerHTML = converted.value;
-        content.querySelectorAll("script,style,iframe,object,embed").forEach((node) => node.remove());
-        content.querySelectorAll("*").forEach((node) => {
-          [...node.attributes].forEach((attribute) => {
-            if (/^on/i.test(attribute.name) || (attribute.name === "href" && /^javascript:/i.test(attribute.value))) node.removeAttribute(attribute.name);
-          });
-        });
-        wrapper.appendChild(content);
-        await html2pdf().set({ margin: 10, filename: `${baseName}.pdf`, image: { type: "jpeg", quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }, pagebreak: { mode: ["css", "legacy"] } }).from(wrapper).save();
-      } else if (activeConverter === "pdf-to-word") {
-        const pdfjs = await import("pdfjs-dist");
-        pdfjs.GlobalWorkerOptions.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-        const pdf = await pdfjs.getDocument({ data: await converterFile.arrayBuffer() }).promise;
-        const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
-        const paragraphs = [new Paragraph({ text: "Converted from PDF", heading: HeadingLevel.HEADING_1 })];
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          setConverterMessage(`Extracting page ${pageNumber} of ${pdf.numPages}...`);
-          const page = await pdf.getPage(pageNumber);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map((item) => item.str).join(" ").trim();
-          paragraphs.push(new Paragraph({ children: [new TextRun(pageText || " ")] }));
-          if (pageNumber < pdf.numPages) paragraphs.push(new Paragraph({ text: "" }));
-        }
-        const documentFile = new Document({ sections: [{ children: paragraphs }] });
-        const blob = await Packer.toBlob(documentFile);
-        downloadBlob(blob, `${baseName}.docx`);
-      }
-      setConverterMessage("Conversion complete. Your download should start automatically.");
-    } catch (error) {
-      console.error("File conversion failed:", error);
-      setConverterError(error?.message || "Conversion failed. Please try another file.");
-      setConverterMessage("");
-    } finally {
-      setConverterBusy(false);
-    }
-  };
-
-  // ========================================================
   // UI
   // ========================================================
 
@@ -3746,19 +3594,6 @@ function App() {
           >
           Dashboard
           </button>
-
-          <div className="converters-nav-wrap" style={{ position: "relative" }}>
-            <button type="button" aria-expanded={convertersMenuOpen} onClick={() => setConvertersMenuOpen((open) => !open)}>
-              Converters ▾
-            </button>
-            {convertersMenuOpen && (
-              <div className="converters-nav-menu" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 1000, minWidth: "210px", padding: "8px", borderRadius: "12px", background: "#111d33", border: "1px solid #344765", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>
-                {converterOptions.map((option) => (
-                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
-                ))}
-              </div>
-            )}
-          </div>
 
           <button
             type="button"
@@ -3883,30 +3718,6 @@ function App() {
           <span />
         </button>
       </header>
-
-      {activeConverter && (
-        <section id="converters-section" style={{ maxWidth: "900px", margin: "32px auto", padding: "28px", borderRadius: "18px", background: "#fff", color: "#172033", boxShadow: "0 12px 40px rgba(20,40,80,.10)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <div>
-              <p style={{ margin: 0, color: "#5272a4", fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", fontSize: "12px" }}>StudyFlow AI tools</p>
-              <h2 style={{ margin: "6px 0", color: "#173b70" }}> {activeConverterOption?.label} </h2>
-              <p style={{ margin: 0, color: "#647084" }}>Convert your file and download the result. Converter files are not added to History.</p>
-            </div>
-            <button type="button" onClick={() => { setActiveConverter(""); setConverterFile(null); setConverterMessage(""); setConverterError(""); }} aria-label="Close converter" style={{ border: "1px solid #d4dced", borderRadius: "10px", padding: "9px 14px", background: "#f5f7fb", cursor: "pointer" }}>✕ Close</button>
-          </div>
-          <label style={{ display: "block", marginTop: "24px", padding: "28px", border: "2px dashed #9aafd0", borderRadius: "14px", textAlign: "center", cursor: "pointer", background: "#f8faff" }}>
-            <span style={{ display: "block", fontSize: "32px", marginBottom: "8px" }}>📁</span>
-            <strong>{converterFile ? (Array.isArray(converterFile) ? `${converterFile.length} images selected` : converterFile.name) : "Choose file to convert"}</strong>
-            <small style={{ display: "block", marginTop: "8px", color: "#647084" }}>{activeConverterOption?.multiple ? "Select one or more PNG, JPG or WEBP images" : activeConverterOption?.accept}</small>
-            <input type="file" accept={activeConverterOption?.accept} multiple={activeConverterOption?.multiple} disabled={converterBusy} onChange={(event) => { const selected = [...(event.target.files || [])]; setConverterFile(activeConverterOption?.multiple ? selected : (selected[0] || null)); setConverterMessage(""); setConverterError(""); }} style={{ display: "block", margin: "18px auto 0", maxWidth: "100%" }} />
-          </label>
-          {converterError && <p role="alert" style={{ color: "#b42318", marginTop: "14px" }}>{converterError}</p>}
-          {converterMessage && <p role="status" style={{ color: "#176b45", marginTop: "14px" }}>{converterMessage}</p>}
-          <button type="button" disabled={!converterFile || converterBusy} onClick={runFileConversion} style={{ marginTop: "18px", width: "100%", border: 0, borderRadius: "11px", padding: "14px 18px", background: converterBusy ? "#8495b1" : "#2456a6", color: "#fff", fontWeight: 700, cursor: converterBusy ? "wait" : "pointer" }}>{converterBusy ? "Converting..." : `Convert to ${activeConverter === "pdf-to-image" ? "Images (ZIP)" : activeConverter === "pdf-to-word" ? "Word" : "PDF"}`}</button>
-          {activeConverter === "pdf-to-word" && <small style={{ display: "block", color: "#647084", marginTop: "10px" }}>PDF to Word extracts selectable text into an editable DOCX. Complex layouts, tables and scanned pages may not be preserved; scanned PDFs need OCR.</small>}
-          {activeConverter === "word-to-pdf" && <small style={{ display: "block", color: "#647084", marginTop: "10px" }}>Supports DOCX files. Legacy .doc files are not supported by this browser converter.</small>}
-        </section>
-      )}
 
       {feedbackOpen && (
         <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
