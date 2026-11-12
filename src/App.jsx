@@ -784,6 +784,7 @@ function App() {
   const convertersRef = useRef(null);
   const [activeConverter, setActiveConverter] = useState("");
   const [converterFile, setConverterFile] = useState(null);
+  const [converterDragging, setConverterDragging] = useState(false);
   const [converterBusy, setConverterBusy] = useState(false);
   const [converterMessage, setConverterMessage] = useState("");
   const [converterError, setConverterError] = useState("");
@@ -3627,6 +3628,32 @@ function App() {
 
   const safeDownloadBase = (name) => name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9-_]+/gi, "-").replace(/^-+|-+$/g, "") || "converted-file";
 
+  const handleConverterFiles = (fileList) => {
+    const selected = Array.from(fileList || []);
+    if (!selected.length) return;
+    const accept = (activeConverterOption?.accept || "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+    const matches = (file) => accept.length === 0 || accept.some((rule) =>
+      rule.startsWith(".") ? file.name.toLowerCase().endsWith(rule) :
+      rule.endsWith("/*") ? file.type.startsWith(rule.slice(0, -1)) : file.type === rule
+    );
+    const invalid = selected.filter((file) => !matches(file));
+    if (invalid.length) {
+      setConverterError(`Unsupported file type: ${invalid.map((file) => file.name).join(", ")}. Accepted: ${activeConverterOption?.accept || "supported files"}.`);
+      setConverterMessage("");
+      return;
+    }
+    if (!activeConverterOption?.multiple && selected.length > 1) {
+      setConverterError("Please select only one file for this conversion.");
+      setConverterMessage("");
+      return;
+    }
+    setConverterFile(activeConverterOption?.multiple ? selected : selected[0]);
+    setConverterMessage("");
+    setConverterError("");
+    setConverterResult(null);
+    setConverterDownloadName("");
+  };
+
   const runFileConversion = async () => {
     if (!activeConverter || !converterFile) {
       setConverterError("Please select a file first.");
@@ -4073,7 +4100,19 @@ function App() {
               </button>
             </div>
 
-            <label className="converter-upload-area">
+            <label
+              className={`converter-upload-area${converterDragging ? " converter-upload-dragging" : ""}`}
+              onDragEnter={(event) => { event.preventDefault(); event.stopPropagation(); if (!converterBusy) setConverterDragging(true); }}
+              onDragOver={(event) => { event.preventDefault(); event.stopPropagation(); if (!converterBusy) setConverterDragging(true); }}
+              onDragLeave={(event) => {
+                event.preventDefault(); event.stopPropagation();
+                if (!event.currentTarget.contains(event.relatedTarget)) setConverterDragging(false);
+              }}
+              onDrop={(event) => {
+                event.preventDefault(); event.stopPropagation(); setConverterDragging(false);
+                if (!converterBusy) handleConverterFiles(event.dataTransfer.files);
+              }}
+            >
               <span className="converter-folder-icon">📁</span>
               <strong>
                 {converterFile
@@ -4093,12 +4132,8 @@ function App() {
                 multiple={activeConverterOption?.multiple}
                 disabled={converterBusy}
                 onChange={(event) => {
-                  const selected = [...(event.target.files || [])];
-                  setConverterFile(activeConverterOption?.multiple ? selected : (selected[0] || null));
-                  setConverterMessage("");
-                  setConverterError("");
-                  setConverterResult(null);
-                  setConverterDownloadName("");
+                  handleConverterFiles(event.target.files);
+                  event.target.value = "";
                 }}
               />
             </label>
