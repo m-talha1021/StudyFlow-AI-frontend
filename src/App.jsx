@@ -3672,7 +3672,6 @@ function App() {
         const JSZip = (await import("jszip")).default;
         const zip = new JSZip();
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          setConverterMessage(`Rendering page ${pageNumber} of ${pdf.numPages}...`);
           const page = await pdf.getPage(pageNumber);
           const viewport = page.getViewport({ scale: 2 });
           const canvas = document.createElement("canvas");
