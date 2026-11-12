@@ -3718,7 +3718,6 @@ function App() {
         const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
         const paragraphs = [new Paragraph({ text: "Converted from PDF", heading: HeadingLevel.HEADING_1 })];
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          setConverterMessage(`Extracting page ${pageNumber} of ${pdf.numPages}...`);
           const page = await pdf.getPage(pageNumber);
           const textContent = await page.getTextContent();
           const pageText = textContent.items.map((item) => item.str).join(" ").trim();
