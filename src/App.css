@@ -13139,7 +13139,7 @@ footer p {
 
 /* Hide feature card descriptions on mobile */
 @media (max-width: 768px) {
-    .feature-card p,
+    .feature-card small,
     .feature-card .feature-description {
         display: none !important;
     }
