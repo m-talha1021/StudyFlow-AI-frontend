@@ -3610,7 +3610,6 @@ function App() {
     setConverterError("");
     setConverterResult(null);
     setConverterDownloadName("");
-    setConverterMessage("Converting your file...");
     try {
       const sourceName = Array.isArray(converterFile) ? converterFile[0]?.name : converterFile.name;
       const baseName = safeDownloadBase(sourceName || "converted-file");
@@ -3706,7 +3705,6 @@ function App() {
         setConverterResult(blob);
         setConverterDownloadName(`${baseName}.docx`);
       }
-      setConverterMessage("Conversion complete! Click Download Now to save your file.");
     } catch (error) {
       console.error("File conversion failed:", error);
       setConverterError(error?.message || "Conversion failed. Please try another file.");
@@ -3761,6 +3759,19 @@ function App() {
           >
           Dashboard
           </button>
+
+          <div className="converters-nav-wrap" style={{ position: "relative" }}>
+            <button type="button" aria-expanded={convertersMenuOpen} onClick={() => setConvertersMenuOpen((open) => !open)}>
+              Converters ▾
+            </button>
+            {convertersMenuOpen && (
+              <div className="converters-nav-menu" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 1000, minWidth: "210px", padding: "8px", borderRadius: "12px", background: "#111d33", border: "1px solid #344765", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>
+                {converterOptions.map((option) => (
+                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <button
             type="button"
@@ -3819,18 +3830,7 @@ function App() {
           >
            Content History
           </button>
-            <div className="converters-nav-wrap" style={{ position: "relative" }}>
-            <button type="button" aria-expanded={convertersMenuOpen} onClick={() => setConvertersMenuOpen((open) => !open)}>
-              Converters ▾
-            </button>
-            {convertersMenuOpen && (
-              <div className="converters-nav-menu" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 1000, minWidth: "210px", padding: "8px", borderRadius: "12px", background: "#111d33", border: "1px solid #344765", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>
-                {converterOptions.map((option) => (
-                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
-                ))}
-              </div>
-            )}
-          </div>
+
           <button
             type="button"
             onClick={() => {
@@ -3938,9 +3938,6 @@ function App() {
               <div>
                 <p className="converter-label">File Converter</p>
                 <h2>{activeConverterOption?.label}</h2>
-                <p className="converter-subtitle">
-                  Convert your file and download the result. Converter files are not added to History.
-                </p>
               </div>
               <button
                 type="button"
@@ -3955,7 +3952,7 @@ function App() {
                 }}
                 aria-label="Close converter"
               >
-                ✕ Close
+                ✖
               </button>
             </div>
 
@@ -4000,17 +3997,6 @@ function App() {
             >
               {converterBusy ? "Converting..." : converterResult ? "Download Now" : `Convert to ${activeConverter === "pdf-to-image" ? "Images (ZIP)" : activeConverter === "pdf-to-word" ? "Word" : "PDF"}`}
             </button>
-
-            {activeConverter === "pdf-to-word" && (
-              <small className="converter-note">
-                PDF to Word extracts selectable text into an editable DOCX. Complex layouts, tables and scanned pages may not be preserved; scanned PDFs need OCR.
-              </small>
-            )}
-            {activeConverter === "word-to-pdf" && (
-              <small className="converter-note">
-                Supports DOCX files. Legacy .doc files are not supported by this browser converter.
-              </small>
-            )}
           </section>
         )}
 
@@ -5058,7 +5044,7 @@ function App() {
                   title="Close result"
                   aria-label="Close result"
                 >
-                  ✕ Close
+                  ✖
                 </button>
 
               </div>
