@@ -3712,21 +3712,63 @@ function App() {
         setConverterResult(pdfBlob);
         setConverterDownloadName(`${baseName}.pdf`);
       } else if (activeConverter === "pdf-to-word") {
+        // Extract selectable text from every PDF page and write it into a DOCX.
         const pdfjs = await import("pdfjs-dist");
         pdfjs.GlobalWorkerOptions.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-        const pdf = await pdfjs.getDocument({ data: await converterFile.arrayBuffer() }).promise;
-        const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
+
+        const pdf = await pdfjs.getDocument({
+          data: new Uint8Array(await converterFile.arrayBuffer()),
+        }).promise;
+        const { Document, Packer, Paragraph, TextRun, PageBreak } = await import("docx");
+        const paragraphs = [
+          new Paragraph({
+            children: [new TextRun({ text: converterFile.name || "Converted PDF", bold: true, size: 30 })],
+            spacing: { after: 300 },
+          }),
+        ];
+        let extractedCharacterCount = 0;
+
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
           const page = await pdf.getPage(pageNumber);
           const textContent = await page.getTextContent();
-          const pageText = textContent.items.map((item) => item.str).join(" ").trim();
-          paragraphs.push(new Paragraph({ children: [new TextRun(pageText || " ")] }));
-          if (pageNumber < pdf.numPages) paragraphs.push(new Paragraph({ text: "" }));
+          let currentLine = "";
+          const flushLine = () => {
+            const line = currentLine.replace(/[\t ]+/g, " ").trim();
+            if (line) {
+              paragraphs.push(new Paragraph({
+                children: [new TextRun({ text: line })],
+                spacing: { after: 100 },
+              }));
+              extractedCharacterCount += line.length;
+            }
+            currentLine = "";
+          };
+
+          for (const item of textContent.items) {
+            if (typeof item.str !== "string") continue;
+            currentLine += item.str;
+            if (item.hasEOL) flushLine();
+          }
+          flushLine();
+
+          if (pageNumber < pdf.numPages) {
+            paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
+          }
         }
-        const documentFile = new Document({ sections: [{ children: paragraphs }] });
+
+        if (extractedCharacterCount === 0) {
+          throw new Error(
+            "No selectable text was found in this PDF. It may be a scanned/image-only PDF; OCR is required to convert scanned pages into editable Word text."
+          );
+        }
+
+        const documentFile = new Document({
+          sections: [{ properties: {}, children: paragraphs }],
+        });
         const blob = await Packer.toBlob(documentFile);
         setConverterResult(blob);
         setConverterDownloadName(`${baseName}.docx`);
+        setConverterMessage(`Extracted ${extractedCharacterCount.toLocaleString()} characters from ${pdf.numPages} page(s). Click Download Now to save your Word file.`);
       }
     } catch (error) {
       console.error("File conversion failed:", error);
@@ -3848,7 +3890,7 @@ function App() {
               aria-haspopup="true"
               onClick={() => setConvertersMenuOpen((open) => !open)}
             >
-              Converters ▼
+              Convert files ▼
             </button>
 
             {convertersMenuOpen && (
