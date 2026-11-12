@@ -13088,3 +13088,30 @@ footer p {
     background: #313745 !important;
     color: #ffffff !important;
 }
+
+.converters-nav-wrap {
+    position: relative;
+}
+
+.converters-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 9999;
+}
+
+/* Smooth dropdown appearance */
+.converters-dropdown {
+    animation: converterDropdownShow 0.2s ease;
+}
+
+@keyframes converterDropdownShow {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
