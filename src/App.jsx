@@ -3821,9 +3821,6 @@ function App() {
         const blob = await Packer.toBlob(documentFile);
         setConverterResult(blob);
         setConverterDownloadName(`${baseName}.docx`);
-        setConverterMessage(
-          `Extracted ${extractedCharacterCount.toLocaleString()} characters from ${pdf.numPages} page(s).${ocrPageCount ? ` OCR was used on ${ocrPageCount} scanned page(s).` : ""} Click Download Now to save your Word file.`
-        );
       }
     } catch (error) {
       console.error("File conversion failed:", error);
