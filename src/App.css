@@ -13115,3 +13115,23 @@ footer p {
         transform: translateY(0);
     }
 }
+
+
+/* Border around the complete Converters dropdown */
+.converters-dropdown {
+    border: 1px solid #3976c9 !important;
+    border-radius: 15px !important;
+    padding: 8px !important;
+    background: #102746 !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+/* Keep individual options neatly inside the border */
+.converters-dropdown button {
+    width: 100%;
+    border-radius: 10px !important;
+    margin: 2px 0 !important;
+    box-sizing: border-box;
+}
