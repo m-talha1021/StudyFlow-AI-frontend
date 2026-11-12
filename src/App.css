@@ -12967,7 +12967,7 @@ footer p {
 /* Convert and download button */
 
 .converter-submit-btn {
-    width: 100%;
+    width: 300px;
     min-height: 58px;
     margin-top: 24px;
     padding: 14px 20px;
