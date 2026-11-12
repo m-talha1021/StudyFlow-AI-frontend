@@ -3767,17 +3767,16 @@ function App() {
             } else {
               // Render scanned page to canvas and recognize its text with Tesseract.js.
               if (!ocrWorker) {
-                setConverterMessage("Scanned pages detected. Starting English + Urdu OCR; language data may take a moment to load...");
+               
                 const { createWorker } = await import("tesseract.js");
                 // Load English + Urdu trained data so mixed-language scans are recognized.
                 ocrWorker = await createWorker("eng+urd");
               }
 
-              setConverterMessage(`Reading scanned page ${pageNumber} of ${pdf.numPages} with English + Urdu OCR...`);
               const viewport = page.getViewport({ scale: 2 });
               const canvas = document.createElement("canvas");
               const context = canvas.getContext("2d");
-              if (!context) throw new Error("Could not prepare a page for OCR in this browser.");
+              if (!context) throw new Error("Could not enable OCR.");
               canvas.width = Math.ceil(viewport.width);
               canvas.height = Math.ceil(viewport.height);
               await page.render({ canvasContext: context, viewport }).promise;
@@ -3812,7 +3811,7 @@ function App() {
         }
 
         if (extractedCharacterCount === 0) {
-          throw new Error("No text could be extracted, even with OCR. The PDF may be blank, very low quality, or contain unsupported text.");
+          throw new Error("No text could be extracted.");
         }
 
         const documentFile = new Document({
