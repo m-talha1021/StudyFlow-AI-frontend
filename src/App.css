@@ -12968,7 +12968,7 @@ footer p {
 
 .converter-submit-btn {
     width: 300px;
-    margin-left: 550px; 
+    margin-left: 230px; 
     min-height: 58px;
     margin-top: 24px;
     padding: 14px 20px;
@@ -13007,7 +13007,7 @@ footer p {
       background-color: #1B49BF !important;
    }
 .converter-submit-btn{
- margin-left: 8.5px;  
+ margin-left: 7px;  
 }
     .converter-header h2 {
         font-size: 22px;
@@ -13034,4 +13034,11 @@ footer p {
 
 .converter-upload-area input[type="file"] {
     display: none !important;
+}
+/* Navbar button hover effect */
+nav button:hover,
+.navbar button:hover {
+    background: #1B49BF !important;
+    color: #ffffff !important;
+    transition: all 0.25s ease;
 }
