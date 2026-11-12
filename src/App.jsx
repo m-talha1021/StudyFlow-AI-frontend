@@ -3884,29 +3884,127 @@ function App() {
         </button>
       </header>
 
-      {activeConverter && (
-        <section id="converters-section" style={{ maxWidth: "900px", margin: "32px auto", padding: "28px", borderRadius: "18px", background: "#fff", color: "#172033", boxShadow: "0 12px 40px rgba(20,40,80,.10)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <div>
-              <p style={{ margin: 0, color: "#5272a4", fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", fontSize: "12px" }}>StudyFlow AI tools</p>
-              <h2 style={{ margin: "6px 0", color: "#173b70" }}> {activeConverterOption?.label} </h2>
-              <p style={{ margin: 0, color: "#647084" }}>Convert your file and download the result. Converter files are not added to History.</p>
-            </div>
-            <button type="button" onClick={() => { setActiveConverter(""); setConverterFile(null); setConverterMessage(""); setConverterError(""); }} aria-label="Close converter" style={{ border: "1px solid #d4dced", borderRadius: "10px", padding: "9px 14px", background: "#f5f7fb", cursor: "pointer" }}>✕ Close</button>
-          </div>
-          <label style={{ display: "block", marginTop: "24px", padding: "28px", border: "2px dashed #9aafd0", borderRadius: "14px", textAlign: "center", cursor: "pointer", background: "#f8faff" }}>
-            <span style={{ display: "block", fontSize: "32px", marginBottom: "8px" }}>📁</span>
-            <strong>{converterFile ? (Array.isArray(converterFile) ? `${converterFile.length} images selected` : converterFile.name) : "Choose file to convert"}</strong>
-            <small style={{ display: "block", marginTop: "8px", color: "#647084" }}>{activeConverterOption?.multiple ? "Select one or more PNG, JPG or WEBP images" : activeConverterOption?.accept}</small>
-            <input type="file" accept={activeConverterOption?.accept} multiple={activeConverterOption?.multiple} disabled={converterBusy} onChange={(event) => { const selected = [...(event.target.files || [])]; setConverterFile(activeConverterOption?.multiple ? selected : (selected[0] || null)); setConverterMessage(""); setConverterError(""); }} style={{ display: "block", margin: "18px auto 0", maxWidth: "100%" }} />
-          </label>
-          {converterError && <p role="alert" style={{ color: "#b42318", marginTop: "14px" }}>{converterError}</p>}
-          {converterMessage && <p role="status" style={{ color: "#176b45", marginTop: "14px" }}>{converterMessage}</p>}
-          <button type="button" disabled={!converterFile || converterBusy} onClick={runFileConversion} style={{ marginTop: "18px", width: "100%", border: 0, borderRadius: "11px", padding: "14px 18px", background: converterBusy ? "#8495b1" : "#2456a6", color: "#fff", fontWeight: 700, cursor: converterBusy ? "wait" : "pointer" }}>{converterBusy ? "Converting..." : `Convert to ${activeConverter === "pdf-to-image" ? "Images (ZIP)" : activeConverter === "pdf-to-word" ? "Word" : "PDF"}`}</button>
-          {activeConverter === "pdf-to-word" && <small style={{ display: "block", color: "#647084", marginTop: "10px" }}>PDF to Word extracts selectable text into an editable DOCX. Complex layouts, tables and scanned pages may not be preserved; scanned PDFs need OCR.</small>}
-          {activeConverter === "word-to-pdf" && <small style={{ display: "block", color: "#647084", marginTop: "10px" }}>Supports DOCX files. Legacy .doc files are not supported by this browser converter.</small>}
-        </section>
-      )}
+     
+{activeConverter && (
+  <section id="converters-section" className="converter-page">
+
+    <div className="converter-header">
+      <div>
+        <p className="converter-label">File Converter</p>
+        <h2>{activeConverterOption?.label}</h2>
+      </div>
+
+      <button
+        type="button"
+        className="converter-close-btn"
+        onClick={() => {
+          setActiveConverter("");
+          setConverterFile(null);
+          setConverterMessage("");
+          setConverterError("");
+          setConverterResult(null);
+          setConverterDownloadName("");
+        }}
+        aria-label="Close converter"
+      >
+        ✖
+      </button>
+    </div>
+
+    <label className="converter-upload-area">
+      <span className="converter-folder-icon">📁</span>
+
+      <strong>
+        {converterFile
+          ? Array.isArray(converterFile)
+            ? `${converterFile.length} images selected`
+            : converterFile.name
+          : "Choose file to convert"}
+      </strong>
+
+      <small>
+        {activeConverterOption?.multiple
+          ? "Select one or more PNG, JPG or WEBP images"
+          : activeConverterOption?.accept}
+      </small>
+
+      <input
+        type="file"
+        accept={activeConverterOption?.accept}
+        multiple={activeConverterOption?.multiple}
+        disabled={converterBusy}
+        onChange={(event) => {
+          const selected = [...(event.target.files || [])];
+
+          setConverterFile(
+            activeConverterOption?.multiple
+              ? selected
+              : selected[0] || null
+          );
+
+          setConverterMessage("");
+          setConverterError("");
+          setConverterResult(null);
+          setConverterDownloadName("");
+        }}
+      />
+    </label>
+
+    {converterError && (
+      <p className="converter-error" role="alert">
+        {converterError}
+      </p>
+    )}
+
+    {converterMessage && (
+      <p className="converter-status" role="status">
+        {converterMessage}
+      </p>
+    )}
+
+    <button
+      type="button"
+      className="converter-submit-btn"
+      disabled={
+        converterBusy ||
+        (!converterResult && !converterFile)
+      }
+      onClick={
+        converterResult
+          ? downloadConvertedFile
+          : runFileConversion
+      }
+    >
+      {converterBusy
+        ? "Converting..."
+        : converterResult
+          ? "Download Now"
+          : `Convert to ${
+              activeConverter === "pdf-to-image"
+                ? "Images (ZIP)"
+                : activeConverter === "pdf-to-word"
+                  ? "Word"
+                  : "PDF"
+            }`}
+    </button>
+
+    {activeConverter === "pdf-to-word" && (
+      <small className="converter-note">
+        PDF to Word extracts selectable text into an editable DOCX.
+        Complex layouts, tables and scanned pages may not be preserved;
+        scanned PDFs need OCR.
+      </small>
+    )}
+
+    {activeConverter === "word-to-pdf" && (
+      <small className="converter-note">
+        Supports DOCX files. Legacy .doc files are not supported
+        by this browser converter.
+      </small>
+    )}
+
+  </section>
+)}
 
       {feedbackOpen && (
         <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
