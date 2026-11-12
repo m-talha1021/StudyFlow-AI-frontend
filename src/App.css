@@ -13062,3 +13062,29 @@ footer p {
     border-color: #438de9 !important;
     color: #ffffff !important;
 }
+/* Converter dropdown menu */
+.converters-nav-wrap {
+    position: relative;
+}
+
+.converters-nav-wrap button {
+    background: #313745 !important;
+    color: #ffffff !important;
+    border: 1px solid #326ac5 !important;
+    border-radius: 10px !important;
+    transition: all 0.25s ease !important;
+}
+
+/* Dropdown option hover */
+.converters-nav-wrap button:hover {
+    background: #313745 !important;
+    border-color: #70aaff !important;
+    color: #ffffff !important;
+}
+
+/* Remove purple gradient from selected option */
+.converters-nav-wrap button:focus,
+.converters-nav-wrap button:active {
+    background: #313745 !important;
+    color: #ffffff !important;
+}
