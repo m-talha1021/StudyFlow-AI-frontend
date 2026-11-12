@@ -13004,10 +13004,10 @@ footer p {
         border-radius: 14px;
     }
    .app-nav-links mobile-open button:hover{
-      background-color: #1B49BF;
+      background-color: #1B49BF !important;
    }
 .converter-submit-btn{
- margin-left: 10px;  
+ margin-left: 8.5px;  
 }
     .converter-header h2 {
         font-size: 22px;
@@ -13031,7 +13031,6 @@ footer p {
         font-size: 15px;
     }
 }
-
 
 .converter-upload-area input[type="file"] {
     display: none !important;
