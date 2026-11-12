@@ -3762,19 +3762,6 @@ function App() {
           Dashboard
           </button>
 
-          <div className="converters-nav-wrap" style={{ position: "relative" }}>
-            <button type="button" aria-expanded={convertersMenuOpen} onClick={() => setConvertersMenuOpen((open) => !open)}>
-              Converters ▾
-            </button>
-            {convertersMenuOpen && (
-              <div className="converters-nav-menu" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 1000, minWidth: "210px", padding: "8px", borderRadius: "12px", background: "#111d33", border: "1px solid #344765", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>
-                {converterOptions.map((option) => (
-                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
-                ))}
-              </div>
-            )}
-          </div>
-
           <button
             type="button"
             onClick={() => {
@@ -3832,7 +3819,18 @@ function App() {
           >
            Content History
           </button>
-
+            <div className="converters-nav-wrap" style={{ position: "relative" }}>
+            <button type="button" aria-expanded={convertersMenuOpen} onClick={() => setConvertersMenuOpen((open) => !open)}>
+              Converters ▾
+            </button>
+            {convertersMenuOpen && (
+              <div className="converters-nav-menu" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 1000, minWidth: "210px", padding: "8px", borderRadius: "12px", background: "#111d33", border: "1px solid #344765", boxShadow: "0 12px 30px rgba(0,0,0,.25)" }}>
+                {converterOptions.map((option) => (
+                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => {
