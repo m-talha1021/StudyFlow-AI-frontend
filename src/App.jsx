@@ -3712,7 +3712,7 @@ function App() {
         setConverterResult(pdfBlob);
         setConverterDownloadName(`${baseName}.pdf`);
       } else if (activeConverter === "pdf-to-word") {
-        // Extract selectable text from every PDF page and write it into a DOCX.
+        // Extract selectable PDF text; use OCR for scanned/image-only pages.
         const pdfjs = await import("pdfjs-dist");
         pdfjs.GlobalWorkerOptions.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
 
@@ -3727,39 +3727,92 @@ function App() {
           }),
         ];
         let extractedCharacterCount = 0;
+        let ocrWorker = null;
+        let ocrPageCount = 0;
 
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          const page = await pdf.getPage(pageNumber);
-          const textContent = await page.getTextContent();
-          let currentLine = "";
-          const flushLine = () => {
-            const line = currentLine.replace(/[\t ]+/g, " ").trim();
-            if (line) {
-              paragraphs.push(new Paragraph({
-                children: [new TextRun({ text: line })],
-                spacing: { after: 100 },
-              }));
-              extractedCharacterCount += line.length;
+        try {
+          for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+            const page = await pdf.getPage(pageNumber);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items
+              .filter((item) => typeof item.str === "string")
+              .map((item) => item.str)
+              .join(" ")
+              .trim();
+
+            if (pageText) {
+              // Keep selectable text from digitally-created PDF pages.
+              let currentLine = "";
+              const flushLine = () => {
+                const line = currentLine.replace(/[\t ]+/g, " ").trim();
+                if (line) {
+                  paragraphs.push(new Paragraph({
+                    children: [new TextRun({ text: line })],
+                    // Set right-to-left paragraph direction for Urdu/Arabic-script text.
+                    bidirectional: /[\u0600-\u06FF]/.test(line),
+                    spacing: { after: 100 },
+                  }));
+                  extractedCharacterCount += line.length;
+                }
+                currentLine = "";
+              };
+
+              for (const item of textContent.items) {
+                if (typeof item.str !== "string") continue;
+                currentLine += item.str;
+                if (item.hasEOL) flushLine();
+                else currentLine += " ";
+              }
+              flushLine();
+            } else {
+              // Render scanned page to canvas and recognize its text with Tesseract.js.
+              if (!ocrWorker) {
+                setConverterMessage("Scanned pages detected. Starting English + Urdu OCR; language data may take a moment to load...");
+                const { createWorker } = await import("tesseract.js");
+                // Load English + Urdu trained data so mixed-language scans are recognized.
+                ocrWorker = await createWorker("eng+urd");
+              }
+
+              setConverterMessage(`Reading scanned page ${pageNumber} of ${pdf.numPages} with English + Urdu OCR...`);
+              const viewport = page.getViewport({ scale: 2 });
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d");
+              if (!context) throw new Error("Could not prepare a page for OCR in this browser.");
+              canvas.width = Math.ceil(viewport.width);
+              canvas.height = Math.ceil(viewport.height);
+              await page.render({ canvasContext: context, viewport }).promise;
+
+              const { data } = await ocrWorker.recognize(canvas);
+              const recognizedText = (data?.text || "").trim();
+              canvas.width = 0;
+              canvas.height = 0;
+
+              if (recognizedText) {
+                recognizedText.split(/\r?\n/).forEach((line) => {
+                  const cleanLine = line.replace(/[\t ]+/g, " ").trim();
+                  if (!cleanLine) return;
+                  paragraphs.push(new Paragraph({
+                    children: [new TextRun({ text: cleanLine })],
+                    // Urdu is written right-to-left; keep its paragraph direction in DOCX.
+                    bidirectional: /[\u0600-\u06FF]/.test(cleanLine),
+                    spacing: { after: 100 },
+                  }));
+                  extractedCharacterCount += cleanLine.length;
+                });
+                ocrPageCount += 1;
+              }
             }
-            currentLine = "";
-          };
 
-          for (const item of textContent.items) {
-            if (typeof item.str !== "string") continue;
-            currentLine += item.str;
-            if (item.hasEOL) flushLine();
+            if (pageNumber < pdf.numPages) {
+              paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
+            }
           }
-          flushLine();
-
-          if (pageNumber < pdf.numPages) {
-            paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
-          }
+        } finally {
+          if (ocrWorker) await ocrWorker.terminate();
         }
 
         if (extractedCharacterCount === 0) {
-          throw new Error(
-            "No selectable text was found in this PDF. It may be a scanned/image-only PDF; OCR is required to convert scanned pages into editable Word text."
-          );
+          throw new Error("No text could be extracted, even with OCR. The PDF may be blank, very low quality, or contain unsupported text.");
         }
 
         const documentFile = new Document({
@@ -3768,7 +3821,9 @@ function App() {
         const blob = await Packer.toBlob(documentFile);
         setConverterResult(blob);
         setConverterDownloadName(`${baseName}.docx`);
-        setConverterMessage(`Extracted ${extractedCharacterCount.toLocaleString()} characters from ${pdf.numPages} page(s). Click Download Now to save your Word file.`);
+        setConverterMessage(
+          `Extracted ${extractedCharacterCount.toLocaleString()} characters from ${pdf.numPages} page(s).${ocrPageCount ? ` OCR was used on ${ocrPageCount} scanned page(s).` : ""} Click Download Now to save your Word file.`
+        );
       }
     } catch (error) {
       console.error("File conversion failed:", error);
@@ -3890,7 +3945,7 @@ function App() {
               aria-haspopup="true"
               onClick={() => setConvertersMenuOpen((open) => !open)}
             >
-              Convert files ▼
+              Converters ▼
             </button>
 
             {convertersMenuOpen && (
