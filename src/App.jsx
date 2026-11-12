@@ -309,6 +309,7 @@ function WelcomePage({ onLogin, onSignup }) {
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
             <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
             <div><span>🗂️</span><strong>Content History</strong><small>View content from history</small></div>
+            <div><span>⇆</span><strong>Convert files</strong><small>Convert files to other formats</small></div>
           </div>
         </section>
       </main>
@@ -3811,20 +3812,6 @@ function App() {
           >
             Features
           </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("transcribing-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Transcribing
-          </button>
-
 
           <button
             type="button"
