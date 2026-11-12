@@ -3716,7 +3716,6 @@ function App() {
         pdfjs.GlobalWorkerOptions.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
         const pdf = await pdfjs.getDocument({ data: await converterFile.arrayBuffer() }).promise;
         const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
-        const paragraphs = [new Paragraph({ text: "Converted from PDF", heading: HeadingLevel.HEADING_1 })];
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
           const page = await pdf.getPage(pageNumber);
           const textContent = await page.getTextContent();
