@@ -13136,11 +13136,3 @@ footer p {
     box-sizing: border-box;
 }
 
-
-/* Hide feature card descriptions on mobile */
-@media (max-width: 768px) {
-    .feature-card > small,
-    .feature-card .feature-description {
-        display: none !important;
-    }
-}
