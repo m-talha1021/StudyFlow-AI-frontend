@@ -13035,10 +13035,30 @@ footer p {
 .converter-upload-area input[type="file"] {
     display: none !important;
 }
-/* Navbar button hover effect */
-nav button:hover,
-.navbar button:hover {
+/* =================================
+   NAVBAR BLUE HOVER EFFECT
+================================= */
+
+.app-nav-links > button,
+.app-nav-links .converters-nav-wrap > button {
+    transition: background-color 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease !important;
+}
+
+/* Hover effect */
+.app-nav-links > button:hover,
+.app-nav-links .converters-nav-wrap > button:hover {
     background: #1B49BF !important;
+    background-color: #1B49BF!important;
+    border-color: #438de9 !important;
     color: #ffffff !important;
-    transition: all 0.25s ease;
+}
+
+/* Keyboard focus */
+.app-nav-links > button:focus-visible,
+.app-nav-links .converters-nav-wrap > button:focus-visible {
+    background-color: #1B49BF !important;
+    border-color: #438de9 !important;
+    color: #ffffff !important;
 }
