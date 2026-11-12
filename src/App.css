@@ -13135,3 +13135,12 @@ footer p {
     margin: 2px 0 !important;
     box-sizing: border-box;
 }
+
+
+/* Hide feature card descriptions on mobile */
+@media (max-width: 768px) {
+    .feature-card p,
+    .feature-card .feature-description {
+        display: none !important;
+    }
+}
