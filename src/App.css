@@ -12862,7 +12862,7 @@ footer p {
 }
 
 .converter-close-btn {
-    padding: 11px 17px;
+    padding: 11px 11px;
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(150, 190, 240, 0.4);
@@ -13002,6 +13002,9 @@ footer p {
         padding: 20px 15px;
         border-radius: 14px;
     }
+   .app-nav-links mobile-open button:hover{
+      background-color: #1B49BF;
+   }
 
     .converter-header h2 {
         font-size: 22px;
