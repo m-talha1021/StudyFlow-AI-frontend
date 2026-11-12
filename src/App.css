@@ -12809,4 +12809,186 @@ footer p {
     right: 0 !important;
   }
 
+   
+/* =====================================
+   STUDYFLOW AI - CONVERTER UI
+===================================== */
+
+.converter-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 35px 4%;
+    box-sizing: border-box;
+    color: #ffffff;
+    background: linear-gradient(135deg, #071b35, #102f59 55%, #153d70);
+    border-radius: 18px;
+}
+
+/* Converter heading */
+.converter-page h1,
+.converter-page h2 {
+    color: #ffffff;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+.converter-page .converter-subtitle {
+    color: #b8c9df;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* Small section label */
+.converter-page .converter-label {
+    color: #75aaff;
+    font-size: 13px;
+    font-weight: 750;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Upload area */
+.converter-page .converter-upload-area {
+    background: rgba(255, 255, 255, 0.055);
+    border: 2px dashed #4c83c8;
+    border-radius: 18px;
+    min-height: 230px;
+    padding: 35px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: all 0.25s ease;
+}
+
+.converter-page .converter-upload-area:hover {
+    background: rgba(68, 130, 210, 0.12);
+    border-color: #80b4ff;
+}
+
+/* Upload text */
+.converter-page .converter-upload-area h3 {
+    color: #ffffff;
+    font-size: 19px;
+    margin: 12px 0;
+}
+
+.converter-page .converter-upload-area p {
+    color: #b9cce5;
+    font-size: 14px;
+}
+
+/* File input */
+.converter-page input[type="file"] {
+    max-width: 100%;
+    color: #dceaff;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(130, 175, 230, 0.4);
+    border-radius: 9px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.converter-page input[type="file"]::file-selector-button {
+    background: #2862ad;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.converter-page input[type="file"]::file-selector-button:hover {
+    background: #397ed3;
+}
+
+/* Convert button */
+.converter-page .converter-submit-btn {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 25px;
+    border: none;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #3479d3, #2457a5);
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.18);
+}
+
+.converter-page .converter-submit-btn:hover {
+    background: linear-gradient(135deg, #438de9, #306bc0);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(25, 95, 180, 0.3);
+}
+
+.converter-page .converter-submit-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Close button */
+.converter-page .converter-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border: 1px solid rgba(150, 190, 240, 0.35);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.converter-page .converter-close-btn:hover {
+    background: #244f83;
+    border-color: #75aaff;
+}
+
+/* Success and error messages */
+.converter-page .converter-status {
+    margin-top: 18px;
+    color: #55dda0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.converter-page .converter-error {
+    color: #ff8585;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .converter-page {
+        padding: 25px 16px;
+        border-radius: 12px;
+    }
+
+    .converter-page .converter-upload-area {
+        min-height: 190px;
+        padding: 25px 12px;
+    }
+
+    .converter-page .converter-upload-area h3 {
+        font-size: 16px;
+    }
+
+    .converter-page .converter-submit-btn {
+        min-height: 52px;
+        font-size: 15px;
+    }
+
+    .converter-page .converter-close-btn {
+        padding: 9px 13px;
+        font-size: 13px;
+    }
+}
+
 }
