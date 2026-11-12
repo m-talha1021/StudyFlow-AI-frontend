@@ -3722,10 +3722,6 @@ function App() {
         const converted = await mammoth.convertToHtml({ arrayBuffer: await converterFile.arrayBuffer() });
         const wrapper = document.createElement("div");
         wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 28px; width: 720px; box-sizing: border-box; line-height: 1.55;";
-        const title = document.createElement("h1");
-        title.textContent = " " + (converterFile.name);
-        title.style.cssText = "font-size: 18px; color: #163b75; margin: 0 0 20px;";
-        wrapper.appendChild(title);
         const content = document.createElement("div");
         content.innerHTML = converted.value;
         content.querySelectorAll("script,style,iframe,object,embed").forEach((node) => node.remove());
