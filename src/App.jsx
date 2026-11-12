@@ -779,6 +779,8 @@ function App() {
   const [gamesOpen, setGamesOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [convertersMenuOpen, setConvertersMenuOpen] = useState(false);
+  const appNavbarRef = useRef(null);
+  const convertersRef = useRef(null);
   const [activeConverter, setActiveConverter] = useState("");
   const [converterFile, setConverterFile] = useState(null);
   const [converterBusy, setConverterBusy] = useState(false);
@@ -978,6 +980,29 @@ function App() {
 
   const [showGoUp, setShowGoUp] =
     useState(false);
+
+  // Close the mobile navbar when the user taps anywhere outside it.
+  // Also close the Converters dropdown when clicking outside its full area.
+  useEffect(() => {
+    const handleNavbarOutsidePointer = (event) => {
+      const target = event.target;
+
+      if (appNavbarRef.current && !appNavbarRef.current.contains(target)) {
+        setMobileMenuOpen(false);
+        setConvertersMenuOpen(false);
+        return;
+      }
+
+      if (convertersRef.current && !convertersRef.current.contains(target)) {
+        setConvertersMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleNavbarOutsidePointer);
+    return () => {
+      document.removeEventListener("pointerdown", handleNavbarOutsidePointer);
+    };
+  }, []);
 
   // ========================================================
   // FIREBASE SESSION LISTENER
@@ -3727,7 +3752,7 @@ function App() {
           Mobile: logo + hamburger menu
       ================================================== */}
 
-      <header className="app-navbar">
+      <header ref={appNavbarRef} className="app-navbar">
         <a
           className="brand-mark"
           href="#heroclass"
@@ -3828,27 +3853,34 @@ function App() {
           >
             Fun Zone
           </button>
-         <div
-  ref={convertersRef}
-  className="converters-nav-wrap"
-  onMouseLeave={() => setConvertersMenuOpen(false)}
->
-  <button
-    type="button"
-    aria-expanded={convertersMenuOpen}
-    onClick={() => setConvertersMenuOpen(prev => !prev)}
-  >
-    Converters ▼
-  </button>
+          <div
+            ref={convertersRef}
+            className="converters-nav-wrap"
+            onMouseLeave={() => setConvertersMenuOpen(false)}
+          >
+            <button
+              type="button"
+              aria-expanded={convertersMenuOpen}
+              aria-haspopup="true"
+              onClick={() => setConvertersMenuOpen((open) => !open)}
+            >
+              Converters ▼
+            </button>
 
-  {convertersMenuOpen && (
-    <div className="converters-dropdown">
-      {converterOptions.map((option) => (
-                  <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
-                ))}}
-    </div>
-  )}
-</div>
+            {convertersMenuOpen && (
+              <div className="converters-dropdown">
+                {converterOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => chooseConverter(option.id)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             type="button"
             className="feedback-nav-link"
