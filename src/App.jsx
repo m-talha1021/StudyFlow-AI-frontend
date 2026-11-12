@@ -3589,9 +3589,9 @@ function App() {
 
    const converterOptions = [
     { id: "image-to-pdf", label: "Image to PDF", accept: ".png,.jpg,.jpeg,.webp", multiple: true },
-    { id: "pdf-to-image", label: "PDF to Image", accept: ".pdf file", multiple: false },
-    { id: "word-to-pdf", label: "Word to PDF", accept: ".docx file", multiple: false },
-    { id: "pdf-to-word", label: "PDF to Word", accept: ".pdf file", multiple: false },
+    { id: "pdf-to-image", label: "PDF to Image", accept: ".pdf,application/pdf", multiple: false },
+    { id: "word-to-pdf", label: "Word to PDF", accept: ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document", multiple: false },
+    { id: "pdf-to-word", label: "PDF to Word", accept: ".pdf,application/pdf", multiple: false },
   ];
 
   const activeConverterOption = converterOptions.find((item) => item.id === activeConverter);
