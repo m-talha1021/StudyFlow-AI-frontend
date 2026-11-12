@@ -3843,7 +3843,7 @@ function App() {
 
   {convertersMenuOpen && (
     <div className="converters-dropdown">
-      {{converterOptions.map((option) => (
+      {converterOptions.map((option) => (
                   <button key={option.id} type="button" style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: "8px" }} onClick={() => chooseConverter(option.id)}>{option.label}</button>
                 ))}}
     </div>
