@@ -13006,7 +13006,9 @@ footer p {
    .app-nav-links mobile-open button:hover{
       background-color: #1B49BF;
    }
-
+.converter-submit-btn{
+ margin-left: 10px;  
+}
     .converter-header h2 {
         font-size: 22px;
     }
@@ -13031,3 +13033,6 @@ footer p {
 }
 
 
+.converter-upload-area input[type="file"] {
+    display: none !important;
+}
