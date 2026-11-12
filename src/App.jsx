@@ -1932,8 +1932,8 @@ function App() {
     const newlyAddedFiles = replaceExisting
       ? []
       : incomingFiles.filter(
-        (candidate) => !previousFiles.some((existing) => sameFile(existing, candidate))
-      );
+          (candidate) => !previousFiles.some((existing) => sameFile(existing, candidate))
+        );
 
     const combinedFiles = replaceExisting
       ? incomingFiles
@@ -3588,7 +3588,7 @@ function App() {
   // FILE CONVERTERS (client-side; outputs are never saved to history)
   // ========================================================
 
-  const converterOptions = [
+   const converterOptions = [
     { id: "image-to-pdf", label: "Image to PDF", accept: ".png,.jpg,.jpeg,.webp", multiple: true },
     { id: "pdf-to-image", label: "PDF to Image", accept: ".pdf,application/pdf", multiple: false },
     { id: "word-to-pdf", label: "Word to PDF", accept: ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document", multiple: false },
@@ -3634,7 +3634,7 @@ function App() {
     const accept = (activeConverterOption?.accept || "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
     const matches = (file) => accept.length === 0 || accept.some((rule) =>
       rule.startsWith(".") ? file.name.toLowerCase().endsWith(rule) :
-        rule.endsWith("/*") ? file.type.startsWith(rule.slice(0, -1)) : file.type === rule
+      rule.endsWith("/*") ? file.type.startsWith(rule.slice(0, -1)) : file.type === rule
     );
     const invalid = selected.filter((file) => !matches(file));
     if (invalid.length) {
@@ -3722,7 +3722,9 @@ function App() {
         const converted = await mammoth.convertToHtml({ arrayBuffer: await converterFile.arrayBuffer() });
         const wrapper = document.createElement("div");
         wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 28px; width: 720px; box-sizing: border-box; line-height: 1.55;";
-
+        const title = document.createElement("h1");
+        title.textContent = "StudyFlow AI · Converted Document";
+        title.style.cssText = "font-size: 18px; color: #163b75; margin: 0 0 20px;";
         wrapper.appendChild(title);
         const content = document.createElement("div");
         content.innerHTML = converted.value;
@@ -3792,7 +3794,7 @@ function App() {
             } else {
               // Render scanned page to canvas and recognize its text with Tesseract.js.
               if (!ocrWorker) {
-
+               
                 const { createWorker } = await import("tesseract.js");
                 // Load English + Urdu trained data so mixed-language scans are recognized.
                 ocrWorker = await createWorker("eng+urd");
@@ -3898,7 +3900,7 @@ function App() {
               });
             }}
           >
-            Dashboard
+          Dashboard
           </button>
 
 
@@ -3943,7 +3945,7 @@ function App() {
               });
             }}
           >
-            Content History
+           Content History
           </button>
 
           <button
@@ -4039,7 +4041,7 @@ function App() {
         </button>
       </header>
 
-
+     
       {feedbackOpen && (
         <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
       )}
@@ -4117,7 +4119,7 @@ function App() {
                   ? Array.isArray(converterFile)
                     ? `${converterFile.length} images selected`
                     : converterFile.name
-                  : "Drag or Browse file to convert"}
+                  : "Choose file to convert"}
               </strong>
               <small>
                 {activeConverterOption?.multiple
@@ -4593,7 +4595,7 @@ function App() {
             </strong>
 
             <small>
-              Drag & drop or click to browse multiple PDF, DOCX, PPTX,
+             Drag & drop or click to browse multiple PDF, DOCX, PPTX,
               JPG, PNG, WEBP, HEIC or HEIF files
             </small>
 
