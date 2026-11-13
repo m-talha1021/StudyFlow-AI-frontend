@@ -3964,7 +3964,7 @@ function App() {
               aria-haspopup="true"
               onClick={() => setConvertersMenuOpen((open) => !open)}
             >
-              Converters ▼
+              Convert ▼
             </button>
 
             {convertersMenuOpen && (
