@@ -4109,7 +4109,7 @@ function App() {
                 if (!converterBusy) handleConverterFiles(event.dataTransfer.files);
               }}
             >
-              <span className="converter-folder-icon">📁</span>
+              <span className="converter-folder-icon"><i class="bi bi-upload"></i></span>
               <strong>
                 {converterFile
                   ? Array.isArray(converterFile)
