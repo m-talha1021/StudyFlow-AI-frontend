@@ -4,27 +4,7 @@ import {
   useState,
 } from "react";
 
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-} from "firebase/auth";
-
-import { auth, db } from "./firebase";
-
-import {
-  doc,
-  setDoc,
-  getDoc,
-  increment,
-  serverTimestamp,
-  addDoc,
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { supabase } from "./supabase";
 
 import "./App.css";
 import "./Transcribing.css";
@@ -47,6 +27,8 @@ const apiRequest = async (endpoint, options = {}) => {
     options.body instanceof FormData;
 
   let response;
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
 
   try {
     response = await fetch(
@@ -62,6 +44,7 @@ const apiRequest = async (endpoint, options = {}) => {
                 "application/json",
             }),
 
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           ...(options.headers || {}),
         },
       }
@@ -755,7 +738,7 @@ function pickMotivationalQuote(previousQuote = "") {
 
 function App() {
   // ========================================================
-  // FIREBASE AUTHENTICATION
+  // Supabase AUTHENTICATION
   // ========================================================
 
   const [authChecked, setAuthChecked] = useState(false);
@@ -1007,23 +990,32 @@ function App() {
   }, []);
 
   // ========================================================
-  // FIREBASE SESSION LISTENER
+  // SUPABASE SESSION LISTENER
   // ========================================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+    let mounted = true;
+    const applySession = (session) => {
+      if (!mounted) return;
+      const authUser = session?.user || null;
+      setUser(authUser ? { ...authUser, uid: authUser.id, displayName: authUser.user_metadata?.display_name || authUser.user_metadata?.full_name || "" } : null);
       setAuthChecked(true);
-
-      if (firebaseUser) {
+      if (authUser) {
         const nextQuote = pickMotivationalQuote(previousQuoteRef.current);
         previousQuoteRef.current = nextQuote;
         setMotivationalQuote(nextQuote);
         setAuthView("app");
       }
+    };
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) console.error("Supabase session error:", error);
+      applySession(data?.session);
+    }).catch((error) => {
+      console.error("Could not restore Supabase session:", error);
+      if (mounted) setAuthChecked(true);
     });
-
-    return () => unsubscribe();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => applySession(session));
+    return () => { mounted = false; listener?.subscription?.unsubscribe(); };
   }, []);
 
   // Shared result links are readable without signing in (Firestore rules must
@@ -1034,9 +1026,10 @@ function App() {
     let cancelled = false;
     (async () => {
       try {
-        const snapshot = await getDoc(doc(db, "sharedResults", shareId));
-        if (!snapshot.exists()) throw new Error("This shared result link is invalid or has expired.");
-        const shared = snapshot.data();
+        const { data, error } = await supabase.rpc("get_shared_result", { p_share_id: shareId });
+        if (error) throw error;
+        const shared = Array.isArray(data) ? data[0] : data;
+        if (!shared) throw new Error("This shared result link is invalid or has expired.");
         if (!shared?.result) throw new Error("No result was found at this link.");
         if (cancelled) return;
         setSharedPublicData({ ...shared, id: shareId });
@@ -1077,45 +1070,19 @@ function App() {
       setDashboardLoading(true);
 
       try {
-        const snapshot = await getDoc(
-          doc(db, "users", user.uid)
-        );
-
-        const materialsSnapshot = await getDocs(
-          collection(db, "users", user.uid, "materialHistory")
-        );
-
-        const flashcardsSnapshot = await getDocs(
-          collection(db, "users", user.uid, "flashcardHistory")
-        );
-
-        const generatedHistorySnapshot = await getDocs(
-          collection(db, "users", user.uid, "generatedHistory")
-        );
-
+        const [profileResult, materialsResult, flashcardsResult, generatedResult] = await Promise.all([
+          supabase.from("profiles").select("*").eq("id", user.uid).maybeSingle(),
+          supabase.from("material_history").select("*").eq("user_id", user.uid).order("created_at", { ascending: false }),
+          supabase.from("flashcard_history").select("*").eq("user_id", user.uid).order("created_at", { ascending: false }),
+          supabase.from("generated_history").select("*").eq("user_id", user.uid).order("created_at", { ascending: false }),
+        ]);
+        for (const result of [profileResult, materialsResult, flashcardsResult, generatedResult]) if (result.error) throw result.error;
         if (cancelled) return;
-
-        const data = snapshot.exists()
-          ? snapshot.data()
-          : {};
-
-        const materialHistory = materialsSnapshot.docs
-          .map((historyDoc) => ({
-            id: historyDoc.id,
-            ...historyDoc.data(),
-          }))
-          .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-
-        const flashcardHistory = flashcardsSnapshot.docs
-          .map((historyDoc) => ({
-            id: historyDoc.id,
-            ...historyDoc.data(),
-          }))
-          .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-
-        const generatedHistory = generatedHistorySnapshot.docs
-          .map((historyDoc) => ({ id: historyDoc.id, ...historyDoc.data() }))
-          .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+        const raw = profileResult.data || {};
+        const data = { totalMaterials: raw.total_materials, studySessions: raw.study_sessions, completedQuizzes: raw.completed_quizzes, totalQuizScore: raw.total_quiz_score, flashcardsCreated: raw.flashcards_created };
+        const materialHistory = (materialsResult.data || []).map((row) => ({ id: row.id, fileNames: row.file_names || [], createdAt: new Date(row.created_at).getTime() }));
+        const flashcardHistory = (flashcardsResult.data || []).map((row) => ({ id: row.id, cards: row.cards || [], fileNames: row.file_names || [], createdAt: new Date(row.created_at).getTime() }));
+        const generatedHistory = (generatedResult.data || []).map((row) => ({ id: row.id, title: row.title, type: row.type, kind: row.kind, content: row.content, sourceFiles: row.source_files || [], language: row.language, mode: row.mode, createdAt: new Date(row.created_at).getTime() }));
 
         setDashboardMaterialsHistory(materialHistory);
         setDashboardFlashcardHistory(flashcardHistory);
@@ -1421,151 +1388,53 @@ function App() {
   };
 
   // ========================================================
-  // FIREBASE AUTHENTICATION HANDLERS
+  // SUPABASE AUTHENTICATION HANDLERS
   // ========================================================
 
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
     setAuthError("");
-
     const isSignup = authView === "signup";
     const email = authForm.email.trim();
     const password = authForm.password;
-
-    if (isSignup) {
-      if (!authForm.name.trim()) {
-        setAuthError("Please enter your full name.");
-        return;
-      }
-
-      if (password !== authForm.confirmPassword) {
-        setAuthError("Passwords do not match.");
-        return;
-      }
-    }
-
+    if (isSignup && !authForm.name.trim()) return setAuthError("Please enter your full name.");
+    if (isSignup && password !== authForm.confirmPassword) return setAuthError("Passwords do not match.");
     setAuthLoading(true);
-
     try {
+      let result;
       if (isSignup) {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        const firebaseUser = credential.user;
-        const displayName = authForm.name.trim();
-
-        await updateProfile(firebaseUser, {
-          displayName,
-        });
-
-        await setDoc(
-          doc(db, "users", firebaseUser.uid),
-          {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName,
-            totalMaterials: 0,
-            studySessions: 0,
-            completedQuizzes: 0,
-            totalQuizScore: 0,
-            flashcardsCreated: 0,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        setUser(firebaseUser);
-        setAuthView("app");
+        result = await supabase.auth.signUp({ email, password, options: { data: { display_name: authForm.name.trim(), full_name: authForm.name.trim() } } });
+        if (result.error) throw result.error;
+        if (!result.data.session) setAuthError("Account created. Check your email to confirm your account, then sign in.");
+        else setAuthView("app");
       } else {
-        const credential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        setUser(credential.user);
+        result = await supabase.auth.signInWithPassword({ email, password });
+        if (result.error) throw result.error;
         setAuthView("app");
       }
-
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      setAuthError("");
+      setAuthForm({ name: "", email: "", password: "", confirmPassword: "" });
     } catch (error) {
-      console.error("Firebase authentication error:", error);
-
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          setAuthError("This email is already registered.");
-          break;
-        case "auth/invalid-email":
-          setAuthError("Please enter a valid email address.");
-          break;
-        case "auth/weak-password":
-          setAuthError("Password should be at least 6 characters.");
-          break;
-        case "auth/invalid-credential":
-          setAuthError("Invalid email or password.");
-          break;
-        case "auth/wrong-password":
-          setAuthError("Password is incorrect!");
-          break;
-        case "auth/user-not-found":
-          setAuthError("Account does not exist.");
-          break;
-        case "auth/network-request-failed":
-          setAuthError(
-            "Failed: Check your internet connection."
-          );
-          break;
-        case "auth/operation-not-allowed":
-          setAuthError(
-            "Email/password sign-in is not enabled in Firebase Authentication."
-          );
-          break;
-        default:
-          setAuthError(error.message || "Authentication failed.");
-      }
-    } finally {
-      setAuthLoading(false);
-    }
+      console.error("Supabase authentication error:", error);
+      const message = String(error.message || "Authentication failed.");
+      if (/already registered|already exists/i.test(message)) setAuthError("This email is already registered.");
+      else if (/invalid login credentials/i.test(message)) setAuthError("Invalid email or password.");
+      else if (/password.*(6|weak)|at least/i.test(message)) setAuthError("Password should meet the minimum length requirement.");
+      else if (/email/i.test(message) && /invalid/i.test(message)) setAuthError("Please enter a valid email address.");
+      else setAuthError(message);
+    } finally { setAuthLoading(false); }
   };
 
   const handleForgotPassword = async () => {
     setAuthError("");
-
     const email = authForm.email.trim();
-
-    if (!email) {
-      setAuthError("Enter your email address first.");
-      return;
-    }
-
+    if (!email) return setAuthError("Enter your email address first.");
     setAuthLoading(true);
-
     try {
-      await sendPasswordResetEmail(auth, email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/` });
+      if (error) throw error;
       setAuthError("Password reset email sent. Check your inbox.");
-    } catch (error) {
-      console.error("Password reset error:", error);
-
-      if (error.code === "auth/user-not-found") {
-        setAuthError("No account was found with this email.");
-      } else if (error.code === "auth/invalid-email") {
-        setAuthError("Please enter a valid email address.");
-      } else {
-        setAuthError(error.message || "Could not send the reset email.");
-      }
-    } finally {
-      setAuthLoading(false);
-    }
+    } catch (error) { setAuthError(error.message || "Could not send the reset email."); }
+    finally { setAuthLoading(false); }
   };
 
   const openAuth = (view) => {
@@ -1579,7 +1448,7 @@ function App() {
     setDashboardHistoryType(null);
 
     try {
-      await signOut(auth);
+      await supabase.auth.signOut();
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -1676,7 +1545,19 @@ function App() {
   };
 
   // Save every successful generated result in the signed-in user's private
-  // Firestore subcollection. Keep documents below Firestore's 1 MiB limit.
+  // Supabase history table. Keep individual records reasonably sized.
+  const updateProfileStats = async (changes) => {
+    if (!user?.uid) return;
+    const { error } = await supabase.rpc("increment_user_stats", {
+      p_total_materials: changes.total_materials || 0,
+      p_study_sessions: changes.study_sessions || 0,
+      p_completed_quizzes: changes.completed_quizzes || 0,
+      p_total_quiz_score: changes.total_quiz_score || 0,
+      p_flashcards_created: changes.flashcards_created || 0,
+    });
+    if (error) throw error;
+  };
+
   const getCurrentSourceFileNames = () => {
     if (Array.isArray(files) && files.length) {
       return files.map((selectedFile) => selectedFile.name).filter(Boolean);
@@ -1698,25 +1579,23 @@ function App() {
         : getCurrentSourceFileNames(),
       language: language || "english",
       mode: contentMode || "summary",
-      userId: user.uid,
-      createdAt: Date.now(),
+      createdAt: new Date().toISOString(),
     };
 
     const bytes = new TextEncoder().encode(JSON.stringify(historyItem)).length;
     if (bytes > 850 * 1024) {
-      console.warn("Generated result is too large for a single Firestore history document; it was not saved.");
+      console.warn("Generated result is too large for a single history record; it was not saved.");
       return;
     }
 
     try {
-      const historyRef = await addDoc(
-        collection(db, "users", user.uid, "generatedHistory"),
-        historyItem
-      );
-      setDashboardGeneratedHistory((previous) => [
-        { id: historyRef.id, ...historyItem },
-        ...previous,
-      ]);
+      const { data: saved, error } = await supabase.from("generated_history").insert({
+        user_id: user.uid, title: historyItem.title, type: historyItem.type, kind: historyItem.kind,
+        content: historyItem.content, source_files: historyItem.sourceFiles, language: historyItem.language,
+        mode: historyItem.mode, created_at: historyItem.createdAt,
+      }).select().single();
+      if (error) throw error;
+      setDashboardGeneratedHistory((previous) => [{ id: saved.id, ...historyItem }, ...previous]);
     } catch (error) {
       console.error("Could not save generated content history:", error);
     }
@@ -1997,16 +1876,7 @@ function App() {
       // Count and save only newly added files. Reprocessing after removing a
       // file must not inflate the user's upload statistics.
       if (requestId === materialRequestIdRef.current && newlyAddedFiles.length && user?.uid) {
-        const userRef = doc(db, "users", user.uid);
-        await setDoc(
-          userRef,
-          {
-            totalMaterials: increment(newlyAddedFiles.length),
-            studySessions: increment(1),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        await updateProfileStats({ total_materials: newlyAddedFiles.length, study_sessions: 1 });
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -2015,18 +1885,10 @@ function App() {
         }));
 
         try {
-          const materialHistoryItem = {
-            fileNames: newlyAddedFiles.map((selectedFile) => selectedFile.name),
-            createdAt: Date.now(),
-          };
-          const historyDoc = await addDoc(
-            collection(db, "users", user.uid, "materialHistory"),
-            materialHistoryItem
-          );
-          setDashboardMaterialsHistory((previous) => [
-            { id: historyDoc.id, ...materialHistoryItem },
-            ...previous,
-          ]);
+          const materialHistoryItem = { fileNames: newlyAddedFiles.map((selectedFile) => selectedFile.name), createdAt: Date.now() };
+          const { data: saved, error } = await supabase.from("material_history").insert({ user_id: user.uid, file_names: materialHistoryItem.fileNames }).select().single();
+          if (error) throw error;
+          setDashboardMaterialsHistory((previous) => [{ id: saved.id, ...materialHistoryItem }, ...previous]);
         } catch (historyError) {
           console.error("Could not save material history:", historyError);
         }
@@ -2450,16 +2312,7 @@ function App() {
       // Save generated flashcards for the current user.
       if (user?.uid) {
         const createdCount = data.cards.length;
-        const userRef = doc(db, "users", user.uid);
-
-        await setDoc(
-          userRef,
-          {
-            flashcardsCreated: increment(createdCount),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        await updateProfileStats({ flashcards_created: createdCount });
 
         setDashboardStats((previous) => ({
           ...previous,
@@ -2479,18 +2332,9 @@ function App() {
         };
 
         try {
-          const historyDoc = await addDoc(
-            collection(db, "users", user.uid, "flashcardHistory"),
-            flashcardHistoryItem
-          );
-
-          setDashboardFlashcardHistory((previous) => [
-            {
-              id: historyDoc.id,
-              ...flashcardHistoryItem,
-            },
-            ...previous,
-          ]);
+          const { data: saved, error } = await supabase.from("flashcard_history").insert({ user_id: user.uid, cards: flashcardHistoryItem.cards, file_names: flashcardHistoryItem.fileNames }).select().single();
+          if (error) throw error;
+          setDashboardFlashcardHistory((previous) => [{ id: saved.id, ...flashcardHistoryItem }, ...previous]);
         } catch (historyError) {
           console.error("Could not save flashcard history:", historyError);
         }
@@ -2588,17 +2432,7 @@ function App() {
 
     if (user?.uid && totalQuestions > 0) {
       try {
-        const userRef = doc(db, "users", user.uid);
-
-        await setDoc(
-          userRef,
-          {
-            completedQuizzes: increment(1),
-            totalQuizScore: increment(percentage),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        await updateProfileStats({ completed_quizzes: 1, total_quiz_score: percentage });
 
         setDashboardStats((previous) => {
           const completedQuizzes = previous.completedQuizzes + 1;
@@ -3037,19 +2871,17 @@ function App() {
     if (!result?.trim()) return;
     try {
       const shareId = (window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/[^a-zA-Z0-9-]/g, "");
-      await setDoc(doc(db, "sharedResults", shareId), {
-        result,
-        mode,
-        language: resultLanguage || "english",
+      const { error } = await supabase.from("shared_results").insert({
+        id: shareId, user_id: user.uid, result, mode, language: resultLanguage || "english",
         title: mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary",
-        createdAt: serverTimestamp(),
       });
+      if (error) throw error;
       const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${encodeURIComponent(shareId)}`;
       await navigator.clipboard.writeText(shareUrl);
       alert("Share link copied. Anyone with the link can open the result and download it as a PDF.");
     } catch (error) {
       console.error("Share result error:", error);
-      alert("Could not create the share link. Check your Firestore rules and clipboard permissions.");
+      alert("Could not create the share link. Check your Supabase table policies and clipboard permissions.");
     }
   };
 
@@ -3312,14 +3144,8 @@ function App() {
     if (!user?.uid) return;
 
     try {
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          [`featureUsage.${featureName}`]: increment(1),
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+      const { error } = await supabase.rpc("increment_feature_usage", { p_feature_name: featureName });
+      if (error) throw error;
     } catch (error) {
       console.error(
         `Could not save ${featureName} usage:`,
