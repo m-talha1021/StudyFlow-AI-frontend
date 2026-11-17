@@ -1018,8 +1018,7 @@ function App() {
     return () => { mounted = false; listener?.subscription?.unsubscribe(); };
   }, []);
 
-  // Shared result links are readable without signing in (Firestore rules must
-  // allow public reads of sharedResults documents).
+  // Shared result links are resolved through the Supabase RPC policy.
   useEffect(() => {
     const shareId = new URLSearchParams(window.location.search).get("shared");
     if (!shareId) return;
@@ -2922,14 +2921,19 @@ function App() {
     }
 
     try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) throw new Error("Your session has expired. Please sign in again.");
+
       const response = await fetch(
         `${API_BASE_URL}/api/generate-pdf`,
         {
           method: "POST",
 
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
 
           body: JSON.stringify({
