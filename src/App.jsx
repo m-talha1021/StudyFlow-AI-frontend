@@ -11,6 +11,7 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
 
 import { auth, db } from "./firebase";
@@ -320,7 +321,7 @@ function WelcomePage({ onLogin, onSignup }) {
   );
 }
 
-function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, form, setForm }) {
+function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, successMessage, form, setForm }) {
   const isSignup = mode === "signup";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -351,7 +352,29 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               : "Log in to continue learning."}
           </p>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="auth-error" role="alert">{error}</div>}
+          {successMessage && (
+            <div
+              className="auth-success"
+              role="status"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+                padding: "14px 16px",
+                margin: "16px 0",
+                borderRadius: "12px",
+                border: "1px solid rgba(74, 222, 128, 0.4)",
+                background: "rgba(34, 197, 94, 0.10)",
+                color: "#86efac",
+                fontSize: "14px",
+                lineHeight: 1.6,
+              }}
+            >
+              <strong>Account created successfully!</strong>
+              <span>{successMessage}</span>
+            </div>
+          )}
 
           {isSignup && (
             <label>
@@ -765,6 +788,7 @@ function App() {
   const [authView, setAuthView] = useState("welcome");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [authSuccess, setAuthSuccess] = useState("");
   const [authForm, setAuthForm] = useState({
     name: "",
     email: "",
@@ -1015,11 +1039,14 @@ function App() {
       setUser(firebaseUser);
       setAuthChecked(true);
 
-      if (firebaseUser) {
+      if (firebaseUser?.emailVerified) {
         const nextQuote = pickMotivationalQuote(previousQuoteRef.current);
         previousQuoteRef.current = nextQuote;
         setMotivationalQuote(nextQuote);
         setAuthView("app");
+      } else if (firebaseUser) {
+        // Do not grant app access until the email address is verified.
+        setUser(null);
       }
     });
 
@@ -1427,6 +1454,7 @@ function App() {
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
     setAuthError("");
+    setAuthSuccess("");
 
     const isSignup = authView === "signup";
     const email = authForm.email.trim();
@@ -1478,8 +1506,20 @@ function App() {
           { merge: true }
         );
 
-        setUser(firebaseUser);
-        setAuthView("app");
+        // Send the verification email before signing the new user out.
+        await sendEmailVerification(firebaseUser);
+        await signOut(auth);
+
+        setUser(null);
+        setAuthView("signup");
+        setAuthSuccess(
+          `We sent a verification link to ${email}. Please check your inbox (and spam folder), then verify your email before logging in.`
+        );
+        setAuthForm((previous) => ({
+          ...previous,
+          password: "",
+          confirmPassword: "",
+        }));
       } else {
         const credential = await signInWithEmailAndPassword(
           auth,
@@ -1487,16 +1527,26 @@ function App() {
           password
         );
 
+        if (!credential.user.emailVerified) {
+          await signOut(auth);
+          setUser(null);
+          setAuthView("login");
+          setAuthError("Please verify your email address using the link we sent you before logging in.");
+          return;
+        }
+
         setUser(credential.user);
         setAuthView("app");
       }
 
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      if (!isSignup) {
+        setAuthForm({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      }
       setAuthError("");
     } catch (error) {
       console.error("Firebase authentication error:", error);
@@ -1570,6 +1620,7 @@ function App() {
 
   const openAuth = (view) => {
     setAuthError("");
+    setAuthSuccess("");
     setAuthView(view);
   };
 
@@ -3570,6 +3621,7 @@ function App() {
           onForgotPassword={handleForgotPassword}
           loading={authLoading}
           error={authError}
+          successMessage={authSuccess}
           form={authForm}
           setForm={setAuthForm}
         />
