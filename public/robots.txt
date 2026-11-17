@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Keep private/authenticated application areas out of search
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /results
+Disallow: /upload
+Disallow: /flashcards
+Disallow: /quiz
+Disallow: /games
+
+# Sitemap
+Sitemap: https://study-flow-ai-lac.vercel.app/sitemap.xml
