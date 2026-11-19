@@ -4175,7 +4175,16 @@ function App() {
                 if (!converterBusy) handleConverterFiles(event.dataTransfer.files);
               }}
             >
-              <span className="converter-folder-icon">📄</span>
+              <span className="converter-folder-icon"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  height="32"
+  width="32"
+  fill="#e3e3e3"
+>
+  <path d="M11,19h2V14.83l1.6,1.6L16,15l-4-4L8,15l1.43,1.4L11,14.83V19ZM6,22q-0.82,0-1.41-0.59T4,20V4Q4,3.17 4.59,2.59T6,2h8l6,6V20q0,0.82-0.59,1.41T18,22H6ZM13,9V4H6V20H18V9H13ZM6,4V9V4V9V20V4Z" />
+</svg>
+</span>
               <strong>
                 {converterFile
                   ? Array.isArray(converterFile)
