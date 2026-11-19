@@ -298,6 +298,9 @@ function WelcomePage({ onLogin, onSignup }) {
             <button type="button" className="secondary-auth-button" onClick={onLogin}>
               I already have an account
             </button>
+            <button type="button" className="download-apk">
+              Download Android .APK
+            </button>
           </div>
 
           <div className="feature-grid">
