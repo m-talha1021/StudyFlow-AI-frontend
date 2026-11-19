@@ -13154,6 +13154,10 @@ footer p {
    text-decoration: none;
 }
 
+.download-apk a:hover{
+   color: black;
+}
+
 /* Hover Effect */
 .download-apk:hover {
     background-color: white;
