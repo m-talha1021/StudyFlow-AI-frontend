@@ -5130,7 +5130,7 @@ function App() {
                   </div>
                   <div className="transcription-result-actions">
                     <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy📋</button>
-                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg> TXT</button>
+                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="18px" width="18px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg> TXT</button>
                   </div>
                 </div>
                 <textarea
@@ -5222,7 +5222,7 @@ function App() {
                   className="download-button"
                   title="Download PDF"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg> PDF
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="18px" width="18px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg> PDF
                 </button>
 
                 <button
