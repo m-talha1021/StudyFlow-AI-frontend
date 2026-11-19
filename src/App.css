@@ -13136,8 +13136,13 @@ footer p {
     box-sizing: border-box;
 }
 
-/* Download APK Button */
 .download-apk {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
     background-color: #000;
     color: white;
     border: 1px solid #bfb8b8;
@@ -13146,15 +13151,21 @@ footer p {
     cursor: pointer;
     font-size: 16px;
     font-weight: 750;
+    text-decoration: none;
     transition: all 0.3s ease;
 }
 
-.download-apk a{
-   color: white;
-   text-decoration: none;
-   margin-bottom: 10px;
+.download-apk svg {
+    flex-shrink: 0;
 }
-.download-apk:hover{
-   border: 1px #113d73 solid;
+
+.download-apk a {
+    color: white;
+    text-decoration: none;
 }
+
+.download-apk:hover {
+    border: 1px solid #113d73;
+}
+
 
