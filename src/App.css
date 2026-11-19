@@ -13152,6 +13152,7 @@ footer p {
 .download-apk a{
    color: white;
    text-decoration: none;
+   padding-bottom: 5px;
 }
 
 .download-apk a:hover{
