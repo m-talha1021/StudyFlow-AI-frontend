@@ -299,7 +299,7 @@ function WelcomePage({ onLogin, onSignup }) {
               I already have an account
             </button>
             <button type="button" className="download-apk">
-              <a href= "https://drive.google.com/file/d/1qo3fmN5Q5lNlrwNZDYPFpqBLkTdGUjRR/view?usp=sharing" _target="blabk">⤓ Android .APK</a>
+              <a href= "https://drive.google.com/file/d/1qo3fmN5Q5lNlrwNZDYPFpqBLkTdGUjRR/view?usp=sharing" _target="blabk">⬇ Android .APK</a>
             </button>
           </div>
 
