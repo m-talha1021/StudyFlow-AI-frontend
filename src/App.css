@@ -13155,13 +13155,4 @@ footer p {
    padding-bottom: 5px;
 }
 
-.download-apk a:hover{
-   color: black;
-}
 
-/* Hover Effect */
-.download-apk:hover {
-    background-color: white;
-    color: black;
-    border-color: black;
-}
