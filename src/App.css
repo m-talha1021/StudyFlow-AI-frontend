@@ -13136,3 +13136,15 @@ footer p {
     box-sizing: border-box;
 }
 
+.download-apk a{
+   text-decoration: none;
+   color: white;
+}
+.download-apk button{
+   backgorund-color: black;
+   border-radius: 5px white linear;
+}
+.download-apk button:hover{
+   background-color: white;
+   color: black;
+}
