@@ -15773,26 +15773,6 @@ section.result-section,
   border: 1.5px solid #111827 !important;
 }
 
-.container {
-  padding-top: 18px !important;
-  padding-bottom: 30px !important;
-}
-
-.dashboard-section {
-  padding-top: 16px !important;
-  padding-bottom: 14px !important;
-}
-
-section.dashboard-section > div.dashboard-welcome {
-  padding: 24px 20px;
-}
-
-#root section.hero {
-  min-height: 0;
-  padding: 26px 20px 6px;
-  margin-top: 0;
-}
-
 .transcription-kicker {
   color: #4338ca !important;
 }
