@@ -15696,3 +15696,36 @@ section.dashboard-section > div.dashboard-welcome h2 {
 .dashboard-motivational-quote {
   color: #475569 !important;
 }
+
+/* ============================================================
+   ROUND 8 (2026-11-24) — logged-in hero reversed per Muhammad:
+   section background WHITE, the doodle background image kept
+   BLACK (brightness(0) filter forces the PNG's visible pixels
+   to black on the white band), text back to dark.
+   ============================================================ */
+
+#root section.hero {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #111827;
+  box-shadow: 0 14px 30px -16px rgba(15, 23, 42, 0.25);
+}
+
+#root section.hero::before {
+  filter: brightness(0);
+  opacity: 0.85;
+}
+
+#root section.hero h1 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+
+#root section.hero .spann {
+  color: #4f46e5 !important;
+  -webkit-text-fill-color: #4f46e5;
+}
+
+#root section.hero p {
+  color: #475569 !important;
+}
