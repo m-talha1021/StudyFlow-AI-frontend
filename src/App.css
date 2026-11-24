@@ -15919,3 +15919,60 @@ section.result-section,
 .dashboard-rank-progress small {
   display: none !important;
 }
+
+/* ============================================================
+   ROUND 21 (2026-11-24) — Flashcards, from Muhammad's
+   screenshot:
+   - Panel border colour to black
+   - Previous / Flip / Next buttons: indigo-violet gradient
+     with white text (they were white text on pale lavender)
+   - Question/answer card UI: front face gets clean white
+     text on the gradient (a recolour pass had forced the
+     question text dark on purple); back face label darkened
+   ============================================================ */
+
+.flashcards-section {
+  border: 1.5px solid #111827 !important;
+}
+
+.flashcard-controls button,
+.flashcard-controls .secondary-button {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  border: 1px solid transparent !important;
+  font-weight: 700;
+}
+
+.flashcard-controls button:disabled,
+.flashcard-controls .secondary-button:disabled {
+  opacity: 0.45;
+}
+
+/* Front (question) face: white text on the gradient */
+.flashcard .flashcard-front p,
+.flashcard .flashcard-front strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.flashcard .flashcard-front small {
+  color: rgba(255, 255, 255, 0.85) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.85);
+}
+
+.flashcard .flashcard-front .flashcard-label {
+  color: #e0e7ff !important;
+  -webkit-text-fill-color: #e0e7ff;
+}
+
+/* Back (answer) face: light card, dark text, indigo label */
+.flashcard .flashcard-back .flashcard-label {
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+}
+
+.flashcard .flashcard-back small {
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569;
+}
