@@ -15835,3 +15835,39 @@ section.result-section,
 .action-section {
   border: none !important;
 }
+
+/* ============================================================
+   ROUND 16 (2026-11-24) — welcome feature cards: 2 per row
+   on mobile (Muhammad). Round 3 forced 1 per row under
+   520px; now 2 per row at every mobile width, with tighter
+   spacing and type so the cards fit.
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .feature-grid > div {
+    min-height: 0;
+    padding: 14px 12px !important;
+    gap: 7px;
+  }
+
+  .feature-grid span {
+    width: 40px;
+    height: 40px;
+    font-size: 21px;
+    border-radius: 11px;
+  }
+
+  .feature-grid strong {
+    font-size: 13.5px;
+  }
+
+  .feature-grid small {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
