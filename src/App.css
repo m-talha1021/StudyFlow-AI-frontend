@@ -15793,3 +15793,36 @@ section.result-section,
   color: #4338ca !important;
   -webkit-text-fill-color: #4338ca;
 }
+
+/* ============================================================
+   ROUND 14 (2026-11-24) — from Muhammad's screenshots
+   - "What would you like to do?" section (.action-section):
+     border colour to black
+   - Navbar corners: NOT rounded (square, full-width bar)
+   - Camera area: background section removed, Take Photo
+     button made small
+   ============================================================ */
+
+.action-section {
+  border: 1.5px solid #111827 !important;
+}
+
+.public-navbar,
+.app-navbar {
+  border-radius: 0 !important;
+}
+
+.camera-upload {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.camera-button.camera-button-large,
+.camera-upload .camera-button.camera-button-large {
+  width: auto !important;
+  min-height: 42px !important;
+  padding: 10px 20px !important;
+  font-size: 14.5px !important;
+  border-radius: 12px !important;
+  gap: 8px;
+}
