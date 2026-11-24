@@ -3982,6 +3982,19 @@ function App() {
           <button
             type="button"
             onClick={() => {
+              setMobileMenuOpen(false);
+              document.getElementById("transcribing-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
+            Transcribing
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
               setMode("summary");
               setMobileMenuOpen(false);
               document.getElementById("action-section")?.scrollIntoView({
