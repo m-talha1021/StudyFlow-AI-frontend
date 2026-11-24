@@ -15871,3 +15871,40 @@ section.result-section,
     line-height: 1.4;
   }
 }
+
+/* ============================================================
+   ROUND 17 (2026-11-24) — from Muhammad's screenshots
+   - History date/time: it is a plain <span> (earlier rounds
+     missed it) — now BLACK so it is visible
+   - Copy button in result actions: white button whose icon
+     was #e3e3e3 on white — button gets a black border and
+     its SVG turns black
+   - Upload icon SVG (#e3e3e3) turns black
+   ============================================================ */
+
+.dashboard-flashcard-history-info span,
+.dashboard-flashcard-history-info small,
+.dashboard-flashcard-history-info time,
+.history-item-content time,
+.history-item-content small {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000;
+}
+
+.result-actions .secondary-button {
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  color: #000000 !important;
+}
+
+.result-actions .secondary-button svg {
+  fill: #000000 !important;
+}
+
+.upload-icon {
+  color: #000000 !important;
+}
+
+.upload-icon svg {
+  fill: #000000 !important;
+}
