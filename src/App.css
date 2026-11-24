@@ -15282,3 +15282,36 @@ html body .action-card:hover {
 .action-card small {
   color: #475569 !important;
 }
+
+/* ============================================================
+   ROUND 4 (2026-11-24) — THE ACTUAL HERO ROOT CAUSE
+   Two original rules sabotaged every earlier fix:
+   1) `html, body, #root { background: <dark navy gradient>
+      !important; background-attachment: fixed !important; }`
+      — #root itself stayed dark navy (earlier rounds only
+      fixed body and .app, and .app does not wrap the
+      logged-out pages).
+   2) `#root main, #root section, #root > div { background:
+      transparent !important; }` — ID-level specificity beat
+      the class-level !important light backgrounds on
+      .welcome-page and .auth-shell, forcing them transparent
+      and revealing #root's dark navy underneath.
+   These rules use higher-specificity selectors to win both.
+   ============================================================ */
+
+html #root {
+  background-color: #f6f7fb !important;
+  background-image: linear-gradient(180deg, #eef2ff 0%, #f6f7fb 55%) !important;
+  background-attachment: scroll !important;
+}
+
+#root main.welcome-page,
+#root > div.auth-shell,
+#root > div.app {
+  background-color: #f6f7fb !important;
+  background-image: linear-gradient(180deg, #eef2ff 0%, #f6f7fb 55%) !important;
+}
+
+#root section.welcome-hero {
+  background: transparent !important;
+}
