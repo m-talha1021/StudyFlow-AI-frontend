@@ -14917,3 +14917,88 @@ select option {
 .shared-result-viewer {
   color: #0f172a !important;
 }
+
+/* ============================================================
+   TEXT COLOR FIX — ROUND 2 (2026-11-24)
+   Verified on the live site after round 1: logo, footer and
+   "Forgot password?" were fixed, but these were still wrong:
+   - .welcome-page kept its OWN dark navy gradient, so the hero
+     paragraph was still gray-on-navy.
+   - The header "Back" button kept a bright blue pill with dark
+     text; "Sign Up" rendered white on a pale pill.
+   - Placeholders were still too faint.
+   ============================================================ */
+
+/* ---------- Welcome section: light background ---------- */
+.welcome-page {
+  background:
+    radial-gradient(760px 460px at 12% -8%, rgba(99, 102, 241, 0.16), transparent 62%),
+    radial-gradient(700px 440px at 95% 0%, rgba(168, 85, 247, 0.12), transparent 60%),
+    linear-gradient(180deg, #fbfbff 0%, #f6f7fb 100%) !important;
+}
+
+.welcome-hero {
+  background: transparent !important;
+}
+
+.welcome-hero h1 {
+  color: #0f172a !important;
+}
+
+.welcome-hero p,
+.welcome-page .welcome-hero p {
+  color: #475569 !important;
+}
+
+.auth-shell {
+  background:
+    radial-gradient(760px 460px at 12% -8%, rgba(99, 102, 241, 0.18), transparent 62%),
+    radial-gradient(700px 440px at 95% 0%, rgba(168, 85, 247, 0.14), transparent 60%),
+    linear-gradient(180deg, #fbfbff 0%, #f6f7fb 100%) !important;
+}
+
+/* ---------- Header buttons: Back/Login light pill, Sign Up gradient ---------- */
+.public-navbar .nav-link-button {
+  background: #eef2ff !important;
+  background-color: #eef2ff !important;
+  border: 1px solid #e0e7ff !important;
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+}
+
+.public-navbar .nav-link-button:hover {
+  background: #e0e7ff !important;
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  -webkit-text-fill-color: #3730a3;
+}
+
+.public-navbar .nav-signup-button,
+.nav-signup-button {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  border: 1px solid transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* ---------- Placeholders: darker on light inputs, light on the dark chat input ---------- */
+.auth-card input::placeholder,
+.auth-card textarea::placeholder,
+.auth-shell input::placeholder,
+.feedback-form input::placeholder,
+.feedback-form textarea::placeholder,
+.transcription-section input::placeholder,
+.transcription-section textarea::placeholder {
+  color: #475569 !important;
+  opacity: 1;
+}
+
+.chat-input-form input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+/* ---------- Feature descriptions: darker gray ---------- */
+.feature-grid small {
+  color: #334155 !important;
+}
