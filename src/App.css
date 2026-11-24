@@ -15729,3 +15729,12 @@ section.dashboard-section > div.dashboard-welcome h2 {
 #root section.hero p {
   color: #475569 !important;
 }
+
+/* ============================================================
+   ROUND 9 (2026-11-24) — remove the dashed/dotted border
+   around the camera (Take Photo) upload area, per Muhammad.
+   ============================================================ */
+
+.camera-upload {
+  border: none !important;
+}
