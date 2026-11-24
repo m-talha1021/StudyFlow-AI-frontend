@@ -15909,13 +15909,3 @@ section.result-section,
   fill: #000000 !important;
 }
 
-/* ============================================================
-   ROUND 18 (2026-11-24) — rank progress bar removed
-   (Muhammad: "remove the blue bar from below"). The
-   "x/50 sessions • x/50 materials" text stays, readable
-   on the white card.
-   ============================================================ */
-
-.dashboard-rank-progress-track {
-  display: none !important;
-}
