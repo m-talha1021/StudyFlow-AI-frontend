@@ -16058,3 +16058,16 @@ section.result-section,
 .test-navigation-buttons .test-submit-button:hover {
   transform: translateY(-50%) !important;
 }
+
+/* ============================================================
+   ROUND 27 (2026-11-24) — remove border from ALL selected
+   file rows (Muhammad). Round 22 only covered .selected-file;
+   the wide file row uses .selected-file-item, and the
+   transcription chip uses .transcription-selected-file.
+   ============================================================ */
+
+.selected-file,
+.selected-file-item,
+.transcription-selected-file {
+  border: none !important;
+}
