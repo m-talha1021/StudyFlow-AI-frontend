@@ -15610,3 +15610,89 @@ section.dashboard-section > div.dashboard-welcome h2 {
 #root section.hero p {
   color: #cbd5e1 !important;
 }
+
+/* ============================================================
+   ROUND 7 (2026-11-24) — from Muhammad's screenshots
+   - Selected-file name was near-white (#e4e4e7) on white:
+     now dark and readable
+   - Result section + transcription card borders: black
+   - Transcription UI: remove the stray bordered box around
+     the language select, tidy spacing
+   - Welcome band: black background REMOVED (his request) —
+     back to a soft light tint with a dark heading and quote
+   ============================================================ */
+
+/* ---------- Selected file (Study Material) ---------- */
+.selected-files-header {
+  color: #0f172a !important;
+  font-weight: 700;
+}
+
+.selected-file-item {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.selected-file-item strong,
+.selected-file strong {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.selected-file-item small,
+.selected-file small {
+  color: #64748b !important;
+}
+
+.selected-file-remove {
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  -webkit-text-fill-color: #e11d48;
+  border: 1px solid #fecdd3 !important;
+}
+
+/* ---------- Result section: black border ---------- */
+.result-section {
+  border: 1.5px solid #111827 !important;
+}
+
+.result-header {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* ---------- Transcription: black card border + tidier UI ---------- */
+.transcription-card {
+  border: 1.5px solid #111827 !important;
+}
+
+.transcription-language-select {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  align-items: center;
+}
+
+.transcription-selected-file strong {
+  color: #0f172a !important;
+}
+
+.transcription-selected-file small {
+  color: #64748b !important;
+}
+
+/* ---------- Welcome band: black removed, light tint + dark text ---------- */
+section.dashboard-section > div.dashboard-welcome {
+  background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%) !important;
+  background-color: #eef2ff !important;
+  border: 1px solid #e0e7ff !important;
+  box-shadow: 0 10px 25px -12px rgba(79, 70, 229, 0.25) !important;
+}
+
+section.dashboard-section > div.dashboard-welcome h2 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.dashboard-motivational-quote {
+  color: #475569 !important;
+}
