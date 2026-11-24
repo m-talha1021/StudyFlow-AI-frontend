@@ -15738,3 +15738,18 @@ section.dashboard-section > div.dashboard-welcome h2 {
 .camera-upload {
   border: none !important;
 }
+
+/* ============================================================
+   ROUND 10 (2026-11-24) — hero section: border removed and
+   background made the same as the whole screen (transparent,
+   so the page background shows through), per Muhammad.
+   The doodle image stays black and the text stays dark.
+   ============================================================ */
+
+#root section.hero {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
