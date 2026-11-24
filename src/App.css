@@ -15976,3 +15976,24 @@ section.result-section,
   color: #475569 !important;
   -webkit-text-fill-color: #475569;
 }
+
+/* ============================================================
+   ROUND 22 (2026-11-24) — from Muhammad's screenshots
+   - Selected-file chip: outer border removed
+   - Test Concepts panel (.games-panel): border to black
+   - Previous Test Concepts items: only "Test Concepts" +
+     date + time shown — the "Files: ..." line (the only
+     <small> in history info blocks) is hidden
+   ============================================================ */
+
+.selected-file {
+  border: none !important;
+}
+
+.games-panel {
+  border: 1.5px solid #111827 !important;
+}
+
+.dashboard-flashcard-history-info small {
+  display: none !important;
+}
