@@ -16084,3 +16084,14 @@ section.result-section,
   background: transparent !important;
   background-color: transparent !important;
 }
+
+/* ============================================================
+   ROUND 29 (2026-11-24) — splash screen: back to the
+   previous flat deep indigo (#1e1b4b), per Muhammad
+   ("retain the previous splash screen color").
+   ============================================================ */
+
+#root > div.auth-loading-screen {
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
+}
