@@ -15826,3 +15826,12 @@ section.result-section,
   border-radius: 12px !important;
   gap: 8px;
 }
+
+/* ============================================================
+   ROUND 15 (2026-11-24) — action section border removed
+   entirely (Muhammad changed his mind after seeing it black).
+   ============================================================ */
+
+.action-section {
+  border: none !important;
+}
