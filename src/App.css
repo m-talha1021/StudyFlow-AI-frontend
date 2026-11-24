@@ -14736,3 +14736,184 @@ footer p { color: var(--sf-muted); }
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   TEXT COLOR FIX LAYER (2026-11-24) — readability pass
+   ------------------------------------------------------------
+   WHY: several ORIGINAL rules used !important DARK page
+   backgrounds (html body, .app, dashboard containers, footer)
+   that overpowered the redesign's light backgrounds, while
+   the redesign's dark text colours stayed — dark text on dark
+   navy. This layer restores the light page canvas the redesign
+   was designed for, darkens washed-out gray text, and fixes
+   the specific unreadable spots found on the live site:
+   hero paragraph, header logo, footer, "Forgot password?",
+   "Back" button, placeholders, APK download link, feedback
+   panel and cookie bar text. No layout changes.
+   ============================================================ */
+
+/* ---------- Stronger gray text tokens (contrast on light) ---------- */
+:root {
+  --sf-muted: #475569;
+  --sf-faint: #64748b;
+}
+
+/* ---------- 1. Page canvas: light, as the redesign intended ---------- */
+html body {
+  background: linear-gradient(180deg, #fbfbff 0%, #f6f7fb 340px) !important;
+  background-color: #f6f7fb !important;
+  color: #0f172a;
+}
+
+.app {
+  background:
+    radial-gradient(720px 420px at 8% -6%, rgba(99, 102, 241, 0.14), transparent 62%),
+    radial-gradient(680px 420px at 96% -4%, rgba(168, 85, 247, 0.12), transparent 60%),
+    linear-gradient(180deg, #fafaff 0%, #f6f7fb 340px) !important;
+  color: #0f172a;
+}
+
+html body .dashboard,
+html body .dashboard-page,
+html body .logged-in-page,
+html body .main-content,
+html body .page-content {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ---------- 2. Navbars: solid light, readable brand + links ---------- */
+.public-navbar,
+.app-navbar {
+  background: rgba(255, 255, 255, 0.94) !important;
+}
+
+.brand-mark,
+.brand-mark span,
+.brand-mark b,
+.brand-mark strong {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.nav-link-button {
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155;
+}
+
+.nav-link-button:hover {
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+}
+
+/* ---------- 3. Welcome / hero text ---------- */
+.welcome-page {
+  color: #0f172a;
+}
+
+.welcome-hero p,
+.welcome-hero > p,
+.welcome-page .welcome-hero p {
+  color: #475569 !important;
+}
+
+.feature-grid strong {
+  color: #0f172a;
+}
+
+.feature-grid small {
+  color: #475569 !important;
+}
+
+.download-apk,
+.download-apk a {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* ---------- 4. Footer: light background, readable text ---------- */
+footer,
+.public-footer,
+.app-footer,
+.footer {
+  background: #ffffff !important;
+  color: #475569 !important;
+}
+
+footer p,
+.public-footer p,
+.app-footer p,
+.footer p,
+.public-footer-credit {
+  color: #475569 !important;
+}
+
+footer strong,
+.public-footer strong,
+.app-footer strong,
+.footer strong {
+  color: #0f172a !important;
+}
+
+footer a,
+.public-footer a,
+.app-footer a,
+.footer a {
+  color: #4338ca !important;
+}
+
+/* ---------- 5. Auth: forgot-password link, placeholders, subtext ---------- */
+.forgot-password-button {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.forgot-password-button:hover:not(:disabled) {
+  background: #eef2ff !important;
+  background-color: #eef2ff !important;
+  color: #3730a3 !important;
+  -webkit-text-fill-color: #3730a3;
+}
+
+.auth-card > p {
+  color: #475569;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1;
+}
+
+select option {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+/* ---------- 6. Feedback panel: light surface, dark text ---------- */
+.feedback-content {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+}
+
+/* ---------- 7. Cookie bar: dark bar keeps LIGHT text ---------- */
+.cookie-consent-bar,
+.cookie-consent-text,
+.cookie-consent-content,
+.cookie-consent-bar p,
+.cookie-consent-bar span {
+  color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0;
+}
+
+/* ---------- 8. Shared result page: dark text on light page ---------- */
+.shared-result-page,
+.shared-result-viewer {
+  color: #0f172a !important;
+}

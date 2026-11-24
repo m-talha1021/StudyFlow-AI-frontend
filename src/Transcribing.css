@@ -334,3 +334,24 @@
     border-radius: 14px;
   }
 }
+
+/* --- Text color fix (2026-11-24): readable message/header text on the light card --- */
+.transcription-message.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.transcription-message.success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.transcription-result-header p {
+  color: #475569;
+}
+
+.transcription-result-header p strong {
+  color: #0f172a;
+}
