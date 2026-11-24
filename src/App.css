@@ -16017,3 +16017,13 @@ section.result-section,
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff;
 }
+
+/* ============================================================
+   ROUND 25 (2026-11-24) — splash screen background: brand
+   indigo-violet gradient (matches the logo gradient and
+   the site's primary buttons), replacing the flat indigo.
+   ============================================================ */
+
+#root > div.auth-loading-screen {
+  background: linear-gradient(150deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%) !important;
+}
