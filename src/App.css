@@ -15909,3 +15909,13 @@ section.result-section,
   fill: #000000 !important;
 }
 
+
+/* ============================================================
+   ROUND 20 (2026-11-24) — remove the "x/50 sessions •
+   x/50 materials" text line under the rank progress bar
+   (Muhammad). The bar itself stays.
+   ============================================================ */
+
+.dashboard-rank-progress small {
+  display: none !important;
+}
