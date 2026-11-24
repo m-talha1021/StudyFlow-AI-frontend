@@ -15315,3 +15315,267 @@ html #root {
 #root section.welcome-hero {
   background: transparent !important;
 }
+
+/* ============================================================
+   ROUND 5 (2026-11-24) — from Muhammad's screenshots
+   - Autofill no longer turns fields black
+   - Navbar recoloured to match the footer (deep indigo
+     #1e1b4b), mobile menu panel matches too
+   - "Welcome back" hero band gets the black background he
+     asked for; other logged-in headings go dark
+   - Study Material + Transcribing sections: black outlines,
+     readable subtitles, tidier transcription UI
+   - Selected mode option: white text on the gradient
+   - Dashboard / History panels: clean white UI, readable
+     dates, buttons and rank progress
+   - Mobile logout: solid red, white text
+   - Take Photo (camera) button: gradient with white text
+   ============================================================ */
+
+/* ---------- Autofill: keep light fields, dark text ---------- */
+body .auth-card input:-webkit-autofill,
+body .auth-card input:-webkit-autofill:hover,
+body .auth-card input:-webkit-autofill:focus,
+body .auth-card input:-webkit-autofill:active,
+html body input:-webkit-autofill,
+html body input:-webkit-autofill:hover,
+html body input:-webkit-autofill:focus,
+html body input:-webkit-autofill:active,
+html body textarea:-webkit-autofill,
+html body select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #0f172a !important;
+  caret-color: #0f172a !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ---------- Navbar: same deep indigo as the footer ---------- */
+.public-navbar,
+.app-navbar {
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
+  background-image: none !important;
+  border-bottom: 1px solid #312e81 !important;
+  box-shadow: 0 10px 30px -12px rgba(30, 27, 75, 0.55) !important;
+}
+
+.app-navbar .app-nav-links.mobile-open {
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
+  border: 1px solid #312e81 !important;
+}
+
+.app-navbar .app-nav-links.mobile-open > button,
+.app-navbar .app-nav-links.mobile-open a {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* ---------- Welcome hero band: black, white heading ---------- */
+section.dashboard-section > div.dashboard-welcome {
+  background: #050508 !important;
+  background-color: #050508 !important;
+  border-radius: 22px;
+  padding: 38px 22px;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+}
+
+section.dashboard-section > div.dashboard-welcome h2 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* ---------- Logged-in section headings: dark ---------- */
+.input-card .card-header h2,
+.transcription-heading h2,
+.dashboard-panel .dashboard-heading h2 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.input-card .card-header p,
+.transcription-heading p {
+  color: #475569 !important;
+}
+
+/* ---------- Black outlines: Study Material + Transcribing ---------- */
+.input-card {
+  border: 1.5px solid #111827 !important;
+}
+
+.transcription-section {
+  border: 1.5px solid #111827 !important;
+}
+
+/* ---------- Transcription UI polish ---------- */
+.transcription-card {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 18px !important;
+}
+
+.transcription-formats {
+  color: #64748b !important;
+}
+
+#transcription-language {
+  background: #0f1b3d !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  border: 1px solid #1e293b !important;
+}
+
+#transcription-language option {
+  background: #0f1b3d;
+  color: #ffffff;
+}
+
+#transcription-language option:checked {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+/* ---------- Mode options: selected = white text ---------- */
+.mode {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.mode strong {
+  color: #0f172a !important;
+}
+
+.mode small {
+  color: #64748b !important;
+}
+
+.mode.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+.mode.active strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.mode.active small {
+  color: rgba(255, 255, 255, 0.88) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---------- Dashboard / History panels: clean white UI ---------- */
+.dashboard-panel {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 45px -18px rgba(15, 23, 42, 0.25) !important;
+  color: #0f172a !important;
+}
+
+.dashboard-panel .dashboard-heading p {
+  color: #475569 !important;
+}
+
+.dashboard-history-panel {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.dashboard-history-header h3 {
+  color: #0f172a !important;
+}
+
+.dashboard-history-header p {
+  color: #475569 !important;
+}
+
+.dashboard-history-close {
+  background: #eef2ff !important;
+  color: #4338ca !important;
+}
+
+.dashboard-history-open {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  border: 1px solid transparent !important;
+}
+
+.history-item,
+.dashboard-flashcard-history-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.history-item-content strong,
+.dashboard-flashcard-history-info strong {
+  color: #0f172a !important;
+}
+
+.history-item-content small,
+.history-item-content time,
+.dashboard-flashcard-history-info small,
+.dashboard-flashcard-history-info time,
+.dashboard-flashcard-history-info p {
+  color: #64748b !important;
+}
+
+.dashboard-history-empty {
+  background: #f8fafc !important;
+  color: #64748b !important;
+}
+
+.dashboard-stat-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.dashboard-stat-card p,
+.dashboard-card-hint {
+  color: #64748b !important;
+}
+
+.dashboard-rank-progress-track {
+  background: #e0e7ff !important;
+}
+
+.dashboard-rank-progress-track > span {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed) !important;
+}
+
+.dashboard-rank-progress small {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+/* ---------- Mobile logout: solid red, white text ---------- */
+.mobile-logout-button,
+.app-navbar .mobile-logout-button {
+  background: linear-gradient(135deg, #e11d48, #db2777) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  border: 1px solid transparent !important;
+}
+
+/* ---------- Take Photo / camera button: white on gradient ---------- */
+.camera-button,
+.camera-button-large,
+.camera-upload .camera-button.camera-button-large {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  border: 1px solid transparent !important;
+}
+
+.camera-button *,
+.camera-button-large * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
