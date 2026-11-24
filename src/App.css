@@ -15753,3 +15753,46 @@ section.dashboard-section > div.dashboard-welcome h2 {
   border: none !important;
   box-shadow: none !important;
 }
+
+/* ============================================================
+   ROUND 11 (2026-11-24) — from Muhammad's screenshots
+   - Transcription SECTION border removed (the inner card
+     keeps its black border)
+   - Result section border: black, re-asserted stronger
+   - Extra space reduced: page top padding, dashboard
+     section padding, welcome band padding, hero height
+   - Transcription kicker text darkened so it reads clearly
+   ============================================================ */
+
+.transcription-section {
+  border: none !important;
+}
+
+section.result-section,
+.result-section.shared-result-viewer {
+  border: 1.5px solid #111827 !important;
+}
+
+.container {
+  padding-top: 18px !important;
+  padding-bottom: 30px !important;
+}
+
+.dashboard-section {
+  padding-top: 16px !important;
+  padding-bottom: 14px !important;
+}
+
+section.dashboard-section > div.dashboard-welcome {
+  padding: 24px 20px;
+}
+
+#root section.hero {
+  min-height: 0;
+  padding: 26px 20px 6px;
+  margin-top: 0;
+}
+
+.transcription-kicker {
+  color: #4338ca !important;
+}
