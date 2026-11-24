@@ -15776,3 +15776,20 @@ section.result-section,
 .transcription-kicker {
   color: #4338ca !important;
 }
+
+/* ============================================================
+   ROUND 13 (2026-11-24) — hero heading: both lines clearly
+   readable (Muhammad). Line 1 stays near-black, line 2 goes
+   to a deeper indigo (#4338ca, stronger contrast), and the
+   doodle image behind the text is faded so it no longer
+   fights the heading.
+   ============================================================ */
+
+#root section.hero::before {
+  opacity: 0.32;
+}
+
+#root section.hero .spann {
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+}
