@@ -227,3 +227,110 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   StudyFlow AI — Transcribing redesign layer (2026-11-24)
+   Visual-only overrides aligned with the App.css redesign
+   tokens (indigo/violet + slate, light surfaces). All original
+   rules above are preserved; layout properties are untouched.
+   ============================================================ */
+
+.transcription-section,
+.transcription-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
+  color: #0f172a;
+}
+
+.transcription-heading {
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.transcription-kicker {
+  color: #4f46e5;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+.transcription-output,
+.transcription-result {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  color: #334155;
+  line-height: 1.7;
+}
+
+.transcription-submit-button,
+.transcribe-button {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.55);
+}
+
+.transcription-secondary-button,
+.transcription-choose-button {
+  background: #ffffff;
+  color: #4338ca;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.transcription-language-select,
+.transcription-section input,
+.transcription-section textarea,
+.transcription-section select {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+}
+
+.transcription-language-select:focus,
+.transcription-section input:focus,
+.transcription-section textarea:focus,
+.transcription-section select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.28);
+  outline: none;
+}
+
+.transcription-selected-file {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #ddd6fe;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.transcription-message,
+.transcription-formats,
+.transcription-original-language-note {
+  color: #64748b;
+}
+
+.transcription-progress {
+  background: #e0e7ff;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.transcription-spinner {
+  border-color: #e0e7ff;
+  border-top-color: #4f46e5;
+}
+
+@media (max-width: 480px) {
+  .transcription-section,
+  .transcription-card {
+    border-radius: 14px;
+  }
+}
