@@ -16027,3 +16027,34 @@ section.result-section,
 #root > div.auth-loading-screen {
   background: linear-gradient(150deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%) !important;
 }
+
+/* ============================================================
+   ROUND 26 (2026-11-24) — test navigation layout
+   (Muhammad): Next Question button centred; Submit Test
+   button shorter and pushed fully to the right.
+   ============================================================ */
+
+.test-navigation-buttons {
+  position: relative !important;
+}
+
+.test-navigation-buttons .test-next-button {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.test-navigation-buttons .test-submit-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto !important;
+  min-width: 0 !important;
+  flex: none !important;
+  padding: 12px 20px !important;
+  font-size: 15px !important;
+}
+
+.test-navigation-buttons .test-submit-button:hover {
+  transform: translateY(-50%) !important;
+}
