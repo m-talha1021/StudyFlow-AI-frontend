@@ -15002,3 +15002,283 @@ select option {
 .feature-grid small {
   color: #334155 !important;
 }
+
+/* ============================================================
+   ROUND 3 (2026-11-24) — requested by Muhammad
+   1. Password eye icon on Login / Sign Up: proper outline eye,
+      centered in the field, visible slate/indigo colours.
+   2. Navbar recoloured: indigo -> violet gradient, white text.
+      Footer recoloured: deep indigo, light text.
+   3. Welcome feature cards recoloured (soft indigo tint) with
+      tidier layout; in-app feature/action cards made light
+      with a cleaner layout (they were dark navy with dark text).
+   4. Welcome/auth backgrounds simplified to a single light
+      gradient layer (bulletproof) so the hero text sits on light.
+   ============================================================ */
+
+/* ---------- 4. Simple light page backgrounds ---------- */
+.welcome-page,
+.auth-shell {
+  background-color: #f6f7fb !important;
+  background-image: linear-gradient(180deg, #eef2ff 0%, #f6f7fb 55%) !important;
+}
+
+/* ---------- 1. Password eye icon ---------- */
+.password-field-wrapper input {
+  padding-right: 52px !important;
+}
+
+.password-eye-button {
+  top: 50% !important;
+  right: 10px !important;
+  width: 34px !important;
+  height: 34px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: translateY(-50%) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 9px !important;
+  box-shadow: none !important;
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 5;
+}
+
+.password-eye-button svg {
+  width: 20px !important;
+  height: 20px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  display: block;
+}
+
+.password-eye-button:hover {
+  transform: translateY(-50%) !important;
+  background: #eef2ff !important;
+  background-color: #eef2ff !important;
+  color: #4338ca !important;
+  -webkit-text-fill-color: #4338ca;
+}
+
+.password-eye-button:focus-visible {
+  transform: translateY(-50%) !important;
+  outline: 2px solid #4f46e5 !important;
+  outline-offset: 1px;
+  color: #4338ca !important;
+}
+
+/* ---------- 2. Navbar: indigo -> violet gradient ---------- */
+.public-navbar,
+.app-navbar {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 10px 30px -12px rgba(79, 70, 229, 0.55) !important;
+}
+
+.public-navbar .brand-mark,
+.public-navbar .brand-mark span,
+.public-navbar .brand-mark b,
+.public-navbar .brand-mark strong,
+.app-navbar .brand-mark,
+.app-navbar .brand-mark span,
+.app-navbar .brand-mark b,
+.app-navbar .brand-mark strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.public-navbar .nav-link-button {
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.public-navbar .nav-link-button:hover {
+  background: rgba(255, 255, 255, 0.30) !important;
+  background-color: rgba(255, 255, 255, 0.30) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.public-navbar .nav-signup-button,
+.nav-signup-button {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #4f46e5 !important;
+  -webkit-text-fill-color: #4f46e5;
+  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.45) !important;
+}
+
+.app-navbar .app-nav-links > button,
+.app-navbar .app-nav-links a,
+.app-navbar .nav-links a {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.app-navbar .logout-button {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #4f46e5 !important;
+  -webkit-text-fill-color: #4f46e5;
+  border: 1px solid #ffffff !important;
+}
+
+.app-navbar .navbar-menu-button {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* ---------- 2b. Footer: deep indigo ---------- */
+footer,
+.public-footer,
+.app-footer,
+.footer {
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
+  border-top: 1px solid #312e81 !important;
+  color: #c7d2fe !important;
+}
+
+footer p,
+.public-footer p,
+.app-footer p,
+.footer p,
+.public-footer-credit {
+  color: #c7d2fe !important;
+}
+
+footer strong,
+.public-footer strong,
+.app-footer strong,
+.footer strong {
+  color: #ffffff !important;
+}
+
+footer a,
+.public-footer a,
+.app-footer a,
+.footer a {
+  color: #a5b4fc !important;
+}
+
+footer a:hover,
+.public-footer a:hover,
+.app-footer a:hover,
+.footer a:hover {
+  color: #ffffff !important;
+}
+
+/* ---------- 3. Welcome feature cards: soft indigo tint + tidy layout ---------- */
+.feature-grid {
+  gap: 16px !important;
+  align-items: stretch;
+}
+
+.feature-grid > div {
+  background: linear-gradient(160deg, #eef2ff 0%, #f5f3ff 100%) !important;
+  border: 1px solid #c7d2fe !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 14px -6px rgba(79, 70, 229, 0.18) !important;
+  padding: 22px 18px !important;
+  min-height: 158px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 9px;
+  text-align: left;
+}
+
+.feature-grid > div:hover {
+  border-color: #818cf8 !important;
+  box-shadow: 0 14px 28px -10px rgba(79, 70, 229, 0.35) !important;
+  transform: translateY(-3px);
+}
+
+.feature-grid span {
+  background: #ffffff;
+  border: 1px solid #e0e7ff;
+  border-radius: 13px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 3px 8px -3px rgba(79, 70, 229, 0.25);
+}
+
+.feature-grid strong {
+  color: #1e1b4b !important;
+  font-size: 15.5px;
+}
+
+.feature-grid small {
+  color: #475569 !important;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .feature-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .feature-grid > div {
+    min-height: 0;
+  }
+}
+
+/* ---------- 3b. In-app feature / action cards: light + tidy ---------- */
+html body .feature-card,
+html body .study-action-card,
+html body .action-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 14px -6px rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+}
+
+html body .feature-card:hover,
+html body .study-action-card:hover,
+html body .action-card:hover {
+  background: #ffffff !important;
+  border-color: #a5b4fc !important;
+  box-shadow: 0 14px 28px -10px rgba(79, 70, 229, 0.28) !important;
+}
+
+.feature-card h3,
+.feature-card strong,
+.study-action-card h3,
+.study-action-card strong,
+.action-card h3,
+.action-card strong {
+  color: #0f172a !important;
+}
+
+.feature-card p,
+.feature-card small,
+.study-action-card p,
+.study-action-card small,
+.action-card p,
+.action-card small {
+  color: #475569 !important;
+}
