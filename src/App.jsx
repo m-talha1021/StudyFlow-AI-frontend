@@ -4462,8 +4462,8 @@ function App() {
                             .map((historyItem) => (
                               <div className="dashboard-flashcard-history-item" key={historyItem.id}>
                                 <div className="dashboard-flashcard-history-info">
-                                  <strong>{historyItem.title || "Test Concepts"}</strong>
-                                  <span>{historyItem.type || "Test Concepts"} · {new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
+                                  <strong>{(historyItem.title || "Test Concepts").replace(/\s+-\s+\d{1,2}\/\d{1,2}\/\d{2,4}.*$/, "")}</strong>
+                                  <span>{new Date(Number(historyItem.createdAt || Date.now())).toLocaleString()}</span>
                                   <small>Files: {(historyItem.sourceFiles || []).join(", ") || "Pasted study material"}</small>
                                 </div>
                                 <button
