@@ -16071,3 +16071,16 @@ section.result-section,
 .transcription-selected-file {
   border: none !important;
 }
+
+/* ============================================================
+   ROUND 28 (2026-11-24) — selected file rows: white
+   background removed too (Muhammad), so they sit directly
+   on the section background.
+   ============================================================ */
+
+.selected-file,
+.selected-file-item,
+.transcription-selected-file {
+  background: transparent !important;
+  background-color: transparent !important;
+}
