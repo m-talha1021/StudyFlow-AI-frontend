@@ -15997,3 +15997,23 @@ section.result-section,
 .dashboard-flashcard-history-info small {
   display: none !important;
 }
+
+/* ============================================================
+   ROUND 24 (2026-11-24) — splash / loading screen fix.
+   The original dark background was overridden to light by
+   the redesign and the "#root > div transparent" rule, while
+   the "Loading StudyFlow AI..." text stayed near-white —
+   invisible on the light screen. Now: deep indigo
+   background (matches navbar/footer) with white text.
+   ============================================================ */
+
+#root > div.auth-loading-screen {
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
+  color: #ffffff !important;
+}
+
+.auth-loading-screen span {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
