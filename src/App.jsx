@@ -352,6 +352,18 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback }) {
             <button type="button" className="primary-auth-button" onClick={onSignup}>
               Sign Up
             </button>
+            <button type="button" className="secondary-auth-button" onClick={onSignup}>
+              Pricing
+            </button>
+            <button
+              type="button"
+              className="secondary-auth-button"
+              onClick={() =>
+                document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Features
+            </button>
             <button type="button" className="secondary-auth-button" onClick={onLogin}>
               I already have an account
             </button>
@@ -371,7 +383,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback }) {
             </button>
           </div>
 
-          <div className="feature-grid">
+          <div className="feature-grid" id="features">
             <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
             <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
             <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
