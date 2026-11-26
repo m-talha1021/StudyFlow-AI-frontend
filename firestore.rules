@@ -19,43 +19,73 @@
 # NOTE: sharedResults create requires sign-in. A signed-out visitor who
 # opens a shared link can read it, but cannot re-share it until they sign
 # in — that is intentional, so anonymous users cannot write to Firestore.
+#
+# NOTE (2026-11-26): the share-result size cap is 200000 characters, not
+# 60000 — a long summary/quiz from a big lecture can exceed 60k chars and
+# the old cap made sharing fail with a permission error. 200k stays well
+# under Firestore's 1 MiB document limit.
 
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
-    // A user may only read/write their own document and subcollections.
+    // PRIVATE USER DATA
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
 
-      match /materialHistory/{docId} {
-        allow read, write: if isOwner(userId);
+      // Uploaded material history
+      match /materialHistory/{historyId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
       }
 
-      match /flashcardHistory/{docId} {
-        allow read, write: if isOwner(userId);
+      // Generated flashcard history (existing)
+      match /flashcardHistory/{historyId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
       }
 
-      match /generatedHistory/{docId} {
-        allow read, write: if isOwner(userId);
+      // All generated content history
+      match /generatedHistory/{historyId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
       }
     }
 
-    // Public share links: readable by anyone who has the unguessable link
-    // ID, creatable only by signed-in users, never updatable/deletable,
-    // and never listable.
+    // PUBLICLY SHAREABLE STUDY RESULTS
     match /sharedResults/{shareId} {
+
+      // Only signed-in users can create share links.
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasAll([
+                      'result',
+                      'mode',
+                      'language',
+                      'title',
+                      'createdAt'
+                    ])
+                    && request.resource.data.result is string
+                    && request.resource.data.result.size() > 0
+                    && request.resource.data.result.size() <= 200000
+                    && request.resource.data.mode is string
+                    && request.resource.data.language is string
+                    && request.resource.data.title is string
+                    && request.resource.data.createdAt == request.time;
+
+      // Anyone with a share link can read that specific result.
       allow get: if true;
-      allow create: if request.auth != null;
-      allow update, delete, list: if false;
+
+      // Prevent listing all shared results.
+      allow list: if false;
+
+      // Shared results cannot be edited or deleted by clients.
+      allow update, delete: if false;
     }
 
-    // Deny everything else by default.
+    // Deny everything else by default (Firestore also denies anything
+    // not explicitly allowed; this makes it explicit).
     match /{document=**} {
       allow read, write: if false;
     }
