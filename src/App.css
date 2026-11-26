@@ -16793,16 +16793,18 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
    ROUND 47 (2026-11-27) — header gear + Logout a little left
    on desktop (Muhammad: "move these a little towards left
    side in desktop view").
+   Follow-up (2026-11-27): Muhammad asked for MORE left, so the
+   extra right padding went from +20px to +50px total.
    Root cause: the desktop navbar rule (@media min-width: 901px)
    sets padding: 10px clamp(12px, 2.5vw, 32px) — at 1280px that
    is only 32px on the right, so the gear + Logout sat close to
-   the viewport edge. Fix: +20px on the right padding only, in
+   the viewport edge. Fix: +50px on the right padding only, in
    the same desktop breakpoint, so the two buttons shift left as
    a group. Left padding, mobile header, and every other header
    element are untouched.
    ============================================================ */
 @media (min-width: 901px) {
   .app-navbar {
-    padding-right: calc(clamp(12px, 2.5vw, 32px) + 20px);
+    padding-right: calc(clamp(12px, 2.5vw, 32px) + 50px);
   }
 }
