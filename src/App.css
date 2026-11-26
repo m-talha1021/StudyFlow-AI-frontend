@@ -16367,3 +16367,41 @@ footer { gap: 6px 32px; }
 /* Header account area: gear + Logout with breathing room
    now that the user pill is gone. */
 .app-navbar .desktop-nav-user { gap: 10px; align-items: center; }
+
+/* ============================================================
+   ROUND 36 (2026-11-26) — footer phrase, transcript card layout,
+   transcribe drag & drop + Transcribe button contrast
+   Root causes found while fixing:
+   - The footer "Developed by:" text and the "M. Talha" name were
+     separate flex items, so the 32px footer gap pulled them apart.
+   - The transcript textarea was 130% wide (!important), overflowing
+     the card and breaking the result header layout.
+   - The Transcribe button is disabled (opacity .55) until a file is
+     chosen, so its blue gradient rendered as pale lavender with
+     unreadable white text.
+   ============================================================ */
+
+/* --- Transcript result: output must fit the card, header must fit --- */
+textarea.transcription-output { width: 100% !important; max-width: 100% !important; }
+@media (max-width: 767px) {
+  textarea.transcription-output { width: 100% !important; }
+}
+/* The card is a centered flex column: the result block must span it. */
+.transcription-card .transcription-result { width: 100%; min-width: 0; }
+.transcription-result-header { flex-wrap: wrap !important; align-items: center !important; }
+.transcription-result-header > div:first-child { min-width: 0; }
+.transcription-result-header h3 { font-size: 20px !important; line-height: 1.35 !important; margin: 4px 0 0 !important; }
+
+/* --- Transcribe section: even vertical rhythm --- */
+.transcription-card .transcription-formats { margin: 10px 0 0 !important; }
+.transcription-submit-button { margin-top: 10px !important; }
+
+/* --- Transcribe button: primary gradient (not the pale disabled blue),
+   readable even while disabled (no file chosen yet) --- */
+.transcription-submit-button { background: linear-gradient(135deg, #4f46e5, #7c3aed) !important; }
+.transcription-submit-button:hover:not(:disabled) { background-image: linear-gradient(135deg, #4338ca, #6d28d9) !important; }
+.transcription-submit-button:disabled { opacity: 0.9 !important; }
+
+/* --- Drag & drop highlight on the transcribe card --- */
+.transcription-card-dragging { border: 2px dashed #4f46e5 !important; background: #eef2ff !important; }
+.transcription-card { transition: border-color .2s ease, background .2s ease; }

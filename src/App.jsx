@@ -1008,6 +1008,7 @@ function App() {
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
+  const [isDraggingTranscription, setIsDraggingTranscription] = useState(false);
 
   const [materialReady, setMaterialReady] =
     useState(false);
@@ -2520,25 +2521,55 @@ function App() {
     processFiles(validFiles);
   };
 
+  // Drag and drop for the transcribe card - same flow as the file picker.
+  const handleTranscriptionDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (transcriptionLoading) {
+      event.dataTransfer.dropEffect = "none";
+      return;
+    }
+    const hasFiles = Array.from(event.dataTransfer?.types || []).includes("Files");
+    if (!hasFiles) return;
+    event.dataTransfer.dropEffect = "copy";
+    setIsDraggingTranscription(true);
+  };
+
+  const handleTranscriptionDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Ignore transitions between children inside the drop zone.
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsDraggingTranscription(false);
+    }
+  };
+
+  const handleTranscriptionDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingTranscription(false);
+    if (transcriptionLoading) return;
+    const droppedFile = event.dataTransfer?.files?.[0];
+    if (!droppedFile) return;
+    acceptTranscriptionFile(droppedFile);
+  };
+
   // ========================================================
   // LECTURE TRANSCRIPTION
   // ========================================================
 
-  const handleTranscriptionFileChange = (event) => {
-    const selectedFile = event.target.files?.[0];
-    if (!selectedFile) return;
-
+  // Shared by the file picker and drag and drop: same validation, same
+  // errors, same 100MB limit. Returns true when the file was accepted.
+  const acceptTranscriptionFile = (selectedFile) => {
     if (!/\.(mp3|mp4|mpeg|mpga|m4a|wav|webm|ogg|flac)$/i.test(selectedFile.name)) {
       setTranscriptionFile(null);
       setTranscriptionError("Choose an MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC file.");
-      event.target.value = "";
-      return;
+      return false;
     }
     if (selectedFile.size > MAX_TRANSCRIPTION_FILE_SIZE) {
       setTranscriptionFile(null);
       setTranscriptionError("The maximum supported audio/video file size is 100 MB. Please choose a smaller or compressed file.");
-      event.target.value = "";
-      return;
+      return false;
     }
 
     setTranscriptionFile(selectedFile);
@@ -2547,6 +2578,13 @@ function App() {
     setTranscriptionError("");
     setTranscriptionNotice("");
     setTranscriptionProgress("");
+    return true;
+  };
+
+  const handleTranscriptionFileChange = (event) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+    acceptTranscriptionFile(selectedFile);
     event.target.value = "";
   };
 
@@ -4351,9 +4389,9 @@ function App() {
         )}
         <footer>
           <p style={{ color: "white", fontSize: "18px" }}>
-            <b>© StudyFlow AI • Learn better, Grow faster. Developed by:</b>
+            <b>© StudyFlow AI • Learn better, Grow faster. Developed by:{" "}
+              <strong style={{ fontSize: "20px" }}>M. Talha</strong></b>
           </p>
-          <h3 style={{ color: "white", fontSize: "20px" }}><b>M. Talha</b></h3>
           <p className="sf2-footer-links sf2-footer-links-dark">
             <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
             <span aria-hidden="true">·</span>
@@ -5535,7 +5573,13 @@ function App() {
             <h2>🎙️ Lecture Transcribing</h2>
             <p>Upload audio/video/recording file & convert it into text.</p>
           </div>
-          <div className="transcription-card">
+          <div
+            className={`transcription-card${isDraggingTranscription ? " transcription-card-dragging" : ""}`}
+            onDragEnter={handleTranscriptionDragOver}
+            onDragOver={handleTranscriptionDragOver}
+            onDragLeave={handleTranscriptionDragLeave}
+            onDrop={handleTranscriptionDrop}
+          >
             <input
               ref={transcriptionInputRef}
               className="transcription-file-input"
@@ -5548,9 +5592,9 @@ function App() {
               <span aria-hidden="true">📁</span>
               {transcriptionFile ? "Choose another file" : "Choose audio or video"}
             </button>
-            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 100MB size.</p>
+            <p className="transcription-formats">MP3, MP4, MPEG, M4A, WAV, WebM, OGG or FLAC · Up to 100MB size. You can also drag &amp; drop a file here.</p>
 
-            <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "4px 0 10px" }}>
+            <div className="transcription-language-select" style={{ display: "flex", flexDirection: "column", gap: "6px", margin: "2px 0 4px" }}>
               <label htmlFor="transcription-language" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Select language:</label>
               <select
                 id="transcription-language"
@@ -6609,24 +6653,11 @@ function App() {
         >
 
           <b>
-            © StudyFlow AI • Learn better,
-            Grow faster. Developed by:
+            © StudyFlow AI • Learn better, Grow faster. Developed by:{" "}
+            <strong style={{ fontSize: "20px" }}>M. Talha</strong>
           </b>
 
         </p>
-
-        <h3
-          style={{
-            color: "white",
-            fontSize: "20px",
-          }}
-        >
-
-          <b>
-            M. Talha
-          </b>
-
-        </h3>
 
         <p className="sf2-footer-links sf2-footer-links-dark">
           <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
