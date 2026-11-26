@@ -16095,3 +16095,89 @@ section.result-section,
   background: #1e1b4b !important;
   background-color: #1e1b4b !important;
 }
+
+/* ========================================================
+   PHASE 2 — Plans, Settings, legal pages, onboarding,
+   Google sign-in, quota banner, oral-exam notice (sf2-*)
+   ======================================================== */
+
+.sf2-footer-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin: 10px 0 0; font-size: 14px; }
+.sf2-footer-links button { background: none; border: none; cursor: pointer; color: inherit; font-size: inherit; text-decoration: underline; padding: 4px 2px; }
+.sf2-footer-links-dark button { color: #c7d2fe; }
+.public-footer .sf2-footer-links button { color: #312e81; }
+.sf2-auth-footer-links { justify-content: center; margin-top: 18px; }
+.sf2-auth-footer-links button { color: #c7d2fe; }
+.sf2-cookie-policy-link { background: none; border: none; cursor: pointer; color: inherit; font: inherit; text-decoration: underline; padding: 0; }
+
+.sf2-google-button { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px 16px; margin-top: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); background: #ffffff; color: #1f2937; font-size: 15px; font-weight: 600; cursor: pointer; }
+.sf2-google-button:disabled { opacity: 0.6; cursor: not-allowed; }
+.sf2-google-g { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #4285f4; color: #fff; font-weight: 700; font-size: 14px; }
+.sf2-google-note { font-size: 12px; opacity: 0.75; text-align: center; margin: 8px 0 0; }
+.sf2-auth-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 0; opacity: 0.7; font-size: 13px; }
+.sf2-auth-divider::before, .sf2-auth-divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.25); }
+
+.sf2-page { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; color: #e0e7ff; }
+.sf2-page h1 { font-size: 30px; margin: 16px 0 8px; color: #fff; }
+.sf2-page-subtitle { opacity: 0.85; line-height: 1.6; margin: 0 0 24px; }
+.sf2-back-button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-size: 14px; }
+.sf2-brand-button { background: none; border: none; cursor: pointer; }
+.sf2-nav-plan { color: #c7d2fe; font-size: 14px; font-weight: 600; margin-right: 8px; }
+
+.sf2-legal h2 { font-size: 20px; margin: 28px 0 8px; color: #fff; }
+.sf2-legal p { line-height: 1.75; opacity: 0.92; margin: 8px 0; }
+
+.sf2-plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+.sf2-plan-card { position: relative; border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 24px; background: rgba(255,255,255,0.06); }
+.sf2-plan-card-pro { border-color: #818cf8; background: rgba(99,102,241,0.14); }
+.sf2-plan-card-current { outline: 2px solid #4ade80; outline-offset: -2px; }
+.sf2-plan-card h2 { font-size: 22px; margin: 0 0 4px; color: #fff; }
+.sf2-plan-price { font-size: 20px; font-weight: 700; color: #fff; margin: 4px 0 12px; }
+.sf2-plan-limits { line-height: 1.7; opacity: 0.95; }
+.sf2-plan-card ul { list-style: none; padding: 0; margin: 16px 0; line-height: 1.9; }
+.sf2-plan-badge { position: absolute; top: -11px; right: 16px; background: #4f46e5; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.sf2-plan-badge-current { background: #16a34a; }
+.sf2-plan-button { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #4f46e5; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+.sf2-plan-button:disabled { opacity: 0.65; cursor: not-allowed; }
+.sf2-plans-note { margin-top: 20px; opacity: 0.8; line-height: 1.7; font-size: 14px; }
+
+.sf2-settings-section { border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 22px; margin-bottom: 20px; background: rgba(255,255,255,0.05); }
+.sf2-settings-section h2 { font-size: 19px; margin: 0 0 10px; color: #fff; }
+.sf2-settings-section p { line-height: 1.7; opacity: 0.92; }
+.sf2-settings-email { margin: 0 0 14px; }
+.sf2-settings-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.sf2-settings-form label, .sf2-delete-confirm label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; flex: 1; min-width: 220px; }
+.sf2-settings-form input, .sf2-delete-confirm input { padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25); color: #fff; font-size: 15px; }
+.sf2-settings-message { margin-top: 12px; color: #86efac; }
+.sf2-error { color: #fca5a5; margin: 10px 0; }
+.sf2-primary-button { padding: 11px 18px; border-radius: 10px; border: none; background: #4f46e5; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+.sf2-primary-button:disabled { opacity: 0.6; cursor: not-allowed; }
+.sf2-secondary-button { padding: 11px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+.sf2-danger-zone { border-color: rgba(248,113,113,0.5); }
+.sf2-danger-button { padding: 11px 18px; border-radius: 10px; border: none; background: #dc2626; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+.sf2-danger-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.sf2-delete-confirm { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.sf2-delete-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.sf2-onboarding-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(10,10,40,0.72); padding: 20px; box-sizing: border-box; }
+.sf2-onboarding-card { max-width: 520px; width: 100%; background: #1e1b4b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+.sf2-onboarding-card h2 { margin: 0 0 10px; font-size: 24px; }
+.sf2-onboarding-card p { line-height: 1.7; opacity: 0.92; }
+.sf2-onboarding-steps { line-height: 1.8; padding-left: 20px; }
+.sf2-onboarding-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.sf2-onboarding-actions .sf2-secondary-button { text-align: center; }
+
+.sf2-quota-banner { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; margin: 16px auto 0; max-width: 1100px; padding: 14px 18px; border-radius: 12px; background: #fef3c7; color: #78350f; font-size: 15px; line-height: 1.6; }
+.sf2-quota-banner button { padding: 8px 14px; border-radius: 8px; border: none; background: #4f46e5; color: #fff; font-weight: 700; cursor: pointer; }
+.sf2-quota-banner .sf2-quota-dismiss { background: transparent; color: #78350f; padding: 8px; }
+
+.sf2-oral-unsupported { max-width: 1100px; margin: 24px auto; padding: 20px 24px; border-radius: 16px; background: #fef3c7; color: #78350f; line-height: 1.7; }
+.sf2-oral-unsupported h2 { margin: 0 0 8px; font-size: 20px; }
+.sf2-oral-unsupported button { margin-top: 10px; padding: 9px 16px; border-radius: 9px; border: none; background: #4f46e5; color: #fff; font-weight: 700; cursor: pointer; }
+
+.sf2-sample-lecture-button { display: block; margin: 12px auto 0; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); color: #fff; font-size: 14px; cursor: pointer; }
+
+@media (max-width: 640px) {
+  .sf2-plans-grid { grid-template-columns: 1fr; }
+  .sf2-page { padding: 24px 16px 48px; }
+  .sf2-page h1 { font-size: 25px; }
+}

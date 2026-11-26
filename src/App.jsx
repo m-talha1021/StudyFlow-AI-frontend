@@ -13,6 +13,8 @@ import {
   updateProfile,
   sendEmailVerification,
   getIdToken,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
 import { auth, db } from "./firebase";
@@ -30,6 +32,15 @@ import {
 
 import "./App.css";
 import "./Transcribing.css";
+import {
+  SAMPLE_LECTURE_TEXT,
+  getPlanId,
+  PrivacyPolicyPage,
+  TermsOfServicePage,
+  PlansPage,
+  SettingsPage,
+  OnboardingModal,
+} from "./phase2.jsx";
 
 // ========================================================
 // BACKEND API
@@ -109,6 +120,22 @@ const apiRequest = async (endpoint, options = {}) => {
     throw new Error(
       `Server returned an invalid response (${response.status}).`
     );
+  }
+
+  // A 429 means the daily quota for the user's plan is used up.
+  // Surface a friendly message that points at Plans / coming-soon Pro
+  // instead of the backend's raw error, and tell the app (via a
+  // window event) so it can show a banner with a link to Plans.
+  if (response.status === 429) {
+    const quotaError = new Error(
+      "You've reached today's Free plan limit (50 AI calls or 30 transcription minutes a day). " +
+      "Your limit resets tomorrow — Pro (coming soon) will raise it to 500 AI calls and 300 transcription minutes a day. See Plans for details."
+    );
+    quotaError.quotaExceeded = true;
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("studyflow:quota-exceeded"));
+    }
+    throw quotaError;
   }
 
   // A 401 means the backend needs a signed-in user (no token, or an
@@ -293,7 +320,7 @@ function BrandMark() {
   );
 }
 
-function WelcomePage({ onLogin, onSignup }) {
+function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms }) {
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
@@ -359,12 +386,20 @@ function WelcomePage({ onLogin, onSignup }) {
       </main>
       <footer className="public-footer">
         <p>© StudyFlow AI · Learn better. Grow faster.</p>
+        <p className="sf2-footer-links">
+          <button type="button" onClick={onPrivacy}>Privacy Policy</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={onTerms}>Terms of Service</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={onSignup}>Plans</button>
+        </p>
       </footer>
+      <CookieConsent onPrivacy={onPrivacy} />
     </div>
   );
 }
 
-function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, successMessage, form, setForm }) {
+function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, successMessage, form, setForm, onGoogleSignIn, googleLoading, onPrivacy, onTerms }) {
   const isSignup = mode === "signup";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -536,6 +571,21 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 : "Login"}
           </button>
 
+          <div className="sf2-auth-divider"><span>or</span></div>
+
+          <button
+            type="button"
+            className="sf2-google-button"
+            onClick={onGoogleSignIn}
+            disabled={loading || googleLoading}
+          >
+            <span aria-hidden="true" className="sf2-google-g">G</span>
+            {googleLoading ? "Connecting to Google…" : "Continue with Google"}
+          </button>
+          <p className="sf2-google-note">
+            Google sign-in uses your Google account — no extra password needed.
+          </p>
+
           <p className="auth-switch">
             {isSignup
               ? "Already have an account?"
@@ -548,8 +598,15 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
               {isSignup ? "Login" : "Sign up"}
             </button>
           </p>
+
+          <p className="sf2-footer-links sf2-auth-footer-links">
+            <button type="button" onClick={onPrivacy}>Privacy Policy</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" onClick={onTerms}>Terms of Service</button>
+          </p>
         </form>
       </main>
+      <CookieConsent onPrivacy={onPrivacy} />
     </div>
   );
 }
@@ -639,7 +696,7 @@ function FeedbackModal({ user, onClose }) {
   );
 }
 
-function CookieConsent() {
+function CookieConsent({ onPrivacy }) {
   const [showCookieBar, setShowCookieBar] = useState(false);
 
   useEffect(() => {
@@ -676,7 +733,12 @@ function CookieConsent() {
         <span className="cookie-consent-icon">🍪</span>
 
         <p className="cookie-consent-text">
-          We use cookies to improve your StudyFlow AI experience.
+          We use cookies to improve your StudyFlow AI experience.{" "}
+          {onPrivacy && (
+            <button type="button" className="sf2-cookie-policy-link" onClick={onPrivacy}>
+              Read our Privacy Policy
+            </button>
+          )}
         </p>
 
         <div className="cookie-consent-actions">
@@ -828,7 +890,24 @@ function App() {
   const [user, setUser] = useState(null);
   const [motivationalQuote, setMotivationalQuote] = useState("");
   const previousQuoteRef = useRef("");
-  const [authView, setAuthView] = useState("welcome");
+  // Public pages (?page=privacy / ?page=terms) are real entry points so
+  // they can be linked from the footer, the cookie bar, and the sitemap.
+  const [authView, setAuthView] = useState(() => {
+    try {
+      const page = new URLSearchParams(window.location.search).get("page");
+      return page === "privacy" || page === "terms" ? page : "welcome";
+    } catch {
+      return "welcome";
+    }
+  });
+  // In-app view for a signed-in user: "app" (workspace) or a Phase 2 page.
+  const [appView, setAppView] = useState("app");
+  // Plan from users/{uid}.plan; a missing field means "free".
+  const [userPlan, setUserPlan] = useState("free");
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [quotaNotice, setQuotaNotice] = useState(false);
+  const [oralUnsupported, setOralUnsupported] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [authSuccess, setAuthSuccess] = useState("");
@@ -1096,6 +1175,25 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // When the backend answers 429, show a banner pointing at Plans.
+  useEffect(() => {
+    const handleQuotaExceeded = () => setQuotaNotice(true);
+    window.addEventListener("studyflow:quota-exceeded", handleQuotaExceeded);
+    return () => window.removeEventListener("studyflow:quota-exceeded", handleQuotaExceeded);
+  }, []);
+
+  // First-run onboarding: show once per browser (localStorage flag).
+  useEffect(() => {
+    if (!user?.uid) return;
+    try {
+      if (!localStorage.getItem("studyflow_onboarding_seen")) {
+        setShowOnboarding(true);
+      }
+    } catch {
+      // Private-mode storage failure: onboarding simply won't show.
+    }
+  }, [user?.uid]);
+
   // Shared result links are readable without signing in (Firestore rules must
   // allow public reads of sharedResults documents).
   useEffect(() => {
@@ -1168,6 +1266,8 @@ function App() {
         const data = snapshot.exists()
           ? snapshot.data()
           : {};
+
+        setUserPlan(getPlanId(data.plan));
 
         const materialHistory = materialsSnapshot.docs
           .map((historyDoc) => ({
@@ -1538,6 +1638,7 @@ function App() {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             displayName,
+            plan: "free",
             totalMaterials: 0,
             studySessions: 0,
             completedQuizzes: 0,
@@ -1665,6 +1766,127 @@ function App() {
     setAuthError("");
     setAuthSuccess("");
     setAuthView(view);
+  };
+
+  // Google sign-in. The existing email/password flow and the
+  // email-verification enforcement are unchanged. Google accounts
+  // come back with a verified email; an unverified result is still
+  // signed out, exactly like the email/password path.
+  const handleGoogleSignIn = async () => {
+    setAuthError("");
+    setAuthSuccess("");
+    setGoogleLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const credential = await signInWithPopup(auth, provider);
+      const firebaseUser = credential.user;
+
+      if (!firebaseUser.emailVerified) {
+        await signOut(auth);
+        setUser(null);
+        setAuthError("Please verify your Google account email before signing in.");
+        return;
+      }
+
+      // Create the user doc on first Google sign-in (with the default
+      // free plan). Never overwrite an existing doc's plan.
+      const userDocRef = doc(db, "users", firebaseUser.uid);
+      const userSnapshot = await getDoc(userDocRef);
+      if (!userSnapshot.exists()) {
+        await setDoc(userDocRef, {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName || "",
+          plan: "free",
+          totalMaterials: 0,
+          studySessions: 0,
+          completedQuizzes: 0,
+          totalQuizScore: 0,
+          flashcardsCreated: 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        await setDoc(userDocRef, { updatedAt: serverTimestamp() }, { merge: true });
+      }
+
+      setUser(firebaseUser);
+      setAuthView("app");
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      if (error.code === "auth/popup-blocked") {
+        setAuthError("The Google sign-in popup was blocked. Please allow popups for this site and try again.");
+      } else if (error.code === "auth/popup-closed-by-user") {
+        setAuthError("The Google sign-in window was closed before finishing. Please try again.");
+      } else if (error.code === "auth/operation-not-allowed") {
+        setAuthError("Google sign-in is not enabled yet. Ask the StudyFlow AI team to enable Google in Firebase Authentication → Sign-in method.");
+      } else if (error.code === "auth/cancelled-popup-request") {
+        setAuthError("Another sign-in window is already open. Please finish it and try again.");
+      } else {
+        setAuthError(error.message || "Google sign-in failed. Please try again.");
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const dismissOnboarding = () => {
+    try {
+      localStorage.setItem("studyflow_onboarding_seen", "true");
+    } catch { /* ignore */ }
+    setShowOnboarding(false);
+  };
+
+  // Load the built-in sample lecture into the material input so the
+  // user can try Summary / Flashcards / Quiz instantly.
+  const loadSampleLecture = () => {
+    dismissOnboarding();
+    setText(SAMPLE_LECTURE_TEXT);
+    setFile(null);
+    setFiles([]);
+    setMaterialReady(false);
+    setResult("");
+    setResultLanguage("");
+    setFlashcards([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setMode("summary");
+    setAppView("app");
+    requestAnimationFrame(() => {
+      document.getElementById("inputcard")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
+  // After account deletion: clear local state and return to the
+  // public landing page.
+  const handleAccountDeleted = async () => {
+    try {
+      localStorage.removeItem("studyflow_onboarding_seen");
+    } catch { /* ignore */ }
+    setUser(null);
+    setUserPlan("free");
+    setAppView("app");
+    setShowOnboarding(false);
+    setAuthView("welcome");
+    setText("");
+    setResult("");
+    setFlashcards([]);
+    setChatMessages([]);
+  };
+
+  // Open a public page (?page=privacy / ?page=terms) and keep the URL
+  // in sync so the page is a real, shareable entry point.
+  const openPublicPage = (page) => {
+    setAuthError("");
+    setAuthSuccess("");
+    setAuthView(page);
+    try {
+      const url = page === "welcome" ? window.location.pathname : `${window.location.pathname}?page=${page}`;
+      window.history.pushState(null, "", url);
+    } catch { /* ignore */ }
   };
 
   const handleLogout = async () => {
@@ -2870,7 +3092,7 @@ function App() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
       setOralExam(p => ({ ...p, supported: false, status: "unsupported" }));
-      alert("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      setOralUnsupported(true);
       return;
     }
     if (!oralExam.active || !oralExam.sessionId || oralRecognitionActiveRef.current) return;
@@ -2950,7 +3172,7 @@ function App() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
       setGenerating(false);
-      alert("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      setOralUnsupported(true);
       return;
     }
     try {
@@ -3677,6 +3899,24 @@ function App() {
   }
 
   if (!user) {
+    if (authView === "privacy") {
+      return (
+        <div className="auth-shell">
+          <PrivacyPolicyPage onBack={() => openPublicPage("welcome")} />
+          <CookieConsent onPrivacy={() => openPublicPage("privacy")} />
+        </div>
+      );
+    }
+
+    if (authView === "terms") {
+      return (
+        <div className="auth-shell">
+          <TermsOfServicePage onBack={() => openPublicPage("welcome")} />
+          <CookieConsent onPrivacy={() => openPublicPage("privacy")} />
+        </div>
+      );
+    }
+
     if (authView === "login" || authView === "signup") {
       return (
         <AuthPage
@@ -3689,6 +3929,10 @@ function App() {
           successMessage={authSuccess}
           form={authForm}
           setForm={setAuthForm}
+          onGoogleSignIn={handleGoogleSignIn}
+          googleLoading={googleLoading}
+          onPrivacy={() => openPublicPage("privacy")}
+          onTerms={() => openPublicPage("terms")}
         />
       );
     }
@@ -3697,6 +3941,8 @@ function App() {
       <WelcomePage
         onLogin={() => openAuth("login")}
         onSignup={() => openAuth("signup")}
+        onPrivacy={() => openPublicPage("privacy")}
+        onTerms={() => openPublicPage("terms")}
       />
     );
   }
@@ -3971,6 +4217,75 @@ function App() {
   };
 
   // ========================================================
+  // PHASE 2 SUB-VIEWS (logged-in): Plans / Settings / legal
+  // ========================================================
+  // Rendered instead of the workspace, with a simple header.
+  // The main workspace below is untouched.
+
+  if (appView !== "app") {
+    const goBackToApp = () => {
+      setAppView("app");
+      window.scrollTo({ top: 0 });
+    };
+    return (
+      <div className="app">
+        <header className="app-navbar">
+          <button
+            type="button"
+            className="brand-mark sf2-brand-button"
+            onClick={goBackToApp}
+            aria-label="StudyFlow AI home"
+          >
+            <img src="/favicon.svg" alt="StudyFlow AI logo" />
+            <span>StudyFlow AI</span>
+          </button>
+          <div className="app-nav-user desktop-nav-user">
+            <span className="sf2-nav-plan">Plan: {getPlanId(userPlan) === "pro" ? "Pro" : "Free"}</span>
+            <button type="button" className="logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </header>
+
+        {appView === "plans" && (
+          <PlansPage currentPlan={userPlan} onBack={goBackToApp} />
+        )}
+        {appView === "settings" && (
+          <SettingsPage
+            user={user}
+            currentPlan={userPlan}
+            onBack={goBackToApp}
+            onViewPlans={() => setAppView("plans")}
+            onSignOut={handleLogout}
+            onAccountDeleted={handleAccountDeleted}
+          />
+        )}
+        {appView === "privacy" && (
+          <PrivacyPolicyPage onBack={goBackToApp} />
+        )}
+        {appView === "terms" && (
+          <TermsOfServicePage onBack={goBackToApp} />
+        )}
+
+        <CookieConsent onPrivacy={() => setAppView("privacy")} />
+        <footer>
+          <p style={{ color: "white", fontSize: "18px" }}>
+            <b>© StudyFlow AI • Learn better, Grow faster. Developed by:</b>
+          </p>
+          <h3 style={{ color: "white", fontSize: "20px" }}><b>M. Talha</b></h3>
+          <p className="sf2-footer-links sf2-footer-links-dark">
+            <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" onClick={() => setAppView("terms")}>Terms of Service</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" onClick={() => setAppView("plans")}>Plans</button>
+          </p>
+        </footer>
+      </div>
+    );
+  }
+
+  // ========================================================
   // UI
   // ========================================================
 
@@ -4122,6 +4437,28 @@ function App() {
             <span aria-hidden="true">📝</span> Feedback
           </button>
 
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAppView("plans");
+              window.scrollTo({ top: 0 });
+            }}
+          >
+            Plans
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAppView("settings");
+              window.scrollTo({ top: 0 });
+            }}
+          >
+            Settings
+          </button>
+
           <div className="mobile-account-block">
             <span>
               👤 {user.displayName || user.email || "Account"}
@@ -4170,6 +4507,34 @@ function App() {
 
       {feedbackOpen && (
         <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
+      )}
+
+      {quotaNotice && (
+        <div className="sf2-quota-banner" role="alert">
+          <span>
+            You&apos;ve reached today&apos;s Free plan limit. Your limit resets
+            tomorrow — <strong>Pro (coming soon)</strong> will raise it to
+            500 AI calls and 300 transcription minutes a day.
+          </span>
+          <button type="button" onClick={() => setAppView("plans")}>
+            View Plans
+          </button>
+          <button
+            type="button"
+            className="sf2-quota-dismiss"
+            onClick={() => setQuotaNotice(false)}
+            aria-label="Dismiss quota notice"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {showOnboarding && (
+        <OnboardingModal
+          onLoadSample={loadSampleLecture}
+          onSkip={dismissOnboarding}
+        />
       )}
 
       <section
@@ -4699,6 +5064,14 @@ function App() {
             }}
             placeholder="Paste your study material here..."
           />
+
+          <button
+            type="button"
+            className="sf2-sample-lecture-button"
+            onClick={loadSampleLecture}
+          >
+            ✨ No material handy? Try the sample lecture
+          </button>
 
           {/* DIVIDER */}
 
@@ -5885,6 +6258,22 @@ function App() {
           AI ORAL EXAM
       ================================================== */}
 
+      {oralUnsupported && (
+        <section className="sf2-oral-unsupported" role="alert">
+          <h2>🎙️ Oral Exam needs speech recognition</h2>
+          <p>
+            Your browser does not support speech recognition, so the Oral
+            Exam cannot listen to your answers here. Please open StudyFlow AI
+            in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> —
+            on desktop or Android — to use the Oral Exam. Summaries, quizzes,
+            flashcards, and all other features work in this browser.
+          </p>
+          <button type="button" onClick={() => setOralUnsupported(false)}>
+            Dismiss
+          </button>
+        </section>
+      )}
+
       {
         oralExam.active && (
           <section className="oral-exam-section" id="oral-exam-section">
@@ -6153,7 +6542,7 @@ function App() {
           </div>
         )
       }
-      <CookieConsent />
+      <CookieConsent onPrivacy={() => setAppView("privacy")} />
 
 
       {/* ==================================================
@@ -6188,6 +6577,16 @@ function App() {
           </b>
 
         </h3>
+
+        <p className="sf2-footer-links sf2-footer-links-dark">
+          <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={() => setAppView("terms")}>Terms of Service</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={() => setAppView("plans")}>Plans</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={() => setAppView("settings")}>Settings</button>
+        </p>
 
       </footer>
 

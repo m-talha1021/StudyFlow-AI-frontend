@@ -5,6 +5,28 @@ import App from './App.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import { firebaseConfigError, missingFirebaseConfig } from './firebase.js'
 
+// Google Analytics 4: loaded ONLY when VITE_GA_MEASUREMENT_ID is set.
+// No measurement ID is hardcoded; without the env var this is a no-op.
+function initAnalytics() {
+  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  if (!measurementId || typeof document === 'undefined') return;
+  try {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    document.head.appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+    const gtag = (...args) => window.dataLayer.push(args);
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', measurementId);
+  } catch {
+    // Analytics must never break the app.
+  }
+}
+
+initAnalytics()
+
 // Shown instead of the app when Firebase env vars are missing, so a
 // misconfigured deploy shows what to fix instead of a blank page.
 function FirebaseSetupNeeded() {
