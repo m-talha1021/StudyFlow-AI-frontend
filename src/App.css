@@ -16353,3 +16353,17 @@ footer { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;
 footer p { margin: 0 !important; }
 footer h3 { margin: 0; }
 footer .sf2-footer-links { margin: 0; }
+
+/* ============================================================
+   ROUND 35 (2026-11-26) — footer spacing, navbar cleanup,
+   gear replaces user avatar
+   ============================================================ */
+
+/* Footer: clear space between the text items ("Developed by:
+   M. Talha") and the links — the old 12px gap read as cramped. */
+footer { gap: 6px 32px; }
+.public-footer { gap: 4px 28px; }
+
+/* Header account area: gear + Logout with breathing room
+   now that the user pill is gone. */
+.app-navbar .desktop-nav-user { gap: 10px; align-items: center; }

@@ -321,7 +321,7 @@ function BrandMark() {
   );
 }
 
-function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms }) {
+function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback }) {
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
@@ -393,6 +393,8 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms }) {
           <button type="button" onClick={onTerms}>Terms of Service</button>
           <span aria-hidden="true">·</span>
           <button type="button" onClick={onSignup}>Plans</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={onFeedback}>Feedback</button>
         </p>
       </footer>
       <CookieConsent onPrivacy={onPrivacy} />
@@ -4008,12 +4010,18 @@ function App() {
     }
 
     return (
-      <WelcomePage
-        onLogin={() => openAuth("login")}
-        onSignup={() => openAuth("signup")}
-        onPrivacy={() => openPublicPage("privacy")}
-        onTerms={() => openPublicPage("terms")}
-      />
+      <>
+        <WelcomePage
+          onLogin={() => openAuth("login")}
+          onSignup={() => openAuth("signup")}
+          onPrivacy={() => openPublicPage("privacy")}
+          onTerms={() => openPublicPage("terms")}
+          onFeedback={() => setFeedbackOpen(true)}
+        />
+        {feedbackOpen && (
+          <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
+        )}
+      </>
     );
   }
 
@@ -4338,6 +4346,9 @@ function App() {
         )}
 
         <CookieConsent onPrivacy={() => setAppView("privacy")} />
+        {feedbackOpen && (
+          <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
+        )}
         <footer>
           <p style={{ color: "white", fontSize: "18px" }}>
             <b>© StudyFlow AI • Learn better, Grow faster. Developed by:</b>
@@ -4349,6 +4360,8 @@ function App() {
             <button type="button" onClick={() => setAppView("terms")}>Terms of Service</button>
             <span aria-hidden="true">·</span>
             <button type="button" onClick={() => setAppView("plans")}>Plans</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" onClick={() => setFeedbackOpen(true)}>Feedback</button>
           </p>
         </footer>
       </div>
@@ -4402,18 +4415,6 @@ function App() {
           </button>
 
 
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("inputcard")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Upload material
-          </button>
 
 
           <button
@@ -4456,6 +4457,17 @@ function App() {
           >
             Fun Zone
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAppView("plans");
+              window.scrollTo({ top: 0 });
+            }}
+          >
+            Plans
+          </button>
           <div
             ref={convertersRef}
             className="converters-nav-wrap"
@@ -4484,38 +4496,7 @@ function App() {
               </div>
             )}
           </div>
-          <button
-            type="button"
-            className="feedback-nav-link"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setFeedbackOpen(true);
-            }}
-          >
-            <span aria-hidden="true">📝</span> Feedback
-          </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setAppView("plans");
-              window.scrollTo({ top: 0 });
-            }}
-          >
-            Plans
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setAppView("settings");
-              window.scrollTo({ top: 0 });
-            }}
-          >
-            Settings
-          </button>
 
           <div className="mobile-account-block">
             <span>
@@ -4532,12 +4513,6 @@ function App() {
         </nav>
 
         <div className="app-nav-user desktop-nav-user">
-          <div className="user-pill">
-            <span aria-hidden="true">👤</span>
-            <strong title={user.displayName || user.email || "Account"}>
-              {user.displayName || user.email || "Account"}
-            </strong>
-          </div>
 
           <button
             type="button"
@@ -6661,6 +6636,8 @@ function App() {
           <button type="button" onClick={() => setAppView("plans")}>Plans</button>
           <span aria-hidden="true">·</span>
           <button type="button" onClick={() => setAppView("settings")}>Settings</button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={() => setFeedbackOpen(true)}>Feedback</button>
         </p>
 
       </footer>
