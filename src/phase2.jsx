@@ -361,11 +361,7 @@ export function PlansPage({ currentPlan, onBack, backLabel = "Go back" }) {
           );
         })}
       </div>
-      <p className="sf2-plans-note">
-        Daily limits reset every day. If you reach the Free plan limit, you
-        will see a message here in the app — Pro will raise those limits
-        10x when it launches. No payment details are collected today.
-      </p>
+      <p className="sf2-plans-note">Daily limits reset every day.</p>
     </SubPageShell>
   );
 }
