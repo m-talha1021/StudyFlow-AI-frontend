@@ -16327,3 +16327,29 @@ section.result-section,
 }
 .sf2-page .sf2-settings-message { color: #15803d; }
 .sf2-page .sf2-error { color: #dc2626; }
+
+/* ============================================================
+   ROUND 34 (2026-11-26) — dark SVG icons, shorter Settings
+   display-name field, footer copyright + links in one row
+   ============================================================ */
+
+/* Pale #e3e3e3 SVG icons on light backgrounds -> dark indigo.
+   (The fill attributes in App.jsx are changed too; these rules
+   are the belt-and-braces override.) */
+.upload-icon svg { fill: #4338ca !important; }
+.converter-folder-icon svg { fill: #4338ca !important; }
+.dashboard-history-open svg { fill: #4338ca !important; }
+.transcription-secondary-button svg { fill: currentColor !important; }
+
+/* Settings -> Display name: clearly shorter field (~360px max). */
+.sf2-settings-form label { flex: 0 1 360px; max-width: 360px; }
+
+/* Footer in one row: copyright + links on a single line (desktop).
+   Wraps to two lines on narrow screens. */
+.public-footer { flex-direction: row; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; }
+.public-footer p { padding: 6px 4px; }
+.public-footer .sf2-footer-links { margin: 0; }
+footer { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; align-items: baseline; }
+footer p { margin: 0 !important; }
+footer h3 { margin: 0; }
+footer .sf2-footer-links { margin: 0; }

@@ -464,9 +464,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             <span aria-hidden="true" className="sf2-google-g">G</span>
             {googleLoading ? "Connecting to Google…" : "Continue with Google"}
           </button>
-          <p className="sf2-google-note">
-            Google sign-in uses your Google account — no extra password needed.
-          </p>
 
           <div className="sf2-auth-divider"><span>or continue with email</span></div>
 
@@ -4687,7 +4684,7 @@ function App() {
   viewBox="0 0 24 24"
   height="40"
   width="40"
-  fill="#e3e3e3"
+  fill="#4338ca"
 >
   <path d="M11,19h2V14.83l1.6,1.6L16,15l-4-4L8,15l1.43,1.4L11,14.83V19ZM6,22q-0.82,0-1.41-0.59T4,20V4Q4,3.17 4.59,2.59T6,2h8l6,6V20q0,0.82-0.59,1.41T18,22H6ZM13,9V4H6V20H18V9H13ZM6,4V9V4V9V20V4Z" />
 </svg>
@@ -5049,7 +5046,7 @@ function App() {
                                   className="dashboard-history-open"
                                   onClick={() => downloadHistoryPdf(historyItem)}
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#4338ca"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg>
                                 </button>
                               </div>
                             </div>
@@ -5171,7 +5168,7 @@ function App() {
           >
 
             <span className="upload-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="40px" width="40px" fill="#e3e3e3"><path d="M11,19h2V14.83l1.6,1.6L16,15l-4-4L8,15l1.43,1.4L11,14.83V19ZM6,22q-0.82,0-1.41-0.59T4,20V4Q4,3.17 4.59,2.59T6,2h8l6,6V20q0,0.82-0.59,1.41T18,22H6ZM13,9V4H6V20H18V9H13ZM6,4V9V4V9V20V4Z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="40px" width="40px" fill="#4338ca"><path d="M11,19h2V14.83l1.6,1.6L16,15l-4-4L8,15l1.43,1.4L11,14.83V19ZM6,22q-0.82,0-1.41-0.59T4,20V4Q4,3.17 4.59,2.59T6,2h8l6,6V20q0,0.82-0.59,1.41T18,22H6ZM13,9V4H6V20H18V9H13ZM6,4V9V4V9V20V4Z" /></svg>
             </span>
 
             <strong>
@@ -5645,7 +5642,7 @@ function App() {
                   </div>
                   <div className="transcription-result-actions">
                     <button type="button" className="transcription-secondary-button" onClick={copyTranscription}>Copy📋</button>
-                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="14px" width="14px" fill="#e3e3e3"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg>TXT</button>
+                    <button type="button" className="transcription-secondary-button" onClick={downloadTranscription}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="14px" width="14px" fill="currentColor"><path d="M4,22V20H20v2H4Zm8-4L5,9H9V2h6V9h4l-7,9Zm0-3.25L14.9,11H13V4H11v7H9.1L12,14.75ZM12,11Z"/></svg>TXT</button>
                   </div>
                 </div>
                 <textarea
@@ -5727,7 +5724,7 @@ function App() {
                   className="secondary-button"
                   title="Copy result"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="17px" width="17px" fill="#e3e3e3"><path d="M9,18q-0.82,0-1.41-0.59T7,16V4Q7,3.17 7.59,2.59T9,2h9q0.82,0 1.41,0.59T20,4V16q0,0.82-0.59,1.41T18,18H9Zm0-2h9V4H9V16ZM5,22q-0.83,0-1.41-0.59T3,20V6H5V20H16v2H5Zm4-6V4V16Z"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="17px" width="17px" fill="#000000"><path d="M9,18q-0.82,0-1.41-0.59T7,16V4Q7,3.17 7.59,2.59T9,2h9q0.82,0 1.41,0.59T20,4V16q0,0.82-0.59,1.41T18,18H9Zm0-2h9V4H9V16ZM5,22q-0.83,0-1.41-0.59T3,20V6H5V20H16v2H5Zm4-6V4V16Z"/></svg>
                 </button>
 
                 <button
