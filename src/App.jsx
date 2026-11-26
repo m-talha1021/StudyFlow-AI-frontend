@@ -321,13 +321,13 @@ function BrandMark() {
   );
 }
 
-function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback }) {
+function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans }) {
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
         <BrandMark />
         <div className="public-nav-actions">
-          <button type="button" className="nav-link-button" onClick={onSignup}>
+          <button type="button" className="nav-link-button" onClick={onPlans}>
             Pricing
           </button>
           <button
@@ -913,7 +913,7 @@ function App() {
   const [authView, setAuthView] = useState(() => {
     try {
       const page = new URLSearchParams(window.location.search).get("page");
-      return page === "privacy" || page === "terms" ? page : "welcome";
+      return page === "privacy" || page === "terms" || page === "plans" ? page : "welcome";
     } catch {
       return "welcome";
     }
@@ -4044,6 +4044,18 @@ function App() {
       );
     }
 
+    // Plans are viewable without signing in: a visitor sees Free as the
+    // current plan and Pro as "coming soon", exactly like a signed-in
+    // Free user. No user data is read here.
+    if (authView === "plans") {
+      return (
+        <div className="auth-shell">
+          <PlansPage currentPlan="free" onBack={() => openPublicPage("welcome")} backLabel="Back" />
+          <CookieConsent onPrivacy={() => openPublicPage("privacy")} />
+        </div>
+      );
+    }
+
     if (authView === "login" || authView === "signup") {
       return (
         <AuthPage
@@ -4072,6 +4084,7 @@ function App() {
           onPrivacy={() => openPublicPage("privacy")}
           onTerms={() => openPublicPage("terms")}
           onFeedback={() => setFeedbackOpen(true)}
+          onPlans={() => openPublicPage("plans")}
         />
         {feedbackOpen && (
           <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />

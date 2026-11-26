@@ -308,13 +308,14 @@ export function TermsOfServicePage({ onBack }) {
 // PLANS PAGE
 // --------------------------------------------------------
 
-export function PlansPage({ currentPlan, onBack }) {
+export function PlansPage({ currentPlan, onBack, backLabel = "Back to app" }) {
   const current = getPlanId(currentPlan);
   return (
     <SubPageShell
       title="Plans"
       subtitle="StudyFlow AI is free for now. Pro — with 10x the daily limits — is coming soon."
       onBack={onBack}
+      backLabel={backLabel}
     >
       <div className="sf2-plans-grid">
         {[PLANS.free, PLANS.pro].map((plan) => {

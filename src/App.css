@@ -16406,3 +16406,47 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
 /* --- Drag & drop highlight on the transcribe card --- */
 .transcription-card-dragging { border: 2px dashed #4f46e5 !important; background: #eef2ff !important; }
 .transcription-card { transition: border-color .2s ease, background .2s ease; }
+
+/* ============================================================
+   ROUND 39 (2026-11-26) — navbar Pricing opens Plans directly
+   (JSX change in App.jsx) + mobile public-navbar fix
+   Root cause of the mobile bug: the four public-nav buttons are
+   flex items with default shrink and no nowrap, so on a narrow
+   screen the "Sign Up" button squeezed and its text wrapped
+   onto two lines. Fix: never wrap, never shrink, and hide the
+   brand wordmark a little earlier so all four buttons fit.
+   ============================================================ */
+
+/* --- Public navbar buttons: one line each, never shrink --- */
+.public-navbar .public-nav-actions .nav-link-button,
+.public-navbar .public-nav-actions .nav-signup-button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.public-navbar .public-nav-actions {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .public-navbar {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  /* Wordmark hides at 480px (was 380px): the logo mark stays, and
+     the four buttons gain the room they need to stay on one row. */
+  .public-navbar .brand-mark span {
+    display: none;
+  }
+  .public-navbar .brand-mark img {
+    width: 34px;
+    height: 34px;
+  }
+  .public-nav-actions {
+    gap: 5px;
+  }
+  .public-navbar .public-nav-actions .nav-link-button,
+  .public-navbar .public-nav-actions .nav-signup-button {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+}
