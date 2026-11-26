@@ -16181,3 +16181,149 @@ section.result-section,
   .sf2-page { padding: 24px 16px 48px; }
   .sf2-page h1 { font-size: 25px; }
 }
+
+/* ============================================================
+   ROUND — UI FIXES 2026-11-26 (user screenshots)
+   Root causes found while fixing:
+   - .app h2 / .app p / .app li set dark ink colors, which beat
+     the inherited white text on the dark onboarding modal.
+   - Phase 2 pages (Plans / Privacy / Terms / Settings) render
+     on the LIGHT logged-in app background, but their styles
+     assumed a dark page (white headings, translucent-white
+     cards/inputs/buttons) — white-on-light and invisible cards.
+   - The sample-lecture pill and the Convert nav button used
+     near-transparent/dark backgrounds that vanished on their
+     surfaces. Footer links were dark indigo on the dark footer.
+   ============================================================ */
+
+/* --- Convert nav button: primary gradient CTA, keep dropdown dark --- */
+.app-nav-links .converters-nav-wrap > button {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.55) !important;
+}
+.app-nav-links .converters-nav-wrap > button:hover,
+.app-nav-links .converters-nav-wrap > button:focus-visible {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+/* --- Settings gear button in the logged-in header --- */
+.app-navbar .settings-gear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+}
+.app-navbar .settings-gear-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.app-navbar .settings-gear-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Sample-lecture pill: solid gradient so it reads on the light card --- */
+.sf2-sample-lecture-button {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.55);
+}
+.sf2-sample-lecture-button:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+}
+
+/* --- Footer links: white on the dark indigo footer --- */
+/* NOTE: the sign-in/sign-up footer links are NOT white — they sit on
+   the WHITE auth card, so white text would be invisible there. They
+   are indigo instead (see the auth-card rules below). */
+.public-footer .sf2-footer-links button,
+.sf2-footer-links-dark button,
+.sf2-cookie-policy-link {
+  color: #fff;
+}
+.public-footer .sf2-footer-links button:hover,
+.sf2-footer-links-dark button:hover,
+.sf2-cookie-policy-link:hover {
+  color: #e0e7ff;
+}
+
+/* --- Auth card (white card on the light auth page): the Google button,
+   divider and footer links were styled for a dark card and vanished
+   on white. Give them light-card treatments. --- */
+.sf2-google-button {
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.sf2-auth-divider::before,
+.sf2-auth-divider::after {
+  background: #cbd5e1;
+}
+.sf2-auth-footer-links button {
+  color: #4338ca;
+}
+.sf2-auth-footer-links button:hover {
+  color: #312e81;
+}
+
+/* --- Onboarding modal: explicit light text (beats .app h2/p/li dark ink) --- */
+.app .sf2-onboarding-card h2 { color: #fff; }
+.app .sf2-onboarding-card p,
+.app .sf2-onboarding-card li { color: #e2e8f0; }
+.app .sf2-onboarding-card strong { color: #fff; }
+
+/* --- Phase 2 pages: light theme to match the light app background --- */
+.sf2-page { color: #334155; }
+.sf2-page h1 { color: #0f172a; }
+.sf2-back-button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+.sf2-back-button:hover { background: #eef2ff; }
+.sf2-legal h2 { color: #0f172a; }
+.sf2-legal p { color: #334155; }
+.sf2-plan-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
+}
+.sf2-plan-card-pro { background: #eef2ff; border-color: #818cf8; }
+.sf2-plan-card h2 { color: #0f172a; }
+.sf2-plan-price { color: #0f172a; }
+.sf2-plan-limits { color: #334155; }
+.sf2-plan-card ul { color: #334155; }
+.sf2-plans-note { color: #475569; }
+.sf2-settings-section { background: #fff; border: 1px solid #e2e8f0; }
+.sf2-settings-section h2 { color: #0f172a; }
+.sf2-settings-section p { color: #334155; }
+.sf2-settings-form input,
+.sf2-delete-confirm input {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+.sf2-settings-form input::placeholder,
+.sf2-delete-confirm input::placeholder { color: #94a3b8; }
+/* Secondary buttons are white-on-transparent for the dark onboarding
+   modal; on the light Phase 2 pages they need a light treatment. */
+.sf2-page .sf2-secondary-button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #4338ca;
+}
+.sf2-page .sf2-settings-message { color: #15803d; }
+.sf2-page .sf2-error { color: #dc2626; }

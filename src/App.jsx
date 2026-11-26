@@ -18,6 +18,7 @@ import {
 } from "firebase/auth";
 
 import { auth, db } from "./firebase";
+import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 
 import {
   doc,
@@ -454,6 +455,21 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
             </div>
           )}
 
+          <button
+            type="button"
+            className="sf2-google-button"
+            onClick={onGoogleSignIn}
+            disabled={loading || googleLoading}
+          >
+            <span aria-hidden="true" className="sf2-google-g">G</span>
+            {googleLoading ? "Connecting to Google…" : "Continue with Google"}
+          </button>
+          <p className="sf2-google-note">
+            Google sign-in uses your Google account — no extra password needed.
+          </p>
+
+          <div className="sf2-auth-divider"><span>or continue with email</span></div>
+
           {isSignup && (
             <label>
               Full name
@@ -571,20 +587,6 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
                 : "Login"}
           </button>
 
-          <div className="sf2-auth-divider"><span>or</span></div>
-
-          <button
-            type="button"
-            className="sf2-google-button"
-            onClick={onGoogleSignIn}
-            disabled={loading || googleLoading}
-          >
-            <span aria-hidden="true" className="sf2-google-g">G</span>
-            {googleLoading ? "Connecting to Google…" : "Continue with Google"}
-          </button>
-          <p className="sf2-google-note">
-            Google sign-in uses your Google account — no extra password needed.
-          </p>
 
           <p className="auth-switch">
             {isSignup
@@ -2078,7 +2080,9 @@ function App() {
 
       const logo = document.createElement("img");
 
-      logo.src = `${window.location.origin}/favicon.svg`;
+      // Embedded PNG data URI: html2canvas cannot render SVG <img>
+      // elements reliably, so the SVG came out as a broken-image mark.
+      logo.src = LOGO_PNG_DATA_URI;
       logo.alt = "StudyFlow AI Logo";
 
       logo.style.cssText = `
@@ -3509,6 +3513,75 @@ function App() {
   };
 
   // ========================================================
+  // DOWNLOAD SHARED RESULT AS PDF (no sign-in required)
+  // ========================================================
+  // Shared links are public: anyone with the link can open the result,
+  // so downloading it must NOT call the protected backend generate-pdf
+  // endpoint (that answers 401 without a token). This builds the PDF
+  // client-side with html2pdf.js from the result already on the page —
+  // zero network calls, zero auth. The brand header uses the embedded
+  // PNG logo (see src/logoPng.js) because html2canvas mangles SVG <img>.
+
+  const handleDownloadSharedPDF = async () => {
+    if (!result) {
+      return;
+    }
+    try {
+      const html2pdfModule = await import("html2pdf.js");
+      const html2pdf = html2pdfModule.default || html2pdfModule;
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = "font-family: Arial, sans-serif; color: #172033; background: #fff; padding: 24px; width: 720px; box-sizing: border-box;";
+
+      const brandHeader = document.createElement("div");
+      brandHeader.style.cssText = "display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; width: 100%;";
+      const logo = document.createElement("img");
+      logo.src = LOGO_PNG_DATA_URI;
+      logo.alt = "StudyFlow AI Logo";
+      logo.style.cssText = "width: 48px; height: 48px; object-fit: contain;";
+      const heading = document.createElement("h1");
+      heading.textContent = "StudyFlow AI";
+      heading.style.cssText = "font-size: 28px; font-weight: 700; margin: 0; color: #0511b3;";
+      brandHeader.appendChild(logo);
+      brandHeader.appendChild(heading);
+      wrapper.appendChild(brandHeader);
+
+      try {
+        await logo.decode();
+      } catch (error) {
+        console.warn("Could not load StudyFlow AI logo:", error);
+      }
+
+      const sharedCreatedAt = sharedPublicData?.createdAt;
+      const sharedDate = sharedCreatedAt?.toDate
+        ? sharedCreatedAt.toDate()
+        : new Date(Number(sharedCreatedAt || Date.now()));
+      const metadata = document.createElement("p");
+      metadata.textContent = `${sharedPublicData?.title || (mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary")} • ${sharedDate.toLocaleString()} • Shared using StudyFlow AI`;
+      metadata.style.cssText = "font-size: 13px; color: #5b6475; border-bottom: 1px solid #dce3ef; padding-bottom: 12px; margin-bottom: 18px;";
+      wrapper.appendChild(metadata);
+
+      const body = document.createElement("div");
+      body.textContent = result;
+      body.dir = /[\u0600-\u06ff]/.test(result) ? "auto" : "ltr";
+      body.style.cssText = "font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere;";
+      wrapper.appendChild(body);
+
+      const fileTitle = (sharedPublicData?.title || mode || "Shared Result").replace(/[^a-z0-9-_ ]+/gi, "").trim() || "Shared Result";
+      await html2pdf().set({
+        margin: [10, 10, 12, 10],
+        filename: `StudyFlow AI ${fileTitle}`,
+        image: { type: "jpeg", quality: 0.96 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] },
+      }).from(wrapper).save();
+    } catch (error) {
+      console.error("Shared PDF download failed:", error);
+      alert("Could not create the PDF. Please try again.");
+    }
+  };
+
+  // ========================================================
   // READ RESULT ALOUD
   // ========================================================
 
@@ -3875,7 +3948,7 @@ function App() {
           <div className="result-header">
             <div><span className="result-icon">📄</span><div><h2>{sharedPublicData?.title || "Shared StudyFlow Result"}</h2><small>Shared using StudyFlow AI</small></div></div>
             <div className="result-actions">
-              <button type="button" className="download-button" onClick={handleDownloadPDF} disabled={!result}>📄 Download PDF</button>
+              <button type="button" className="download-button" onClick={handleDownloadSharedPDF} disabled={!result}>📄 Download PDF</button>
               <button type="button" className="secondary-button" onClick={handleCopy} disabled={!result}>📋 Copy</button>
             </div>
           </div>
@@ -4345,18 +4418,6 @@ function App() {
             Upload material
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              document.getElementById("transcribing-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
-          >
-            Transcribing
-          </button>
 
           <button
             type="button"
@@ -4480,6 +4541,23 @@ function App() {
               {user.displayName || user.email || "Account"}
             </strong>
           </div>
+
+          <button
+            type="button"
+            className="settings-gear-button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAppView("settings");
+              window.scrollTo({ top: 0 });
+            }}
+            aria-label="Settings"
+            title="Settings"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
 
           <button
             type="button"
