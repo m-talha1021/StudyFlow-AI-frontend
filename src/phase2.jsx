@@ -30,8 +30,8 @@ import { auth, db } from "./firebase";
 // --------------------------------------------------------
 // PLANS
 // --------------------------------------------------------
-// Free quotas match the Phase 1 backend caps. Pro is 20x on AI calls
-// and 10x on transcription minutes.
+// Free quotas match the Phase 1 backend caps. Pro is fixed at 500 AI
+// calls and 300 transcription minutes per day.
 // The backend reads a `plan` field on users/{uid}; a missing
 // field means "free". Pro is NOT for sale yet — the upgrade
 // button is disabled and labelled "coming soon".
@@ -41,11 +41,11 @@ export const PLANS = {
     id: "free",
     name: "Free",
     price: "Rs. 0",
-    aiCallsPerDay: 25,
-    transcriptionMinutesPerDay: 30,
+    aiCallsPerDay: 10,
+    transcriptionMinutesPerDay: 20,
     features: [
-      "25 AI calls per day (summary, quiz, flashcards, chat, tests)",
-      "30 transcription minutes per day",
+      "10 AI calls per day (summary, quiz, flashcards, chat, tests)",
+      "20 transcription minutes per day",
       "Unlimited file conversion (client-side)",
       "Study history & shared result links",
       "Fun Zone games",
@@ -58,8 +58,8 @@ export const PLANS = {
     aiCallsPerDay: 500,
     transcriptionMinutesPerDay: 300,
     features: [
-      "500 AI calls per day — 20x the Free plan",
-      "300 transcription minutes per day — 10x the Free plan",
+      "500 AI calls per day — 50x the Free plan",
+      "300 transcription minutes per day — 15x the Free plan",
       "Everything in Free",
       "Priority generation when the service is busy",
       "Early access to new features",
@@ -269,7 +269,7 @@ export function TermsOfServicePage({ onBack }) {
       <h2>5. Plans and limits</h2>
       <p>
         StudyFlow AI is currently free to use. The Free plan includes daily
-        limits (25 AI calls and 30 transcription minutes per day). A paid
+        limits (10 AI calls and 20 transcription minutes per day). A paid
         Pro plan with higher limits is planned and will be announced in the
         app when it becomes available; no payment is collected today. Limits
         may change as the service grows, and we will show the current limits
