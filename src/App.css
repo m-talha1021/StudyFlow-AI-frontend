@@ -16325,6 +16325,10 @@ section.result-section,
   box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
 }
 .sf2-plan-card-pro { background: #eef2ff; border-color: #818cf8; }
+/* Signed-out Pricing view only (currentPlan null): visible indigo border on
+   the Free card so it does not blend into the light background. The
+   signed-in Free card keeps its green current-plan outline instead. */
+.sf2-plan-card-public { border: 2px solid #4f46e5; }
 .sf2-plan-card h2 { color: #0f172a; }
 .sf2-plan-price { color: #0f172a; }
 .sf2-plan-limits { color: #334155; }
@@ -16782,5 +16786,23 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
 
   .mindmap-node-detail {
     font-size: 11px;
+  }
+}
+
+/* ============================================================
+   ROUND 47 (2026-11-27) — header gear + Logout a little left
+   on desktop (Muhammad: "move these a little towards left
+   side in desktop view").
+   Root cause: the desktop navbar rule (@media min-width: 901px)
+   sets padding: 10px clamp(12px, 2.5vw, 32px) — at 1280px that
+   is only 32px on the right, so the gear + Logout sat close to
+   the viewport edge. Fix: +20px on the right padding only, in
+   the same desktop breakpoint, so the two buttons shift left as
+   a group. Left padding, mobile header, and every other header
+   element are untouched.
+   ============================================================ */
+@media (min-width: 901px) {
+  .app-navbar {
+    padding-right: calc(clamp(12px, 2.5vw, 32px) + 20px);
   }
 }
