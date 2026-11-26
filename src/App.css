@@ -16361,7 +16361,10 @@ section.result-section,
    are the belt-and-braces override.) */
 .upload-icon svg { fill: #4338ca !important; }
 .converter-folder-icon svg { fill: #4338ca !important; }
-.dashboard-history-open svg { fill: #4338ca !important; }
+/* The dashboard-history-open buttons are now indigo->violet gradient
+   with white text, so the download arrow inside them must be white
+   too (dark indigo on the gradient is unreadable). */
+.dashboard-history-open svg { fill: #ffffff !important; }
 .transcription-secondary-button svg { fill: currentColor !important; }
 
 /* Settings -> Display name: clearly shorter field (~360px max). */
