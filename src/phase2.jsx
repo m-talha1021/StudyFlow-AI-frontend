@@ -99,7 +99,7 @@ In summary, photosynthesis converts light energy into chemical energy stored in 
 // SHARED SHELL FOR IN-APP PAGES
 // --------------------------------------------------------
 
-function SubPageShell({ title, subtitle, onBack, backLabel = "Back to app", children }) {
+function SubPageShell({ title, subtitle, onBack, backLabel = "Go back", children }) {
   return (
     <main className="sf2-page">
       <button type="button" className="sf2-back-button" onClick={onBack}>
@@ -308,7 +308,7 @@ export function TermsOfServicePage({ onBack }) {
 // PLANS PAGE
 // --------------------------------------------------------
 
-export function PlansPage({ currentPlan, onBack, backLabel = "Back to app" }) {
+export function PlansPage({ currentPlan, onBack, backLabel = "Go back" }) {
   // A null/undefined currentPlan means "no signed-in user": the plans are
   // shown plainly, with no "current plan" markers at all (no badge, no
   // "You are on Free" button on the Free card).
