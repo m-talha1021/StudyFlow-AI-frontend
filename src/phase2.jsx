@@ -328,7 +328,7 @@ export function PlansPage({ currentPlan, onBack, backLabel = "Go back" }) {
           return (
             <article
               key={plan.id}
-              className={`sf2-plan-card${isPro ? " sf2-plan-card-pro" : ""}${isCurrent ? " sf2-plan-card-current" : ""}`}
+              className={`sf2-plan-card${isPro ? " sf2-plan-card-pro" : ""}${isCurrent ? " sf2-plan-card-current" : ""}${current === null && !isPro ? " sf2-plan-card-public" : ""}`}
             >
               {isPro && <span className="sf2-plan-badge">Coming soon</span>}
               {isCurrent && <span className="sf2-plan-badge sf2-plan-badge-current">Your current plan</span>}
