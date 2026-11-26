@@ -4516,7 +4516,7 @@ function App() {
               window.scrollTo({ top: 0 });
             }}
           >
-            Plans
+            Pricing
           </button>
           <div
             ref={convertersRef}
