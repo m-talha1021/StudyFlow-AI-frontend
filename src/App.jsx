@@ -131,7 +131,7 @@ const apiRequest = async (endpoint, options = {}) => {
   if (response.status === 429) {
     const quotaError = new Error(
       "You've reached today's Free plan limit (5 AI calls or 20 transcription minutes a day). " +
-      "Your limit resets tomorrow — Pro (coming soon) will raise it to 500 AI calls and 300 transcription minutes a day. See Plans for details."
+      "Your limit resets tomorrow — Pro (coming soon) will raise it to 150 AI calls and 280 transcription minutes a day. See Plans for details."
     );
     quotaError.quotaExceeded = true;
     if (typeof window !== "undefined") {
@@ -4746,7 +4746,7 @@ function App() {
           <span>
             You&apos;ve reached today&apos;s Free plan limit. Your limit resets
             tomorrow — <strong>Pro (coming soon)</strong> will raise it to
-            500 AI calls and 300 transcription minutes a day.
+            150 AI calls and 280 transcription minutes a day.
           </span>
           <button type="button" onClick={() => setAppView("plans")}>
             View Plans

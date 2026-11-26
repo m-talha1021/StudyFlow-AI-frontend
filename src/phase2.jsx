@@ -30,8 +30,8 @@ import { auth, db } from "./firebase";
 // --------------------------------------------------------
 // PLANS
 // --------------------------------------------------------
-// Free quotas match the Phase 1 backend caps. Pro is fixed at 500 AI
-// calls and 300 transcription minutes per day.
+// Free quotas match the Phase 1 backend caps. Pro is fixed at 150 AI
+// calls and 280 transcription minutes per day.
 // The backend reads a `plan` field on users/{uid}; a missing
 // field means "free". Pro is NOT for sale yet — the upgrade
 // button is disabled and labelled "coming soon".
@@ -55,11 +55,11 @@ export const PLANS = {
     id: "pro",
     name: "Pro",
     price: "Coming soon",
-    aiCallsPerDay: 500,
-    transcriptionMinutesPerDay: 300,
+    aiCallsPerDay: 150,
+    transcriptionMinutesPerDay: 280,
     features: [
-      "500 AI calls per day — 100x the Free plan",
-      "300 transcription minutes per day — 15x the Free plan",
+      "150 AI calls per day — 30x the Free plan",
+      "280 transcription minutes per day — 14x the Free plan",
       "Everything in Free",
       "Priority generation when the service is busy",
       "Early access to new features",

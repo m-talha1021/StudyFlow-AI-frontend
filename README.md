@@ -83,7 +83,7 @@ deploys automatically.
 ## Plans
 
 StudyFlow AI is free for now. The Free plan allows 5 AI calls and 20
-transcription minutes per day. A Pro plan (500 AI calls / 300
+transcription minutes per day. A Pro plan (150 AI calls / 280
 transcription minutes per day) is shown in the app as “coming soon” —
 no payment flow is wired up yet. The backend reads a `plan` field on
 `users/{uid}` (`"free"` by default; a missing field means free).
