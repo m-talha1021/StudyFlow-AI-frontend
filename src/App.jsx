@@ -4044,13 +4044,13 @@ function App() {
       );
     }
 
-    // Plans are viewable without signing in: a visitor sees Free as the
-    // current plan and Pro as "coming soon", exactly like a signed-in
-    // Free user. No user data is read here.
+    // Plans are viewable without signing in: a visitor simply sees the
+    // plans, with no "current plan" markers (currentPlan={null} hides
+    // the badge and the Free-card button). No user data is read here.
     if (authView === "plans") {
       return (
         <div className="auth-shell">
-          <PlansPage currentPlan="free" onBack={() => openPublicPage("welcome")} backLabel="Back" />
+          <PlansPage currentPlan={null} onBack={() => openPublicPage("welcome")} backLabel="Back" />
           <CookieConsent onPrivacy={() => openPublicPage("privacy")} />
         </div>
       );

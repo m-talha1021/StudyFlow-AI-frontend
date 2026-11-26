@@ -309,7 +309,10 @@ export function TermsOfServicePage({ onBack }) {
 // --------------------------------------------------------
 
 export function PlansPage({ currentPlan, onBack, backLabel = "Back to app" }) {
-  const current = getPlanId(currentPlan);
+  // A null/undefined currentPlan means "no signed-in user": the plans are
+  // shown plainly, with no "current plan" markers at all (no badge, no
+  // "You are on Free" button on the Free card).
+  const current = currentPlan == null ? null : getPlanId(currentPlan);
   return (
     <SubPageShell
       title="Plans"
@@ -344,7 +347,7 @@ export function PlansPage({ currentPlan, onBack, backLabel = "Back to app" }) {
                 <button type="button" className="sf2-plan-button" disabled>
                   Pro — coming soon
                 </button>
-              ) : isCurrent ? (
+              ) : current === null ? null : isCurrent ? (
                 <button type="button" className="sf2-plan-button" disabled>
                   You are on Free
                 </button>
