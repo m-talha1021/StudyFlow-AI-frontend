@@ -4502,22 +4502,22 @@ function App() {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              setGamesOpen(true);
-            }}
-          >
-            Fun Zone
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
               setAppView("plans");
               window.scrollTo({ top: 0 });
             }}
           >
             Pricing
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setGamesOpen(true);
+            }}
+          >
+            Fun Zone
+          </button>
+
           <div
             ref={convertersRef}
             className="converters-nav-wrap"
