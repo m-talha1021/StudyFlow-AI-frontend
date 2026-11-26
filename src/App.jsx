@@ -12,6 +12,7 @@ import {
   onAuthStateChanged,
   updateProfile,
   sendEmailVerification,
+  getIdToken,
 } from "firebase/auth";
 
 import { auth, db } from "./firebase";
@@ -47,6 +48,21 @@ const apiRequest = async (endpoint, options = {}) => {
     typeof FormData !== "undefined" &&
     options.body instanceof FormData;
 
+  // Auth contract with the backend: every backend call carries the
+  // signed-in user's Firebase ID token as a Bearer token. If nobody is
+  // signed in (or the token cannot be read), do NOT crash — send the
+  // request without a token and let the backend answer 401, which is
+  // turned into a friendly "please sign in" message below.
+  let authToken = null;
+  try {
+    const currentUser = auth?.currentUser;
+    if (currentUser) {
+      authToken = await getIdToken(currentUser);
+    }
+  } catch {
+    authToken = null;
+  }
+
   let response;
 
   try {
@@ -64,6 +80,10 @@ const apiRequest = async (endpoint, options = {}) => {
             }),
 
           ...(options.headers || {}),
+
+          ...(authToken
+            ? { Authorization: `Bearer ${authToken}` }
+            : {}),
         },
       }
     );
@@ -88,6 +108,15 @@ const apiRequest = async (endpoint, options = {}) => {
   } catch {
     throw new Error(
       `Server returned an invalid response (${response.status}).`
+    );
+  }
+
+  // A 401 means the backend needs a signed-in user (no token, or an
+  // expired/invalid one). Surface a friendly sign-in message instead of
+  // the backend's raw error.
+  if (response.status === 401) {
+    throw new Error(
+      "Please sign in to continue. Your session may have expired — sign in again and try once more."
     );
   }
 
@@ -258,7 +287,7 @@ const transcribeFileInSegments = async (file, onProgress, forcedLanguage) => {
 function BrandMark() {
   return (
     <div className="brand-mark">
-      <img src="/favicon.png" alt="StudyFlow AI" />
+      <img src="/favicon.svg" alt="StudyFlow AI" />
       <span><b>StudyFlow AI</b></span>
     </div>
   );
@@ -310,7 +339,7 @@ function WelcomePage({ onLogin, onSignup }) {
 >
   <path d="M12,16L7,11L8.4,9.55l2.6,2.6V4h2v8.15l2.6-2.6L17,11l-5,5ZM6,20q-0.82,0-1.41-0.59T4,18V15H6v3H18V15h2v3q0,0.82-0.59,1.41T18,20H6Z"/>
 </svg>
-<a href= "https://drive.google.com/file/d/1qo3fmN5Q5lNlrwNZDYPFpqBLkTdGUjRR/view?usp=sharing" target="_blabk"> Android .APK</a>
+<a href= "https://drive.google.com/file/d/1qo3fmN5Q5lNlrwNZDYPFpqBLkTdGUjRR/view?usp=sharing" target="_blank" rel="noopener noreferrer"> Android .APK</a>
             </button>
           </div>
 
@@ -576,7 +605,7 @@ function FeedbackModal({ user, onClose }) {
           <div className="feedback-art-orb feedback-art-orb-two" />
           <div className="feedback-icon">
             <img
-              src="/favicon.png"
+              src="/favicon.svg"
               alt="StudyFlow AI logo"
             />
           </div>
@@ -1827,7 +1856,7 @@ function App() {
 
       const logo = document.createElement("img");
 
-      logo.src = `${window.location.origin}/favicon.png`;
+      logo.src = `${window.location.origin}/favicon.svg`;
       logo.alt = "StudyFlow AI Logo";
 
       logo.style.cssText = `
@@ -3155,6 +3184,18 @@ function App() {
     }
 
     try {
+      // Same auth contract as apiRequest: attach the Firebase ID token
+      // when signed in; without one the backend answers 401.
+      let pdfAuthToken = null;
+      try {
+        const currentUser = auth?.currentUser;
+        if (currentUser) {
+          pdfAuthToken = await getIdToken(currentUser);
+        }
+      } catch {
+        pdfAuthToken = null;
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/api/generate-pdf`,
         {
@@ -3163,6 +3204,10 @@ function App() {
           headers: {
             "Content-Type":
               "application/json",
+
+            ...(pdfAuthToken
+              ? { Authorization: `Bearer ${pdfAuthToken}` }
+              : {}),
           },
 
           body: JSON.stringify({
@@ -3172,6 +3217,12 @@ function App() {
           }),
         }
       );
+
+      if (response.status === 401) {
+        throw new Error(
+          "Please sign in to continue. Your session may have expired — sign in again and try once more."
+        );
+      }
 
       if (!response.ok) {
         let errorMessage =
@@ -3619,7 +3670,7 @@ function App() {
   if (!authChecked) {
     return (
       <div className="auth-loading-screen">
-        <img src="/favicon.png" alt="StudyFlow AI" />
+        <img src="/favicon.svg" alt="StudyFlow AI" />
         <span>Loading StudyFlow AI...</span>
       </div>
     );
@@ -3939,7 +3990,7 @@ function App() {
           onClick={() => setMobileMenuOpen(false)}
           aria-label="StudyFlow AI home"
         >
-          <img src="/favicon.png" alt="StudyFlow AI logo" />
+          <img src="/favicon.svg" alt="StudyFlow AI logo" />
           <span>StudyFlow AI</span>
         </a>
 
