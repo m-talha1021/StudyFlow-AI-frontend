@@ -2976,7 +2976,9 @@ footer h3 {
 .app-nav-links button:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.06);
-  transform: translateY(-1px);
+  /* ROUND 41: no translateY on hover — lifting the button moves it out
+     from under a cursor parked at its bottom edge, so :hover toggles
+     in a loop and the button flickers. */
 }
 
 .nav-signup-button,
@@ -2991,7 +2993,7 @@ footer h3 {
 
 .nav-signup-button:hover,
 .logout-button:hover {
-  transform: translateY(-1px);
+  /* ROUND 41: no translateY on hover (see note above). */
   box-shadow: 0 13px 30px rgba(139, 69, 232, 0.38);
 }
 
@@ -3595,7 +3597,9 @@ footer h3 {
     #c026d3 100%
   );
 
-  transform: translateY(-2px);
+  /* ROUND 41: no translateY on hover — lifting the button moves it out
+     from under a cursor parked at its bottom edge, so :hover toggles
+     in a loop and the button flickers. */
 
   box-shadow:
     0 8px 20px rgba(139, 92, 246, 0.4);
@@ -3957,7 +3961,7 @@ footer h3 {
   box-shadow:
     0 8px 24px rgba(124, 58, 237, 0.24),
     inset 0 1px 0 rgba(255,255,255,0.12);
-  transform: translateY(-2px);
+  /* ROUND 41: no translateY on hover (see note above). */
 }
 
 /* Username + logout */
@@ -4018,7 +4022,7 @@ footer h3 {
 }
 
 .navbar-menu-button:hover {
-  transform: translateY(-1px);
+  /* ROUND 41: no translateY on hover (see note above). */
   box-shadow: 0 12px 28px rgba(192, 38, 114, 0.24);
 }
 
@@ -4422,7 +4426,7 @@ body {
 }
 
 .app-navbar .app-nav-links > button:hover {
-  transform: translateY(-1px);
+  /* ROUND 41: no translateY on hover (see note above). */
   border-color: rgba(216, 180, 254, 0.42);
   background: linear-gradient(135deg, #6d3df0, #7c3aed);
 }
@@ -9210,7 +9214,9 @@ body {
 /* Navbar hover */
 
 .app-navbar .app-nav-links > button:hover {
-  transform: translateY(-1px);
+  /* ROUND 41: no translateY on hover — lifting the button moves it out
+     from under a cursor parked at its bottom edge, so :hover toggles
+     in a loop and the button flickers. */
 
   border-color:
     rgba(96, 165, 250, 0.38);
@@ -11440,7 +11446,12 @@ header nav button:hover,
         0 5px 18px rgba(79, 70, 229, 0.35),
         0 0 12px rgba(6, 182, 212, 0.20) !important;
 
-    transform: translateY(-2px) !important;
+    /* ROUND 41: the translateY(-2px) !important that was here lifted
+       every navbar button on hover. With the cursor parked at a
+       button's bottom edge the lift moved the button out from under
+       the pointer, :hover dropped, the button fell back, :hover
+       re-engaged — a rapid flicker. No lift on hover; the gradient
+       highlight above is the hover feedback. */
 }
 
 
@@ -16449,4 +16460,31 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
     padding: 8px 9px;
     font-size: 12px;
   }
+}
+
+/* ============================================================
+   ROUND 41 — Navbar hover flicker fix (2026-11-26)
+   Root cause: every navbar button lifted on hover
+   (translateY(-1px)/translateY(-2px) in several competing
+   :hover rules). With the cursor parked at a button's bottom
+   edge — as in the user's video — the lift moved the button
+   out from under the pointer, :hover dropped, the button fell
+   back, :hover re-engaged, and the cycle repeated: the button
+   flashed between its resting and hover backgrounds. The
+   individual translateY lines are removed above; this block
+   pins transform: none on every navbar-button hover state so
+   no earlier layer can reintroduce the lift. The hover
+   highlight itself (background / border / shadow) is kept.
+   ============================================================ */
+.app-navbar .app-nav-links > button:hover,
+.app-navbar .app-nav-links .converters-nav-wrap > button:hover,
+.app-navbar .logout-button:hover,
+.app-navbar .navbar-menu-button:hover,
+.app-navbar .settings-gear-button:hover,
+.public-navbar .nav-link-button:hover,
+.public-navbar .nav-signup-button:hover {
+  /* !important: a "FORCE OVERRIDE" gradient-hover rule elsewhere in
+     this file lifts nav buttons with translateY(-2px) !important;
+     only an !important none can pin it down. */
+  transform: none !important;
 }
