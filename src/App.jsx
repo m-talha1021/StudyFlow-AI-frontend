@@ -5671,7 +5671,23 @@ function App() {
               }
               onClick={() => setMode("mindmap")}
             >
-              <span>🧠</span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
+                  <g stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                    <line x1="12" y1="12" x2="5.4" y2="5.4" />
+                    <line x1="12" y1="12" x2="18.6" y2="5.4" />
+                    <line x1="12" y1="12" x2="5.4" y2="18.6" />
+                    <line x1="12" y1="12" x2="18.6" y2="18.6" />
+                  </g>
+                  <g fill="currentColor">
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="5" cy="5" r="2.4" />
+                    <circle cx="19" cy="5" r="2.4" />
+                    <circle cx="5" cy="19" r="2.4" />
+                    <circle cx="19" cy="19" r="2.4" />
+                  </g>
+                </svg>
+              </span>
               <div>
                 <strong>Mind Map</strong>
                 <small>See your lecture as a concept map</small>

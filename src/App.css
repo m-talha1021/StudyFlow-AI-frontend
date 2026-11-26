@@ -15475,6 +15475,19 @@ section.dashboard-section > div.dashboard-welcome h2 {
   -webkit-text-fill-color: rgba(255, 255, 255, 0.88);
 }
 
+/* ---------- Mode icon: indigo SVG on white, white when active ---------- */
+.mode>span {
+  color: #4338ca;
+}
+
+.mode>span svg {
+  display: block;
+}
+
+.mode.active>span {
+  color: #ffffff;
+}
+
 /* ---------- Dashboard / History panels: clean white UI ---------- */
 .dashboard-panel {
   background: #ffffff !important;
