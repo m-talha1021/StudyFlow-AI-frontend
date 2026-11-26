@@ -130,7 +130,7 @@ const apiRequest = async (endpoint, options = {}) => {
   // window event) so it can show a banner with a link to Plans.
   if (response.status === 429) {
     const quotaError = new Error(
-      "You've reached today's Free plan limit (10 AI calls or 20 transcription minutes a day). " +
+      "You've reached today's Free plan limit (5 AI calls or 20 transcription minutes a day). " +
       "Your limit resets tomorrow — Pro (coming soon) will raise it to 500 AI calls and 300 transcription minutes a day. See Plans for details."
     );
     quotaError.quotaExceeded = true;
