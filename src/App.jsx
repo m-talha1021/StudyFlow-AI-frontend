@@ -19,6 +19,7 @@ import {
 
 import { auth, db } from "./firebase";
 import { LOGO_PNG_DATA_URI } from "./logoPng.js";
+import MindMap, { mindmapToText } from "./MindMap.jsx";
 
 import {
   doc,
@@ -1071,6 +1072,10 @@ function App() {
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
 
+  // Interactive mind map (concept tree) for the current material.
+  const [mindmap, setMindmap] = useState(null);
+  const [mindmapLoading, setMindmapLoading] = useState(false);
+
   // ========================================================
   // TEST CONCEPTS
   // ========================================================
@@ -1986,6 +1991,7 @@ function App() {
     setFlashcards([]);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
+    setMindmap(null);
     setTestQuestions([]);
     setTestAnswers({});
     setTestIndex(0);
@@ -2069,6 +2075,9 @@ function App() {
       return (value.questions || []).map((question, index) =>
         `Question ${index + 1}: ${question.question || ""}\n${(question.options || []).map((option, optionIndex) => `${String.fromCharCode(65 + optionIndex)}. ${option}`).join("\n")}\nCorrect answer: ${question.answer || ""}`
       ).join("\n\n");
+    }
+    if (value?.kind === "mindmap" || value?.mindmap) {
+      return mindmapToText(value?.mindmap || value);
     }
     if (value?.text) return value.text;
     return JSON.stringify(value ?? "", null, 2);
@@ -2186,6 +2195,14 @@ function App() {
       setTestTotalSeconds(questions.length * 60);
       setTestTimeLeft(questions.length * 60);
       setTimeout(() => document.getElementById("test-concepts-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    if (historyItem.kind === "mindmap" || value?.kind === "mindmap") {
+      const tree = value?.mindmap || value;
+      if (!tree?.topic) return;
+      setMindmap(tree);
+      setTimeout(() => document.getElementById("mindmap-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
 
@@ -2901,6 +2918,98 @@ function App() {
     }
   };
 
+  // ========================================================
+  // MIND MAP
+  // ========================================================
+
+  const handleGenerateMindmap = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    if (!getCurrentMaterialText()) { alert("Please upload or paste study material first."); return; }
+    generationAbortControllerRef.current?.abort();
+    const generationController = new AbortController();
+    generationAbortControllerRef.current = generationController;
+    setMindmapLoading(true);
+    setMindmap(null);
+    setResult("");
+
+    stopSpeech();
+
+    try {
+      let ready = materialReady;
+
+      // Automatically process pasted text
+      if (!ready && text.trim()) {
+        const processed = await processPastedText();
+
+        if (!processed) {
+          setMindmapLoading(false);
+          return;
+        }
+
+        ready = true;
+      }
+
+      if (!ready && !file && !text.trim()) {
+        alert(
+          "Please upload document(s)/image(s) or paste your study content."
+        );
+
+        setMindmapLoading(false);
+        return;
+      }
+
+      const data = await apiRequest(
+        "/api/mindmap",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            materialText: getCurrentMaterialText(),
+          }),
+          signal: generationController.signal,
+        }
+      );
+
+      if (generationController.signal.aborted) return;
+      if (!data.success || !data.mindmap?.topic) {
+        throw new Error(
+          data.error || "Could not generate the mind map."
+        );
+      }
+
+      setMindmap(data.mindmap);
+
+      await saveGeneratedHistory({
+        title: `Mind Map - ${new Date().toLocaleDateString()}`,
+        type: "Mind Map",
+        kind: "mindmap",
+        content: { kind: "mindmap", mindmap: data.mindmap },
+        sourceFiles: getCurrentSourceFileNames(),
+        language: data.language || "english",
+        contentMode: "mindmap",
+      });
+
+      setTimeout(() => {
+        document
+          .getElementById("mindmap-section")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 100);
+
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Mind map error:", error);
+        alert(error.message || "Could not generate the mind map.");
+      }
+    } finally {
+      if (generationAbortControllerRef.current === generationController) {
+        generationAbortControllerRef.current = null;
+      }
+      setMindmapLoading(false);
+    }
+  };
+
   const handleNextFlashcard = () => {
     setFlashcardFlipped(false);
 
@@ -3287,6 +3396,11 @@ function App() {
 
     if (mode === "test") {
       await handleGenerateTest();
+      return;
+    }
+
+    if (mode === "mindmap") {
+      await handleGenerateMindmap();
       return;
     }
 
@@ -5040,7 +5154,8 @@ function App() {
                               "summary",
                               "explain",
                               "explanation",
-                              "quiz"
+                              "quiz",
+                              "mind map"
                             ].includes(type);
                           })
                           .map((historyItem) => (
@@ -5546,6 +5661,23 @@ function App() {
               </div>
             </button>
 
+            {/* MIND MAP */}
+
+            <button type="button"
+              className={
+                mode === "mindmap"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("mindmap")}
+            >
+              <span>🧠</span>
+              <div>
+                <strong>Mind Map</strong>
+                <small>See your lecture as a concept map</small>
+              </div>
+            </button>
+
             {/* ORAL TEST */}
 
             <button type="button"
@@ -5575,12 +5707,13 @@ function App() {
               generating ||
               flashcardsLoading ||
               testLoading ||
+              mindmapLoading ||
               oralExam.listening
             }
           >
             {testLoading
               ? "⏳ Generating..."
-              : generating || flashcardsLoading
+              : generating || flashcardsLoading || mindmapLoading
                 ? "⏳ Generating..."
                 : mode === "flashcards"
                   ? "✨ Generate Flashcards"
@@ -5588,7 +5721,9 @@ function App() {
                     ? "🎙️ Start Oral Test"
                     : mode === "test"
                       ? "✨ Generate Test"
-                      : `✨ Generate ${mode}`}
+                      : mode === "mindmap"
+                        ? "✨ Generate Mind Map"
+                        : `✨ Generate ${mode}`}
           </button>
 
         </section>
@@ -6020,6 +6155,81 @@ function App() {
               </button>
 
             </div>
+
+          </section>
+        )}
+
+        {/* ==================================================
+          MIND MAP
+      ================================================== */}
+
+        {mindmap && (
+          <section
+            className="mindmap-section generated-section-with-close"
+            id="mindmap-section"
+            style={{ position: "relative" }}
+          >
+            <button
+              type="button"
+              className="generated-section-close-button generated-section-close-top-right"
+              aria-label="Close mind map"
+              title="Close mind map"
+              style={{
+                position: "absolute",
+                top: "14px",
+                right: "14px",
+                zIndex: 20,
+                width: "36px",
+                height: "36px",
+                minWidth: "36px",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "50%",
+                border: "1px solid rgba(147, 197, 253, 0.55)",
+                background: "linear-gradient(145deg, rgba(59, 130, 246, 0.28), rgba(30, 64, 175, 0.42))",
+                color: "#ffffff",
+                fontSize: "24px",
+                fontWeight: 400,
+                lineHeight: 1,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0, 0, 0, 0.22)",
+                backdropFilter: "blur(8px)"
+              }}
+              onClick={() => {
+                if (openedFromHistory) {
+                  closeOpenedHistoryContent();
+                } else {
+                  setMindmap(null);
+                }
+              }}
+            >×</button>
+
+            <div className="mindmap-header">
+              <div>
+                <span className="result-icon">🧠</span>
+                <div>
+                  <h2>Mind Map</h2>
+                  <small>
+                    {mindmap.topic}
+                  </small>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={handleGenerateMindmap}
+                disabled={mindmapLoading}
+              >
+                {mindmapLoading
+                  ? "⏳ Generating..."
+                  : "🔄 Regenerate"}
+              </button>
+            </div>
+
+            <MindMap tree={mindmap} />
 
           </section>
         )}

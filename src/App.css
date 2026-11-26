@@ -16486,3 +16486,285 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
      only an !important none can pin it down. */
   transform: none !important;
 }
+
+/* ============================================================
+   MIND MAP (2026-11-26)
+   Interactive concept tree generated from lecture material.
+   NOTE — theme: the app is LIGHT today. The pre-existing
+   `#root section { background: transparent !important; }`
+   rule forces this section transparent (same as the
+   flashcards/test sections), so it reads as a light card
+   over the .app light gradient — NOT the dark gradient
+   below (kept only to match the flashcards-section rule).
+   Header/toolbar text is therefore DARK ink; only the
+   map canvas is a light panel with indigo nodes. Nodes
+   never move on hover — no translate, only a
+   border/shadow change.
+   ============================================================ */
+.mindmap-section {
+  width: min(1050px, calc(100% - 32px));
+  margin: 34px auto 0;
+  padding: 28px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  border: 1px solid rgba(130, 85, 255, 0.2);
+  background: linear-gradient(145deg, rgba(28, 17, 48, 0.86), rgba(12, 12, 21, 0.92));
+}
+
+.mindmap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  padding-right: 44px;
+}
+
+.mindmap-header h2 {
+  margin: 5px 0 4px;
+  font-size: 22px;
+}
+
+.mindmap-header small {
+  font-size: 13px;
+}
+
+.mindmap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mindmap-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mindmap-count {
+  color: #475569;
+  font-size: 13px;
+}
+
+.mindmap-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mindmap-control-button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #c7d2fe;
+  background: #ffffff;
+  color: #4338ca;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.mindmap-control-button:hover {
+  background: #eef2ff;
+}
+
+.mindmap-zoom-label {
+  min-width: 44px;
+  text-align: center;
+  color: #1e1b4b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mindmap-viewport {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #dbe2f1;
+  background:
+    radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0);
+  background-color: #f8fafc;
+  background-size: 22px 22px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mindmap-viewport:active {
+  cursor: grabbing;
+}
+
+.mindmap-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.mindmap-links {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mindmap-links path {
+  fill: none;
+  stroke: #a5b4fc;
+  stroke-width: 2;
+}
+
+.mindmap-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: 8px 30px 8px 12px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1.5px solid #c7d2fe;
+  background: #ffffff;
+  color: #1e1b4b;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(30, 27, 75, 0.08);
+}
+
+.mindmap-node:hover {
+  border-color: #6366f1;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.22);
+}
+
+.mindmap-node:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.mindmap-node-root {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-color: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+}
+
+.mindmap-node-root .mindmap-node-label {
+  font-size: 15px;
+}
+
+.mindmap-node-depth-1 {
+  background: #eef2ff;
+  border-color: #818cf8;
+}
+
+.mindmap-node-depth-2 {
+  background: #ffffff;
+  border-color: #c7d2fe;
+}
+
+.mindmap-node-depth-3 {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.mindmap-node-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.mindmap-node-detail {
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #475569;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mindmap-node-root .mindmap-node-detail {
+  color: #e0e7ff;
+}
+
+.mindmap-node-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mindmap-node-root .mindmap-node-toggle {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.mindmap-hint {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.mindmap-empty {
+  color: #475569;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+@media (max-width: 640px) {
+  .mindmap-section {
+    padding: 20px 14px;
+  }
+
+  .mindmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-right: 40px;
+  }
+
+  .mindmap-header h2 {
+    font-size: 19px;
+  }
+
+  .mindmap-viewport {
+    height: 420px;
+  }
+
+  .mindmap-node {
+    min-height: 56px;
+    padding: 7px 28px 7px 10px;
+  }
+
+  .mindmap-node-label {
+    font-size: 12.5px;
+  }
+
+  .mindmap-node-detail {
+    font-size: 11px;
+  }
+}
