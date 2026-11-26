@@ -9972,8 +9972,7 @@ select:focus-visible {
   color:
     #FFFFFF;
 
-  transform:
-    translateY(-1px);
+  /* ROUND 41: no translateY on hover (see note above). */
 
   box-shadow:
     0 8px 22px rgba(37, 99, 235, 0.12);
@@ -10039,8 +10038,7 @@ select:focus-visible {
       #0EA5E9
     );
 
-  transform:
-    translateY(-1px);
+  /* ROUND 41: no translateY on hover (see note above). */
 
   box-shadow:
     0 12px 30px rgba(37, 99, 235, 0.35);
