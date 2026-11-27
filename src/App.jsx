@@ -1102,6 +1102,16 @@ function App() {
   const [result, setResult] = useState("");
   const [resultLanguage, setResultLanguage] =
     useState("");
+  // Explicit-save state: generated results are NO LONGER auto-saved to
+  // history. Each mode tracks whether the result currently on screen
+  // has already been saved, so its Save button can flip to "Saved ✓"
+  // and a second click can never write a duplicate entry.
+  const [resultSaved, setResultSaved] = useState(false);
+  // Synchronous in-flight guard per mode ("result" | "flashcards" |
+  // "mindmap" | "test"). State updates are async, so a rapid
+  // double-click could pass the `*Saved` check twice before the
+  // re-render — the ref is set before the await and cleared after.
+  const saveBusyRef = useRef({});
   const [sharedPublicData, setSharedPublicData] = useState(null);
   const [sharedPublicError, setSharedPublicError] = useState("");
 
@@ -1126,16 +1136,22 @@ function App() {
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flashcardFlipped, setFlashcardFlipped] = useState(false);
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+  const [flashcardsSaved, setFlashcardsSaved] = useState(false);
 
   // Interactive mind map (concept tree) for the current material.
   const [mindmap, setMindmap] = useState(null);
   const [mindmapLoading, setMindmapLoading] = useState(false);
+  const [mindmapSaved, setMindmapSaved] = useState(false);
+  // Language of the last generated mind map (used by its Save button,
+  // since the generation response is gone by the time the user saves).
+  const [mindmapLanguage, setMindmapLanguage] = useState("english");
 
   // ========================================================
   // TEST CONCEPTS
   // ========================================================
 
   const [testLoading, setTestLoading] = useState(false);
+  const [testSaved, setTestSaved] = useState(false);
   const [testQuestions, setTestQuestions] = useState([]);
   const [testAnswers, setTestAnswers] = useState({});
   const [testIndex, setTestIndex] = useState(0);
@@ -2055,6 +2071,10 @@ function App() {
     setTestTimeLeft(0);
     setTestTotalSeconds(0);
     setTestScore(0);
+    setResultSaved(false);
+    setFlashcardsSaved(false);
+    setMindmapSaved(false);
+    setTestSaved(false);
     setTranscriptionText("");
     setTranscriptionLanguage("");
 
@@ -2071,8 +2091,13 @@ function App() {
     }
   };
 
-  // Save every successful generated result in the signed-in user's private
-  // Firestore subcollection. Keep documents below Firestore's 1 MiB limit.
+  // Write one generated result to the signed-in user's private Firestore
+  // subcollection. Keep documents below Firestore's 1 MiB limit.
+  // Returns true only when the document was actually written, so the
+  // explicit Save buttons can flip to "Saved ✓" (and stay clickable for
+  // a retry) based on the real outcome. Called ONLY from the explicit
+  // Save buttons below — except transcription, which still auto-saves
+  // its transcript (material history, out of scope for this change).
   const getCurrentSourceFileNames = () => {
     if (Array.isArray(files) && files.length) {
       return files.map((selectedFile) => selectedFile.name).filter(Boolean);
@@ -2082,7 +2107,7 @@ function App() {
   };
 
   const saveGeneratedHistory = async ({ title, type, kind = "text", content, sourceFiles, language = "english", contentMode = mode }) => {
-    if (!user?.uid || content == null) return;
+    if (!user?.uid || content == null) return false;
 
     const historyItem = {
       title: String(title || type || "Generated study content").slice(0, 180),
@@ -2101,7 +2126,7 @@ function App() {
     const bytes = new TextEncoder().encode(JSON.stringify(historyItem)).length;
     if (bytes > 850 * 1024) {
       console.warn("Generated result is too large for a single Firestore history document; it was not saved.");
-      return;
+      return false;
     }
 
     try {
@@ -2113,8 +2138,123 @@ function App() {
         { id: historyRef.id, ...historyItem },
         ...previous,
       ]);
+      return true;
     } catch (error) {
       console.error("Could not save generated content history:", error);
+      return false;
+    }
+  };
+
+  // ========================================================
+  // EXPLICIT SAVE — a generated result is stored in history
+  // ONLY when the user taps its Save button. Nothing on any
+  // generation path calls saveGeneratedHistory any more
+  // (except transcription, which is material history).
+  // ========================================================
+
+  const handleSaveResult = async () => {
+    if (!result?.trim() || resultSaved || saveBusyRef.current.result) return;
+    if (!user?.uid) { alert("Please sign in to save this result."); return; }
+    saveBusyRef.current.result = true;
+    try {
+      const saved = await saveGeneratedHistory({
+        title: `${({ summary: "Summary", explain: "Explanation", quiz: "Quiz", notes: "Study Notes" })[mode] || mode} - ${new Date().toLocaleDateString()}`,
+        type: ({ summary: "Summary", explain: "Explanation", quiz: "Quiz", notes: "Study Notes" })[mode] || mode,
+        kind: "text",
+        content: result,
+        sourceFiles: getCurrentSourceFileNames(),
+        language: resultLanguage || "english",
+        contentMode: mode,
+      });
+      if (saved) setResultSaved(true);
+      else alert("Could not save this result. Please try again.");
+    } finally {
+      saveBusyRef.current.result = false;
+    }
+  };
+
+  const handleSaveFlashcards = async () => {
+    if (!flashcards?.length || flashcardsSaved || saveBusyRef.current.flashcards) return;
+    if (!user?.uid) { alert("Please sign in to save these flashcards."); return; }
+    saveBusyRef.current.flashcards = true;
+    try {
+      // Flashcards have a second history store (the Content History
+      // "previous flashcards" list), which used to auto-save too. Both
+      // stores are now written only from this explicit Save.
+      const sourceFileNames = files.length
+        ? files.map((selectedFile) => selectedFile.name)
+        : file?.name
+          ? [file.name]
+          : ["Pasted study material"];
+      const flashcardHistoryItem = {
+        cards: flashcards,
+        fileNames: sourceFileNames,
+        createdAt: Date.now(),
+      };
+      const historyDoc = await addDoc(
+        collection(db, "users", user.uid, "flashcardHistory"),
+        flashcardHistoryItem
+      );
+      setDashboardFlashcardHistory((previous) => [
+        { id: historyDoc.id, ...flashcardHistoryItem },
+        ...previous,
+      ]);
+      const saved = await saveGeneratedHistory({
+        title: `Flashcards - ${new Date().toLocaleDateString()}`,
+        type: "Flashcards",
+        kind: "flashcards",
+        content: { kind: "flashcards", cards: flashcards },
+        sourceFiles: getCurrentSourceFileNames(),
+        contentMode: "flashcards",
+      });
+      if (saved) setFlashcardsSaved(true);
+      else alert("Could not save these flashcards. Please try again.");
+    } catch (error) {
+      console.error("Could not save flashcards history:", error);
+      alert("Could not save these flashcards. Please try again.");
+    } finally {
+      saveBusyRef.current.flashcards = false;
+    }
+  };
+
+  const handleSaveMindmap = async () => {
+    if (!mindmap?.topic || mindmapSaved || saveBusyRef.current.mindmap) return;
+    if (!user?.uid) { alert("Please sign in to save this mind map."); return; }
+    saveBusyRef.current.mindmap = true;
+    try {
+      const saved = await saveGeneratedHistory({
+        title: `Mind Map - ${new Date().toLocaleDateString()}`,
+        type: "Mind Map",
+        kind: "mindmap",
+        content: { kind: "mindmap", mindmap },
+        sourceFiles: getCurrentSourceFileNames(),
+        language: mindmapLanguage || "english",
+        contentMode: "mindmap",
+      });
+      if (saved) setMindmapSaved(true);
+      else alert("Could not save this mind map. Please try again.");
+    } finally {
+      saveBusyRef.current.mindmap = false;
+    }
+  };
+
+  const handleSaveTest = async () => {
+    if (!testQuestions?.length || testSaved || saveBusyRef.current.test) return;
+    if (!user?.uid) { alert("Please sign in to save this test."); return; }
+    saveBusyRef.current.test = true;
+    try {
+      const saved = await saveGeneratedHistory({
+        title: `Test Concepts - ${new Date().toLocaleDateString()}`,
+        type: "Test Concepts",
+        kind: "test",
+        content: { kind: "test", questions: testQuestions },
+        sourceFiles: getCurrentSourceFileNames(),
+        contentMode: "test",
+      });
+      if (saved) setTestSaved(true);
+      else alert("Could not save this test. Please try again.");
+    } finally {
+      saveBusyRef.current.test = false;
     }
   };
 
@@ -2233,6 +2373,7 @@ function App() {
       setFlashcards(cards);
       setFlashcardIndex(0);
       setFlashcardFlipped(false);
+      setFlashcardsSaved(true);
       setTimeout(() => document.getElementById("flashcards-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
@@ -2249,6 +2390,7 @@ function App() {
       testSubmissionRecordedRef.current = false;
       setTestTotalSeconds(questions.length * 60);
       setTestTimeLeft(questions.length * 60);
+      setTestSaved(true);
       setTimeout(() => document.getElementById("test-concepts-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
@@ -2257,6 +2399,8 @@ function App() {
       const tree = value?.mindmap || value;
       if (!tree?.topic) return;
       setMindmap(tree);
+      setMindmapLanguage(historyItem.language || "english");
+      setMindmapSaved(true);
       setTimeout(() => document.getElementById("mindmap-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
@@ -2271,6 +2415,7 @@ function App() {
     setMode(historyItem.mode || "summary");
     setResult(typeof value === "string" ? value : value?.text || historyContentAsText(historyItem));
     setResultLanguage(historyItem.language || "english");
+    setResultSaved(true);
     setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
   };
 
@@ -2282,6 +2427,7 @@ function App() {
     setFlashcards(historyItem.cards);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
+    setFlashcardsSaved(true);
     setDashboardHistoryType(null);
 
     setTimeout(() => {
@@ -2843,6 +2989,8 @@ function App() {
     generationAbortControllerRef.current = generationController;
     setFlashcardsLoading(true);
     setResult("");
+    setResultSaved(false);
+    setFlashcardsSaved(false);
 
     stopSpeech();
 
@@ -2893,7 +3041,8 @@ function App() {
       setFlashcardIndex(0);
       setFlashcardFlipped(false);
 
-      // Save generated flashcards for the current user.
+      // Count the generated flashcards for the current user (a stat,
+      // not history — the sets themselves are saved only via Save).
       if (user?.uid) {
         const createdCount = data.cards.length;
         const userRef = doc(db, "users", user.uid);
@@ -2912,44 +3061,7 @@ function App() {
           flashcardsCreated: previous.flashcardsCreated + createdCount,
         }));
 
-        const sourceFileNames = files.length
-          ? files.map((selectedFile) => selectedFile.name)
-          : file?.name
-            ? [file.name]
-            : ["Pasted study material"];
-
-        const flashcardHistoryItem = {
-          cards: data.cards,
-          fileNames: sourceFileNames,
-          createdAt: Date.now(),
-        };
-
-        try {
-          const historyDoc = await addDoc(
-            collection(db, "users", user.uid, "flashcardHistory"),
-            flashcardHistoryItem
-          );
-
-          setDashboardFlashcardHistory((previous) => [
-            {
-              id: historyDoc.id,
-              ...flashcardHistoryItem,
-            },
-            ...previous,
-          ]);
-        } catch (historyError) {
-          console.error("Could not save flashcard history:", historyError);
-        }
       }
-
-      await saveGeneratedHistory({
-        title: `Flashcards - ${new Date().toLocaleDateString()}`,
-        type: "Flashcards",
-        kind: "flashcards",
-        content: { kind: "flashcards", cards: data.cards },
-        sourceFiles: getCurrentSourceFileNames(),
-        contentMode: "flashcards",
-      });
 
       setTimeout(() => {
         document
@@ -2985,7 +3097,9 @@ function App() {
     generationAbortControllerRef.current = generationController;
     setMindmapLoading(true);
     setMindmap(null);
+    setMindmapSaved(false);
     setResult("");
+    setResultSaved(false);
 
     stopSpeech();
 
@@ -3032,16 +3146,7 @@ function App() {
       }
 
       setMindmap(data.mindmap);
-
-      await saveGeneratedHistory({
-        title: `Mind Map - ${new Date().toLocaleDateString()}`,
-        type: "Mind Map",
-        kind: "mindmap",
-        content: { kind: "mindmap", mindmap: data.mindmap },
-        sourceFiles: getCurrentSourceFileNames(),
-        language: data.language || "english",
-        contentMode: "mindmap",
-      });
+      setMindmapLanguage(data.language || "english");
 
       setTimeout(() => {
         document
@@ -3165,6 +3270,8 @@ function App() {
     generationAbortControllerRef.current = generationController;
     setTestLoading(true);
     setResult("");
+    setResultSaved(false);
+    setTestSaved(false);
     stopSpeech();
 
     try {
@@ -3234,14 +3341,6 @@ function App() {
       setTestTimeLeft(normalizedQuestions.length * 60);
       setTestStarted(false);
 
-      await saveGeneratedHistory({
-        title: `Test Concepts - ${new Date().toLocaleDateString()}`,
-        type: "Test Concepts",
-        kind: "test",
-        content: { kind: "test", questions: normalizedQuestions },
-        sourceFiles: getCurrentSourceFileNames(),
-        contentMode: "test",
-      });
 
       setTimeout(() => {
         document.getElementById("test-concepts-section")?.scrollIntoView({
@@ -3509,6 +3608,7 @@ function App() {
     generationAbortControllerRef.current = generationController;
     setGenerating(true);
     setResult("");
+    setResultSaved(false);
 
     stopSpeech();
 
@@ -3582,15 +3682,6 @@ function App() {
         data.language || "english"
       );
 
-      await saveGeneratedHistory({
-        title: `${({ summary: "Summary", explain: "Explanation", quiz: "Quiz", notes: "Study Notes" })[mode] || mode} - ${new Date().toLocaleDateString()}`,
-        type: ({ summary: "Summary", explain: "Explanation", quiz: "Quiz", notes: "Study Notes" })[mode] || mode,
-        kind: "text",
-        content: data.result || "",
-        sourceFiles: getCurrentSourceFileNames(),
-        language: data.language || "english",
-        contentMode: mode,
-      });
 
       setTimeout(() => {
         document
@@ -6083,6 +6174,23 @@ function App() {
 
                 <button
                   type="button"
+                  onClick={handleSaveResult}
+                  className="save-history-button"
+                  title={resultSaved ? "Saved to history" : "Save this result to history"}
+                  disabled={resultSaved || !result?.trim()}
+                >
+                  {resultSaved ? (
+                    "✓ Saved"
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16px" width="16px" fill="currentColor"><path d="M17,3H7A2,2 0 0,0 5,5V21L12,18L19,21V5C19,3.89 18.1,3 17,3Z" /></svg>
+                      Save
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
                   className="close-result-button"
                   onClick={() => {
                     if (openedFromHistory) {
@@ -6091,6 +6199,7 @@ function App() {
                       stopSpeech();
                       setResult("");
                       setResultLanguage("");
+                      setResultSaved(false);
                     }
                   }}
                   title="Close result"
@@ -6203,6 +6312,7 @@ function App() {
                   setFlashcards([]);
                   setFlashcardIndex(0);
                   setFlashcardFlipped(false);
+                  setFlashcardsSaved(false);
                 }
               }}
             >×</button>
@@ -6218,16 +6328,27 @@ function App() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateFlashcards}
-                disabled={flashcardsLoading}
-              >
-                {flashcardsLoading
-                  ? "⏳ Generating..."
-                  : "🔄 Regenerate"}
-              </button>
+              <div className="generated-header-actions">
+                <button
+                  type="button"
+                  className="save-history-button"
+                  onClick={handleSaveFlashcards}
+                  title={flashcardsSaved ? "Saved to history" : "Save these flashcards to history"}
+                  disabled={flashcardsSaved || !flashcards.length}
+                >
+                  {flashcardsSaved ? "✓ Saved" : "💾 Save"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateFlashcards}
+                  disabled={flashcardsLoading}
+                >
+                  {flashcardsLoading
+                    ? "⏳ Generating..."
+                    : "🔄 Regenerate"}
+                </button>
+              </div>
             </div>
 
             <div className="flashcard-progress">
@@ -6351,6 +6472,7 @@ function App() {
                   closeOpenedHistoryContent();
                 } else {
                   setMindmap(null);
+                  setMindmapSaved(false);
                 }
               }}
             >×</button>
@@ -6366,16 +6488,27 @@ function App() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateMindmap}
-                disabled={mindmapLoading}
-              >
-                {mindmapLoading
-                  ? "⏳ Generating..."
-                  : "🔄 Regenerate"}
-              </button>
+              <div className="generated-header-actions">
+                <button
+                  type="button"
+                  className="save-history-button"
+                  onClick={handleSaveMindmap}
+                  title={mindmapSaved ? "Saved to history" : "Save this mind map to history"}
+                  disabled={mindmapSaved || !mindmap?.topic}
+                >
+                  {mindmapSaved ? "✓ Saved" : "💾 Save"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateMindmap}
+                  disabled={mindmapLoading}
+                >
+                  {mindmapLoading
+                    ? "⏳ Generating..."
+                    : "🔄 Regenerate"}
+                </button>
+              </div>
             </div>
 
             <MindMap tree={mindmap} />
@@ -6429,6 +6562,7 @@ function App() {
                   setTestTimeLeft(0);
                   setTestTotalSeconds(0);
                   setTestScore(0);
+                  setTestSaved(false);
                 }
               }}
             >×</button>
@@ -6438,14 +6572,25 @@ function App() {
                 <h2>Test concepts</h2>
                 <p>Timed multiple-choice questions generated from your study material.</p>
               </div>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateTest}
-                disabled={testLoading}
-              >
-                {testLoading ? "Generating..." : "Regenerate test"}
-              </button>
+              <div className="generated-header-actions">
+                <button
+                  type="button"
+                  className="save-history-button"
+                  onClick={handleSaveTest}
+                  title={testSaved ? "Saved to history" : "Save this test to history"}
+                  disabled={testSaved || !testQuestions.length}
+                >
+                  {testSaved ? "✓ Saved" : "💾 Save"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateTest}
+                  disabled={testLoading}
+                >
+                  {testLoading ? "Generating..." : "Regenerate test"}
+                </button>
+              </div>
             </div>
 
             {!testStarted && !testFinished && (
