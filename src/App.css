@@ -17281,3 +17281,384 @@ footer,
     width: 100%;
   }
 }
+
+/* ============================================================
+   ROUND 60 (2026-11-27) — Study Planner (local schedules,
+   no AI call). Light theme to match the Plans/Settings pages:
+   white cards, indigo primary buttons, slate text.
+   ============================================================ */
+
+.sf-planner-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.sf-planner-form {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
+  box-sizing: border-box;
+}
+
+.sf-planner-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sf-planner-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  min-width: 0;
+}
+
+.sf-planner-field-full {
+  grid-column: 1 / -1;
+}
+
+.sf-planner-field input,
+.sf-planner-field textarea {
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  font-size: 15px;
+  font-family: inherit;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sf-planner-field input:focus,
+.sf-planner-field textarea:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+.sf-planner-field textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.6;
+}
+
+.sf-planner-field-hint {
+  font-size: 13px;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.sf-planner-weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sf-planner-weekday {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sf-planner-weekday input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4f46e5;
+  margin: 0;
+  cursor: pointer;
+}
+
+.sf-planner-weekday-checked {
+  background: #eef2ff;
+  border-color: #818cf8;
+  color: #312e81;
+}
+
+.sf-planner-form-error {
+  color: #dc2626;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+
+.sf-planner-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.sf-planner-empty {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 40px 24px;
+  text-align: center;
+  color: #334155;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
+}
+
+.sf-planner-empty-icon {
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.sf-planner-empty h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.sf-planner-empty p {
+  margin: 0 auto 20px;
+  max-width: 420px;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.sf-planner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sf-planner-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 24px -8px rgba(79, 70, 229, 0.12);
+  box-sizing: border-box;
+}
+
+.sf-planner-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sf-planner-card-top h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.sf-planner-badge {
+  flex-shrink: 0;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.sf-planner-badge-done {
+  background: #16a34a;
+}
+
+.sf-planner-meta {
+  margin: 6px 0 14px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sf-planner-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.sf-planner-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  transition: width 0.25s ease;
+}
+
+.sf-planner-progress-text {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.sf-planner-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sf-planner-delete-button {
+  padding: 11px 18px;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #dc2626;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sf-planner-delete-button:hover {
+  background: #fef2f2;
+}
+
+.sf-planner-delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sf-planner-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.sf-planner-detail-head h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.sf-planner-detail-meta {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.sf-planner-exam-done {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.sf-planner-days {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sf-planner-day-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+.sf-planner-day-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: #4f46e5;
+  cursor: pointer;
+  margin: 0;
+}
+
+.sf-planner-day-row input[type="checkbox"]:disabled {
+  cursor: default;
+}
+
+.sf-planner-day-date {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.sf-planner-day-topic {
+  flex: 1;
+  min-width: 0;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.sf-planner-day-topic-revision {
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.sf-planner-day-minutes {
+  flex-shrink: 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sf-planner-day-done .sf-planner-day-topic {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.sf-planner-day-done .sf-planner-day-date {
+  color: #94a3b8;
+}
+
+@media (max-width: 700px) {
+  .sf-planner-form {
+    padding: 18px 16px;
+  }
+  .sf-planner-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .sf-planner-card {
+    padding: 18px 16px;
+  }
+  .sf-planner-day-row {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .sf-planner-day-topic {
+    flex-basis: calc(100% - 32px);
+    order: 3;
+  }
+  .sf-planner-day-minutes {
+    margin-left: auto;
+  }
+  .sf-planner-card-actions .sf2-primary-button,
+  .sf-planner-card-actions .sf-planner-delete-button,
+  .sf-planner-form-actions .sf2-primary-button,
+  .sf-planner-form-actions .sf2-secondary-button {
+    flex: 1;
+  }
+}

@@ -21,6 +21,7 @@ import { auth, db } from "./firebase";
 import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
+import { StudyPlannerPage } from "./Planner.jsx";
 
 import {
   doc,
@@ -4619,6 +4620,9 @@ function App() {
             onAccountDeleted={handleAccountDeleted}
           />
         )}
+        {appView === "planner" && (
+          <StudyPlannerPage user={user} onBack={goBackToApp} />
+        )}
         {appView === "privacy" && (
           <PrivacyPolicyPage onBack={goBackToApp} />
         )}
@@ -4727,6 +4731,17 @@ function App() {
             }}
           >
             Content History
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setAppView("planner");
+              window.scrollTo({ top: 0 });
+            }}
+          >
+            Planner
           </button>
 
           <button

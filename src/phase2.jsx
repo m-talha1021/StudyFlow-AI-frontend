@@ -100,7 +100,7 @@ In summary, photosynthesis converts light energy into chemical energy stored in 
 // SHARED SHELL FOR IN-APP PAGES
 // --------------------------------------------------------
 
-function SubPageShell({ title, subtitle, onBack, backLabel = "Go back", children }) {
+export function SubPageShell({ title, subtitle, onBack, backLabel = "Go back", children }) {
   return (
     <main className="sf2-page">
       <button type="button" className="sf2-back-button" onClick={onBack}>
