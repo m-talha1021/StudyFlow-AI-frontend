@@ -16810,3 +16810,33 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
     padding-right: calc(clamp(12px, 2.5vw, 32px) + 90px);
   }
 }
+
+/* ============================================================
+   ROUND 51 (2026-11-27) — footer content centered
+   (Muhammad: "align this in center in footer").
+   The footer group (copyright + links) was already laid out
+   with justify-content: center (ROUND 34), and it measures
+   exactly centered in the harness and the real app at
+   1280/1396/375px — the screenshot's small left/right
+   asymmetry does not reproduce with the current build
+   (its numbers fit a ~18px crop off the right edge of the
+   image). This block pins the centering explicitly so it
+   survives any cascade reordering: it also neutralises the
+   old `footer p { margin: 0 auto !important; }` rule, whose
+   auto margins on flex items would spread the two groups
+   apart. Single-row layout, gaps, colors, text, links and
+   behavior are unchanged; mobile still wraps to two
+   centered rows. Applies to all three footer variants
+   (signed-out .public-footer, sub-view and logged-in
+   plain <footer>), which share these rules.
+   ============================================================ */
+footer,
+.public-footer {
+  justify-content: center !important;
+}
+
+footer > p,
+.public-footer > p {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
