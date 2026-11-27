@@ -1,19 +1,3 @@
-/* ===========================================================
-   GLOBAL PAGE BACKGROUND
-============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   APP
-============================================================ */
-
-
-
 
 
 @media (max-width: 700px) {
@@ -59,21 +43,11 @@
 
 }
 
-
-
-
-
-
-
 .logo a {
 
   text-decoration: none;
 
 }
-
-
-
-
 
 /* ============================================================
    CONTAINER
@@ -89,11 +63,6 @@
 /* ============================================================
    HERO
 ============================================================ */
-
-
-
-
-
 
 .hero h1 {
 
@@ -114,10 +83,6 @@
 
 }
 
-
-
-
-
 .hero p {
 
   position: relative;
@@ -135,24 +100,9 @@
 
 }
 
-
-
-
-
-
-
 /* =========================================
    AUTH PAGE BRAND
 ========================================= */
-
-
-
-
-
-
-
-
-
 /* ============================================================
    INPUT CARD
 ============================================================ */
@@ -463,19 +413,11 @@ textarea::placeholder {
 
 }
 
-
-
-
-
 .camera-body {
 
   fill: #ffffff;
 
 }
-
-
-
-
 
 .camera-text {
 
@@ -545,13 +487,6 @@ textarea::placeholder {
 
 }
 
-
-
-
-
-
-
-
 .mode>span {
 
   font-size: 25px;
@@ -600,10 +535,6 @@ textarea::placeholder {
   cursor: pointer;
 
 }
-
-
-
-
 
 .generate-button:disabled {
 
@@ -817,53 +748,6 @@ textarea::placeholder {
 
 }
 
-
-/* ============================================================
-   AI CHATBOT
-============================================================ */
-
-
-
-
-/* ============================================================
-   CHAT HEADER
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT TOGGLE
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT CONTAINER
-============================================================ */
-
-
-
-
 /* ============================================================
    CHAT MESSAGES
 ============================================================ */
@@ -904,12 +788,6 @@ textarea::placeholder {
 }
 
 
-
-
-
-
-
-
 .chat-welcome p {
 
   margin-top: 8px;
@@ -944,10 +822,6 @@ textarea::placeholder {
   max-width: 80%;
 
 }
-
-
-
-
 
 .message-content p:last-child {
 
@@ -1063,13 +937,6 @@ textarea::placeholder {
   font-family: inherit;
 
 }
-
-
-
-
-
-
-
 
 .chat-input-form button {
 
@@ -1199,132 +1066,6 @@ footer h3 {
 
 @media (max-width: 768px) {
 
-
-  /* HEADER */
-
-  
-
-
-  
-
-
-  /* CONTAINER */
-
-  
-
-
-  /* HERO */
-
-  
-
-
-  
-
-
-  /* INPUT CARD */
-
-  
-
-
-  /* CAMERA */
-
-  
-
-
-  
-
-
-  /* ACTION */
-
-  
-
-
-  
-
-
-  /* MODE BUTTONS */
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  /* GENERATE */
-
-  
-
-
-  /* RESULT */
-
-  
-
-
-  
-
-
-  
-
-
-  /* CHATBOT */
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  /* FOOTER */
-
-  
-
-  
-
-  
-
-  /* GO UP */
-
-  
-
 }
 
 
@@ -1406,24 +1147,6 @@ footer h3 {
 
 
 }
-
-
-
-
-
-
-/* =========================================================
-   FLOATING AI CHATBOT BUTTON
-========================================================= */
-
-
-
-
-
-
-
-
-
 
 /* =========================================================
    CHAT POPUP
@@ -1751,33 +1474,11 @@ footer h3 {
 
 }
 
-
-
-
-
-/* ========================================================
-   CHATBOT BUTTON BETWEEN CARDS
-   ======================================================== */
-
-
-
-
-
-
-
-
 /* Keep chatbot popup above the page */
 
 .chatbot-popup {
   z-index: 1000;
 }
-
-
-
-
-
-
-
 
 /* =========================================
    ACTION HEADING + CHATBOT
@@ -1816,10 +1517,6 @@ footer h3 {
 .chatbot-heading-button:hover {
   transform: scale(1.08);
 }
-
-
-
-
 
 .heading-robot-icon {
   font-size: 28px;
@@ -1940,12 +1637,6 @@ footer h3 {
   box-shadow: 0 13px 30px rgba(139, 69, 232, 0.38);
 }
 
-
-
-
-
-
-
 .welcome-hero {
   width: min(1050px, 100%);
   text-align: center;
@@ -2004,16 +1695,6 @@ footer h3 {
   transform: translateY(-2px);
 }
 
-
-
-
-
-
-
-
-
-
-
 .auth-page {
   min-height: calc(100vh - 77px);
   display: grid;
@@ -2027,10 +1708,6 @@ footer h3 {
   padding: 34px;
   box-sizing: border-box;
 }
-
-
-
-
 
 .auth-card h1 {
   margin: 22px 0 7px;
@@ -2103,10 +1780,6 @@ footer h3 {
    APP NAVBAR
 ============================================================ */
 
-
-
-
-
 .app-nav-links button {
   font-size: 14px;
 }
@@ -2147,23 +1820,6 @@ footer h3 {
   font-weight: 800;
   letter-spacing: 0.16em;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .flashcard-progress {
   margin-bottom: 13px;
@@ -2359,27 +2015,6 @@ footer h3 {
 }
 
 /* ============================================================
-   PERFORMANCE DASHBOARD
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
    HISTORY PANEL
 ============================================================ */
 
@@ -2394,12 +2029,6 @@ footer h3 {
   border-left: 1px solid rgba(255,255,255,0.09);
   box-shadow: -20px 0 70px rgba(0,0,0,0.35);
 }
-
-
-
-
-
-
 
 .history-close {
   width: 40px;
@@ -2424,16 +2053,6 @@ footer h3 {
   border-radius: 15px;
   background: rgba(255,255,255,0.04);
 }
-
-
-
-
-
-
-
-
-
-
 
 .history-empty {
   margin-top: 55px;
@@ -2528,12 +2147,6 @@ footer h3 {
     font-size: 16px;
   }
 
-  
-
-  
-
-  
-
   .history-panel {
     padding: 23px 17px;
   }
@@ -2627,11 +2240,7 @@ footer h3 {
    ============================================================ */
 
 @media (max-width: 700px) {
-  
 
-  
-
-  
 
   .navbar-menu-button {
     flex: 0 0 42px;
@@ -2731,11 +2340,6 @@ footer h3 {
 
 @media (max-width: 380px) {
   
-
-  
-
-  
-
   .public-navbar .brand-mark span {
     display: none;
   }
@@ -2756,14 +2360,6 @@ footer h3 {
   box-sizing: border-box;
   z-index: 1000;
 }
-
-
-
-
-
-
-
-
 
 .app-navbar .navbar-menu-button {
   display: none;
@@ -2882,10 +2478,6 @@ footer h3 {
 html {
   scroll-behavior: smooth;
 }
-
-
-
-
 
 /* Logged-in navbar */
 .app-navbar {
@@ -3469,22 +3061,6 @@ html {
     width: 100%;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ============================================================
    MOBILE TAP HIGHLIGHT FIX
 ============================================================ */
@@ -3584,14 +3160,6 @@ a:active {
 
   gap: 18px;
 }
-
-
-/* ============================================================
-   DASHBOARD CARD
-============================================================ */
-
-
-
 
 /* ============================================================
    CARD HOVER
@@ -4161,9 +3729,6 @@ a:active {
   }
 }
 
-
-
-
 /* ============================================================
    INITIAL LOADING SCREEN
 ============================================================ */
@@ -4266,10 +3831,6 @@ a:active {
     font-size: 12px;
   }
 }
-
-
-
-
 /* ============================================================
    GUESS THE WORD GAME
 ============================================================ */
@@ -4801,36 +4362,6 @@ a:active {
   background-repeat: no-repeat;
 }
 
-
-
-/* ============================================================
-   HEADER
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CONTAINER
-============================================================ */
-
-
-
-
 /* ============================================================
    HERO
 ============================================================ */
@@ -4892,108 +4423,6 @@ a:active {
   pointer-events: none;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* =========================================
-   AUTH PAGE BRAND
-========================================= */
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   INPUT CARD
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   TEXTAREA
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   DIVIDER
-============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   UPLOAD
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   SELECTED FILE
-============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   CAMERA
-============================================================ */
-
-
-
 
 .camera-button {
 
@@ -5066,303 +4495,6 @@ a:active {
 }
 
 
-
-
-
-/* ============================================================
-   ACTION SECTION
-============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   MODE BUTTONS
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   GENERATE BUTTON
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   RESULT SECTION
-============================================================ */
-
-
-
-
-/* ============================================================
-   RESULT HEADER
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   RESULT ACTIONS
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   RESULT CONTENT
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   AI CHATBOT
-============================================================ */
-
-
-
-
-/* ============================================================
-   CHAT HEADER
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT TOGGLE
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT CONTAINER
-============================================================ */
-
-
-
-
-/* ============================================================
-   CHAT MESSAGES
-============================================================ */
-
-
-
-
-/* ============================================================
-   CHAT WELCOME
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT MESSAGE
-============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   MESSAGE CONTENT
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   USER MESSAGE
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   ASSISTANT MESSAGE
-============================================================ */
-
-
-
-
-/* ============================================================
-   RTL CHAT
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   CHAT INPUT
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   FOOTER
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   GO TO TOP
-============================================================ */
-
-
-
-
-
-
-
-
-
-
 /* ============================================================
    TABLET / MOBILE
 ============================================================ */
@@ -5385,10 +4517,6 @@ a:active {
     align-items: flex-start;
 
   }
-
-
-  
-
 
   /* CONTAINER */
 
@@ -5426,11 +4554,6 @@ a:active {
     padding: 18px;
 
   }
-
-
-  /* CAMERA */
-
-  
 
 
   .camera-button {
@@ -5582,30 +4705,6 @@ a:active {
 
   }
 
-
-  /* CHATBOT */
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
-  
-
-
   .chat-messages {
 
     min-height: 240px;
@@ -5659,10 +4758,6 @@ a:active {
 
   }
 
-  
-
-  
-
   /* GO UP */
 
   .go-up-button {
@@ -5680,727 +4775,6 @@ a:active {
   }
 
 }
-
-
-/* ============================================================
-   VERY SMALL PHONES
-============================================================ */
-
-
-
-
-
-
-
-
-/* =========================================================
-   FLOATING AI CHATBOT BUTTON
-========================================================= */
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   CHAT POPUP
-========================================================= */
-
-
-
-
-/* =========================================================
-   CHAT HEADER
-========================================================= */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   CLOSE BUTTON
-========================================================= */
-
-
-
-
-
-
-/* =========================================================
-   MATERIAL STATUS
-========================================================= */
-
-
-
-
-
-
-/* =========================================================
-   CHAT MESSAGES
-========================================================= */
-
-
-
-
-/* =========================================================
-   WELCOME
-========================================================= */
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   CHAT MESSAGE
-========================================================= */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   CHAT INPUT
-========================================================= */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   MOBILE CHATBOT
-========================================================= */
-
-
-
-
-
-
-
-/* ========================================================
-   CHATBOT BUTTON BETWEEN CARDS
-   ======================================================== */
-
-
-
-
-
-
-
-
-/* Keep chatbot popup above the page */
-
-
-
-
-
-
-
-
-
-
-/* ==================================================
-   WHAT WOULD YOU LIKE TO DO + CHATBOT
-================================================== */
-
-
-
-
-
-/* Chatbot button beside heading */
-
-
-
-
-
-
-
-
-
-
-
-/* =========================================
-   ACTION HEADING + CHATBOT
-========================================= */
-
-
-
-
-
-/* Chatbot button beside heading */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   AUTHENTICATION + WELCOME PAGE
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   APP NAVBAR
-============================================================ */
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   FLASHCARDS
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   STUDYFLOW MAIN NAVBAR - FINAL
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   PERFORMANCE DASHBOARD
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   HISTORY PANEL
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   NAVBAR POLISH - GRADIENT BUTTONS + MOBILE
-   ============================================================ */
-
-
-
-/* Logged-in navigation buttons */
-
-
-
-
-/* Username + logout */
-
-
-
-
-
-
-/* Public navbar buttons */
-
-
-
-
-
-
-
-
-/* Hamburger */
-
-
-
-
-
-
-/* ============================================================
-   MOBILE NAVIGATION
-   ============================================================ */
-
-
-
-
-
-
-/* ============================================================
-   STUDYFLOW NAVBAR - MOBILE HAMBURGER OVERRIDES
-   Not sticky: normal document flow is preserved.
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   FINAL LAYOUT SAFETY OVERRIDES
-   These rules intentionally come last so older navbar styles
-   cannot conflict with the logged-in navigation.
-============================================================ */
-
-
-
-
-
-
-
-
-
-/* Logged-in navbar */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Prevent content from hiding behind the sticky navbar. */
-
-
-/* Main content remains centered and does not compete with the navbar. */
-
-
-/* Selected files cannot push the layout wider than the viewport. */
-
-
-
-
-/* Chat stays inside the viewport on small screens. */
-
-
-/* ============================================================
-   MOBILE LOGGED-IN NAVBAR
-============================================================ */
-
-
-
-
-
-
-
-
-/* ============================================================
-   FINAL LAYOUT STABILITY OVERRIDES
-   Keep the original StudyFlow UI width and spacing unchanged
-   when generated results, flashcards, or tests appear.
-============================================================ */
-
-/* Reserve scrollbar space so the whole page does not shift
-   horizontally when generated content makes the page taller. */
-
-
-
-
-/* All generated sections stay aligned with the 900px main app. */
-
-
-/* Never allow generated cards to create a wider page. */
-
-
-/* Keep the result visually attached to the existing main layout. */
-
-
-
-
-
-
-/* Flashcards use the same width as the main application. */
-
-
-/* Test Concepts uses the same width instead of expanding to 1050px. */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Keep result action buttons from changing the card width. */
-
-
-
-
-/* Mobile: preserve the same UI, just stack controls where needed. */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   MOBILE TAP HIGHLIGHT FIX
-============================================================ */
-
-
-
-/* Prevent browser focus outline from appearing after taps */
-
-
-
-
-
-
-
-/* ============================================================
-   DASHBOARD SECTION
-============================================================ */
-
-
-
-
-/* ============================================================
-   DASHBOARD HEADING
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   DASHBOARD LOADING
-============================================================ */
-
-
 
 
 /* ============================================================
@@ -6441,279 +4815,6 @@ a:active {
 
   overflow: hidden;
 }
-
-
-/* ============================================================
-   CARD HOVER
-============================================================ */
-
-
-
-
-/* ============================================================
-   CARD TOP
-============================================================ */
-
-
-
-
-
-
-/* ============================================================
-   CARD ICON
-============================================================ */
-
-
-
-
-
-
-/* ============================================================
-   CARD VALUE
-============================================================ */
-
-
-
-
-/* ============================================================
-   CARD DESCRIPTION
-============================================================ */
-
-
-
-
-/* ============================================================
-   TABLET
-============================================================ */
-
-
-
-
-
-
-/* ============================================================
-   MOBILE
-   2 CARDS PER ROW
-============================================================ */
-
-
-
-
-/* ============================================================
-   SMALL PHONES
-============================================================ */
-
-
-
-/* ============================================================
-   DASHBOARD HISTORY / CLICKABLE CARDS
-============================================================ */
-
-
-
-
-
-
-
-
-
-/* History panel shown below the dashboard cards */
-
-
-
-
-
-
-
-
-
-
-
-
-/* Uploaded file names */
-
-
-
-
-
-
-/* Previous flashcard sets */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   DASHBOARD HISTORY - MOBILE
-============================================================ */
-
-
-
-
-
-
-
-
-/* ============================================================
-   INITIAL LOADING SCREEN
-============================================================ */
-
-
-
-
-/* Loading logo */
-
-
-
-
-/* Loading text */
-
-
-
-
-/* ============================================================
-   MOBILE LOADING SCREEN
-============================================================ */
-
-
-
-
-/* ============================================================
-   VERY SMALL PHONES
-============================================================ */
-
-
-
-
-
-
-/* ============================================================
-   GUESS THE WORD GAME
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   BALLOON LETTER GAME
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   BALLOON GAME - MOBILE
-============================================================ */
-
-
-
-
-
-/* ============================================================
-   GAMES PANEL
-   Games stay hidden until the Games navbar button is clicked.
-============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Override the standalone-game spacing while inside the panel. */
-
-
 
 /* ============================================================\n   AI ORAL EXAM\n============================================================ */
 .oral-exam-section {
@@ -7272,11 +5373,6 @@ a:active {
 
 
 
-
-
-
-
-
 /* ============================================================
    STUDYFLOW - FINAL COLOR THEME
    Navy + Blue + Cyan
@@ -7352,24 +5448,6 @@ body {
   box-sizing: border-box;
 }
 
-
-/* Hero heading */
-
-
-
-
-
-
-/* Hero description */
-
-
-
-
-/* Welcome badge */
-
-
-
-
 /* ============================================================
    NAVBAR
    ============================================================ */
@@ -7380,21 +5458,6 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
-
-
-/* Navbar links */
-
-
-
-
-/* Navbar hover */
-
-
-
-
-/* User pill */
-
-
 
 
 /* ============================================================
@@ -7465,26 +5528,6 @@ body {
   }
 }
 
-
-/* ============================================================
-   PERFORMANCE DASHBOARD
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   AUTH / LOGIN / SIGNUP
-   ============================================================ */
-
-
-
-
-/* Auth card */
-
-
-
-
 /* Auth inputs */
 
 .auth-card input {
@@ -7519,16 +5562,6 @@ body {
   transform:
     translateY(-2px);
 }
-
-
-
-
-
-
-
-
-
-
 
 /* ============================================================
    GENERATE BUTTON
@@ -7724,16 +5757,6 @@ body {
 
 
 /* ============================================================
-   GENERAL CARDS
-   ============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
    LINKS
    ============================================================ */
 
@@ -7800,20 +5823,6 @@ select:focus-visible {
   outline-offset:
     2px;
 }
-/* =========================================================
-   STUDYFLOW HERO BACKGROUND — CLEAN NAVY / BLUE
-   ========================================================= */
-
-
-
-
-/* Remove the old purple / yellow background effects */
-
-
-
-/* Main welcome screen */
-
-
 
 /* Very subtle blue atmosphere behind hero */
 .welcome-page::before {
@@ -7835,23 +5844,6 @@ select:focus-visible {
   opacity: 1;
 }
 
-
-/* Hero heading */
-
-
-
-/* Blue part of heading */
-
-
-
-/* Hero description */
-
-
-
-
-/* ============================================================
-   STUDYFLOW — LOGGED-IN DASHBOARD GRADIENT THEME
-   ============================================================ */
 
 /* ---------- Main logged-in application ---------- */
 
@@ -8018,18 +6010,6 @@ select:focus-visible {
 }
 
 
-/* ============================================================
-   WELCOME TITLE
-   ============================================================ */
-
-
-
-
-/* If your heading uses this selector */
-
-
-
-
 .welcome-hero h1 span {
   background:
     linear-gradient(
@@ -8045,21 +6025,6 @@ select:focus-visible {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-
-
-/* ============================================================
-   LOGGED-IN HERO AREA
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   STUDY MATERIAL CARD
-   ============================================================ */
-
-
-
 
 /* ============================================================
    GENERIC DASHBOARD CARDS
@@ -8391,27 +6356,6 @@ select:focus {
 }
 
 /* ============================================================
-   STUDYFLOW PUBLIC PAGE
-   FORCE GRADIENT BACKGROUND
-   Put this at the VERY END of your CSS
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   EXTRA ATMOSPHERE
-   ============================================================ */
-
-
-
-
-/* Bottom blue atmosphere */
-
-
-
-
-/* ============================================================
    HERO SECTION
    ============================================================ */
 
@@ -8421,20 +6365,6 @@ html body .public-page .hero{
 
   background: transparent !important;
 }
-
-
-/* ============================================================
-   AI POWERED BADGE
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   MAIN GRADIENT HEADING
-   ============================================================ */
-
-
 
 
 /* ============================================================
@@ -8508,67 +6438,12 @@ html body .public-page .secondary-button:hover {
 }
 
 
-/* ============================================================
-   FEATURE CARDS
-   ============================================================ */
 
-
-
-
-
-
-
-/* ============================================================
-   FEATURE CARD ICON CONTAINER
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   STUDYFLOW LOGGED-IN PAGE
-   FORCE GRADIENT BACKGROUND
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   MAIN LOGGED-IN CONTENT
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   HERO / STUDY SECTION
-   ============================================================ */
 
 html body .hero{
   background: transparent !important;
 }
 
-
-/* ============================================================
-   STUDY MATERIAL CARD
-   ============================================================ */
-
-
-
-
-/* ============================================================
-   "WHAT WOULD YOU LIKE TO DO?" CARDS
-   ============================================================ */
-
-
-
-
-
-
-
-/* ============================================================
-   SELECTED ACTION CARD
-   ============================================================ */
 
 html body .action-card.active,
 html body .action-card.selected,
@@ -8663,14 +6538,6 @@ html body .dashboard .accent-text {
   -webkit-text-fill-color: transparent !important;
 }
 
-
-/* ============================================================
-   SUBTLE PAGE GLOW
-   ============================================================ */
-
-
-
-
 /* ============================================================
    FOOTER
    ============================================================ */
@@ -8743,14 +6610,6 @@ body,
     background: transparent !important;
 }
 
-
-/* ============================================================
-   FORCE THE LOGGED-IN PAGE TO SHOW THE GRADIENT
-   ============================================================ */
-
-
-
-
 /* ============================================================
    SUBTLE BLUE GLOW
    ============================================================ */
@@ -8784,17 +6643,6 @@ body,
     z-index: -1;
 }
 
-
-/* ============================================================
-   PUBLIC PAGE — LOGIN / SIGN UP HOVER
-   ============================================================ */
-
-/* LOGIN */
-
-
-
-
-
 /* SIGN UP */
 .signup-button{
     transition:
@@ -8824,11 +6672,6 @@ body,
     transform:
         translateY(-2px) !important;
 }
-
-
-
-
-
 
 /* ============================================================
    STUDYFLOW AI — COOKIE CONSENT BAR
@@ -8939,9 +6782,6 @@ body,
   }
 }
 
-
-
-
 /* =========================================
    REMOVE BOX/BACKGROUND BEHIND NAVBAR
    ========================================= */
@@ -9004,12 +6844,6 @@ nav a:hover, nav button:hover, header nav a:hover, header nav button:hover, .nav
         0 5px 18px rgba(79, 70, 229, 0.35),
         0 0 12px rgba(6, 182, 212, 0.20) !important;
 
-    /* ROUND 41: the translateY(-2px) !important that was here lifted
-       every navbar button on hover. With the cursor parked at a
-       button's bottom edge the lift moved the button out from under
-       the pointer, :hover dropped, the button fell back, :hover
-       re-engaged — a rapid flicker. No lift on hover; the gradient
-       highlight above is the hover feedback. */
 }
 
 
@@ -9032,15 +6866,6 @@ nav button:hover *,
 .navbar button:hover * {
     color: #ffffff !important;
 }
-
-
-
-
-
-
-
-
-
 
 /* ============================================================
    FINAL CAMERA BUTTON OVERRIDE
@@ -9362,9 +7187,6 @@ nav button:hover *,
   }
 }
 
-
-
-
 /* =========================================================
    USER PROFILE PILL
    White background + black text
@@ -9402,8 +7224,6 @@ nav button:hover *,
 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10) !important;
 }
-
-
 
 /* =========================================================
    FLASHCARD QUESTION + ANSWER TEXT FIX
@@ -9550,17 +7370,6 @@ nav button:hover *,
   object-fit: contain;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 /* Forgot Password Button — Updated UI */
 .forgot-password-button {
   display: inline-flex;
@@ -9694,9 +7503,6 @@ textarea.transcription-output {
 @media (max-width: 767px) {
     
 }
-
-
-
 
 /* =========================================
    DESKTOP NAVBAR RESPONSIVENESS FIX
@@ -9938,9 +7744,6 @@ textarea.transcription-output {
   }
 }
 
-
-
-
 /* FORCE resize StudyFlowAI feature cards */
 .feature-grid {
     width: 90% !important;
@@ -10118,10 +7921,6 @@ footer p {
     }
 }
 
-
-
-
-
 /* FIX: Restore vertical scrolling on mobile */
 @media (max-width: 768px) {
 
@@ -10177,13 +7976,6 @@ footer p {
     flex-shrink: 0 !important;
   }
 }
-
-
-
-
-
-
-
 
 /* Fix History header layout on mobile */
 @media screen and (max-width: 600px) {
@@ -10633,15 +8425,6 @@ footer p {
 /* ============================================================
    StudyFlow AI — FULL UI REDESIGN LAYER (2026-11-24)
    ------------------------------------------------------------
-   HOW THIS WORKS
-   - Every original rule above this layer is preserved, so all
-     class names, layouts (display / position / grid / flex),
-     animations and breakpoints from the original design remain.
-   - This layer overrides VISUAL properties only (colour,
-     background, border, shadow, radius, spacing rhythm,
-     typography, transitions) to give the whole app one
-     cohesive, light, premium indigo/violet + slate system.
-   - App.jsx was NOT modified in any way.
    ============================================================ */
 
 /* ---------- 1. DESIGN TOKENS ---------- */
@@ -10691,10 +8474,6 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-
-
-
-
 
 ::selection {
   background: rgba(99, 102, 241, 0.24);
@@ -10791,12 +8570,6 @@ body {
   letter-spacing: -0.01em;
 }
 
-
-
-
-
-
-
 .nav-link-button{
   font-weight: 600;
   border-radius: 999px;
@@ -10819,10 +8592,6 @@ body {
   box-shadow: 0 12px 26px -8px rgba(79, 70, 229, 0.6);
   color: #ffffff;
 }
-
-
-
-
 
 .app-nav-links a,
 .nav-links a {
@@ -10865,10 +8634,6 @@ body {
   color: var(--sf-ink);
 }
 
-
-
-
-
 .welcome-hero h1,
 .welcome-hero h2 {
   /* gradient headline text is set in the recolour-safe block below */
@@ -10891,21 +8656,11 @@ body {
   transition: transform var(--sf-transition), box-shadow var(--sf-transition), border-color var(--sf-transition);
 }
 
-
-
-
-
-
-
-
-
 .public-footer, .footer{
   color: var(--sf-muted);
   border-top: 1px solid var(--sf-border);
   background: transparent;
 }
-
-
 
 /* ---------- 6. BUTTONS (shared) ---------- */
 .primary-button, .primary, .generate-button, .download-button, .share-button, .read-aloud-button, .transcription-submit-button, .converter-submit-btn, .feedback-submit, .balloon-start-button, .guess-word-submit-button, .guess-word-start-button, .guess-word-play-again, .test-next-button{
@@ -11026,10 +8781,6 @@ body {
   font-weight: 600;
 }
 
-
-
-
-
 /* Forms — every text field in the app */
 .app input,
 .app textarea,
@@ -11085,10 +8836,6 @@ body {
 .dashboard, .container{
   color: var(--sf-ink);
 }
-
-
-
-
 
 .dashboard-welcome,
 .dashboard-heading,
@@ -11770,16 +9517,6 @@ body {
   box-shadow: var(--sf-ring);
 }
 
-/* Category/state tokens emitted dynamically by App.jsx
-   (history/generated type names). No visual styling needed;
-   they are markers, listed here so coverage checks pass. */
-
-/* ---------- 17. SYSTEMATIC TEXT RECOLOUR (generated from original rules) ----------
-/* Every original rule that set near-white / pale text WITHOUT setting a
-   background in the same rule is recoloured for the light theme here.
-   Rules that paired light text with their own dark/gradient background
-   were left untouched, and coloured-surface text is re-asserted below. */
-
 
 .app-nav-links > button:hover { color: var(--sf-ink); }
 .brand-mark { color: var(--sf-ink); }
@@ -11934,16 +9671,6 @@ footer p { color: var(--sf-muted); }
 /* ============================================================
    TEXT COLOR FIX LAYER (2026-11-24) — readability pass
    ------------------------------------------------------------
-   WHY: several ORIGINAL rules used !important DARK page
-   backgrounds (html body, .app, dashboard containers, footer)
-   that overpowered the redesign's light backgrounds, while
-   the redesign's dark text colours stayed — dark text on dark
-   navy. This layer restores the light page canvas the redesign
-   was designed for, darkens washed-out gray text, and fixes
-   the specific unreadable spots found on the live site:
-   hero paragraph, header logo, footer, "Forgot password?",
-   "Back" button, placeholders, APK download link, feedback
-   panel and cookie bar text. No layout changes.
    ============================================================ */
 
 /* ---------- Stronger gray text tokens (contrast on light) ---------- */
@@ -12015,14 +9742,6 @@ html body .dashboard{
 }
 
 /* ---------- 4. Footer: light background, readable text ---------- */
-
-
-
-
-
-
-
-
 /* ---------- 5. Auth: forgot-password link, placeholders, subtext ---------- */
 .forgot-password-button {
   background: transparent !important;
@@ -12079,16 +9798,7 @@ select option {
   color: #0f172a !important;
 }
 
-/* ============================================================
-   TEXT COLOR FIX — ROUND 2 (2026-11-24)
-   Verified on the live site after round 1: logo, footer and
-   "Forgot password?" were fixed, but these were still wrong:
-   - .welcome-page kept its OWN dark navy gradient, so the hero
-     paragraph was still gray-on-navy.
-   - The header "Back" button kept a bright blue pill with dark
-     text; "Sign Up" rendered white on a pale pill.
-   - Placeholders were still too faint.
-   ============================================================ */
+/* ============================================================ */
 
 /* ---------- Welcome section: light background ---------- */
 .welcome-page {
@@ -12120,11 +9830,6 @@ select option {
 
 /* ---------- Header buttons: Back/Login light pill, Sign Up gradient ---------- */
 
-
-
-
-
-
 /* ---------- Placeholders: darker on light inputs, light on the dark chat input ---------- */
 .auth-card input::placeholder,
 .auth-card textarea::placeholder,
@@ -12143,20 +9848,6 @@ select option {
 }
 
 /* ---------- Feature descriptions: darker gray ---------- */
-
-
-/* ============================================================
-   ROUND 3 (2026-11-24) — requested by Muhammad
-   1. Password eye icon on Login / Sign Up: proper outline eye,
-      centered in the field, visible slate/indigo colours.
-   2. Navbar recoloured: indigo -> violet gradient, white text.
-      Footer recoloured: deep indigo, light text.
-   3. Welcome feature cards recoloured (soft indigo tint) with
-      tidier layout; in-app feature/action cards made light
-      with a cleaner layout (they were dark navy with dark text).
-   4. Welcome/auth backgrounds simplified to a single light
-      gradient layer (bulletproof) so the hero text sits on light.
-   ============================================================ */
 
 /* ---------- 4. Simple light page backgrounds ---------- */
 .welcome-page,
@@ -12369,29 +10060,6 @@ footer a:hover, .public-footer a:hover, .footer a:hover{
 
 /* ---------- 3b. In-app feature / action cards: light + tidy ---------- */
 
-
-
-
-
-
-
-
-/* ============================================================
-   ROUND 4 (2026-11-24) — THE ACTUAL HERO ROOT CAUSE
-   Two original rules sabotaged every earlier fix:
-   1) `html, body, #root { background: <dark navy gradient>
-      !important; background-attachment: fixed !important; }`
-      — #root itself stayed dark navy (earlier rounds only
-      fixed body and .app, and .app does not wrap the
-      logged-out pages).
-   2) `#root main, #root section, #root > div { background:
-      transparent !important; }` — ID-level specificity beat
-      the class-level !important light backgrounds on
-      .welcome-page and .auth-shell, forcing them transparent
-      and revealing #root's dark navy underneath.
-   These rules use higher-specificity selectors to win both.
-   ============================================================ */
-
 html #root {
   background-color: #f6f7fb !important;
   background-image: linear-gradient(180deg, #eef2ff 0%, #f6f7fb 55%) !important;
@@ -12409,21 +10077,6 @@ html #root {
   background: transparent !important;
 }
 
-/* ============================================================
-   ROUND 5 (2026-11-24) — from Muhammad's screenshots
-   - Autofill no longer turns fields black
-   - Navbar recoloured to match the footer (deep indigo
-     #1e1b4b), mobile menu panel matches too
-   - "Welcome back" hero band gets the black background he
-     asked for; other logged-in headings go dark
-   - Study Material + Transcribing sections: black outlines,
-     readable subtitles, tidier transcription UI
-   - Selected mode option: white text on the gradient
-   - Dashboard / History panels: clean white UI, readable
-     dates, buttons and rank progress
-   - Mobile logout: solid red, white text
-   - Take Photo (camera) button: gradient with white text
-   ============================================================ */
 
 /* ---------- Autofill: keep light fields, dark text ---------- */
 body .auth-card input:-webkit-autofill,
@@ -12672,36 +10325,12 @@ section.dashboard-section > div.dashboard-welcome {
   -webkit-text-fill-color: #ffffff;
 }
 
-/* ============================================================
-   ROUND 6 (2026-11-24) — logged-in hero: black background
-   behind "Study smarter, Understand faster." (Muhammad's ask).
-   The decorative background.png stays, faint on the black.
-   Higher-specificity selector needed because the original
-   `#root section { background: transparent !important }`
-   rule would otherwise win over a plain .hero rule.
-   ============================================================ */
 
 #root section.hero {
   border-radius: 24px;
   padding: 48px 20px;
 }
 
-
-
-
-
-
-
-/* ============================================================
-   ROUND 7 (2026-11-24) — from Muhammad's screenshots
-   - Selected-file name was near-white (#e4e4e7) on white:
-     now dark and readable
-   - Result section + transcription card borders: black
-   - Transcription UI: remove the stray bordered box around
-     the language select, tidy spacing
-   - Welcome band: black background REMOVED (his request) —
-     back to a soft light tint with a dark heading and quote
-   ============================================================ */
 
 /* ---------- Selected file (Study Material) ---------- */
 .selected-files-header {
@@ -12778,13 +10407,6 @@ section.dashboard-section > div.dashboard-welcome h2 {
   color: #475569 !important;
 }
 
-/* ============================================================
-   ROUND 8 (2026-11-24) — logged-in hero reversed per Muhammad:
-   section background WHITE, the doodle background image kept
-   BLACK (brightness(0) filter forces the PNG's visible pixels
-   to black on the white band), text back to dark.
-   ============================================================ */
-
 
 
 #root section.hero::before {
@@ -12802,21 +10424,11 @@ section.dashboard-section > div.dashboard-welcome h2 {
   color: #475569 !important;
 }
 
-/* ============================================================
-   ROUND 9 (2026-11-24) — remove the dashed/dotted border
-   around the camera (Take Photo) upload area, per Muhammad.
-   ============================================================ */
 
 .camera-upload {
   border: none !important;
 }
 
-/* ============================================================
-   ROUND 10 (2026-11-24) — hero section: border removed and
-   background made the same as the whole screen (transparent,
-   so the page background shows through), per Muhammad.
-   The doodle image stays black and the text stays dark.
-   ============================================================ */
 
 #root section.hero {
   background: transparent !important;
@@ -12826,15 +10438,6 @@ section.dashboard-section > div.dashboard-welcome h2 {
   box-shadow: none !important;
 }
 
-/* ============================================================
-   ROUND 11 (2026-11-24) — from Muhammad's screenshots
-   - Transcription SECTION border removed (the inner card
-     keeps its black border)
-   - Result section border: black, re-asserted stronger
-   - Extra space reduced: page top padding, dashboard
-     section padding, welcome band padding, hero height
-   - Transcription kicker text darkened so it reads clearly
-   ============================================================ */
 
 .transcription-section {
   border: none !important;
@@ -12849,13 +10452,6 @@ section.result-section,
   color: #4338ca !important;
 }
 
-/* ============================================================
-   ROUND 13 (2026-11-24) — hero heading: both lines clearly
-   readable (Muhammad). Line 1 stays near-black, line 2 goes
-   to a deeper indigo (#4338ca, stronger contrast), and the
-   doodle image behind the text is faded so it no longer
-   fights the heading.
-   ============================================================ */
 
 #root section.hero::before {
   opacity: 0.32;
@@ -12865,17 +10461,6 @@ section.result-section,
   color: #4338ca !important;
   -webkit-text-fill-color: #4338ca;
 }
-
-/* ============================================================
-   ROUND 14 (2026-11-24) — from Muhammad's screenshots
-   - "What would you like to do?" section (.action-section):
-     border colour to black
-   - Navbar corners: NOT rounded (square, full-width bar)
-   - Camera area: background section removed, Take Photo
-     button made small
-   ============================================================ */
-
-
 
 .public-navbar,
 .app-navbar {
@@ -12897,21 +10482,11 @@ section.result-section,
   gap: 8px;
 }
 
-/* ============================================================
-   ROUND 15 (2026-11-24) — action section border removed
-   entirely (Muhammad changed his mind after seeing it black).
-   ============================================================ */
 
 .action-section {
   border: none !important;
 }
 
-/* ============================================================
-   ROUND 16 (2026-11-24) — welcome feature cards: 2 per row
-   on mobile (Muhammad). Round 3 forced 1 per row under
-   520px; now 2 per row at every mobile width, with tighter
-   spacing and type so the cards fit.
-   ============================================================ */
 
 @media (max-width: 700px) {
   .feature-grid {
@@ -12942,15 +10517,6 @@ section.result-section,
   }
 }
 
-/* ============================================================
-   ROUND 17 (2026-11-24) — from Muhammad's screenshots
-   - History date/time: it is a plain <span> (earlier rounds
-     missed it) — now BLACK so it is visible
-   - Copy button in result actions: white button whose icon
-     was #e3e3e3 on white — button gets a black border and
-     its SVG turns black
-   - Upload icon SVG (#e3e3e3) turns black
-   ============================================================ */
 
 .dashboard-flashcard-history-info span, .dashboard-flashcard-history-info small, .dashboard-flashcard-history-info time{
   color: #000000 !important;
@@ -12984,16 +10550,6 @@ section.result-section,
   display: none !important;
 }
 
-/* ============================================================
-   ROUND 21 (2026-11-24) — Flashcards, from Muhammad's
-   screenshot:
-   - Panel border colour to black
-   - Previous / Flip / Next buttons: indigo-violet gradient
-     with white text (they were white text on pale lavender)
-   - Question/answer card UI: front face gets clean white
-     text on the gradient (a recolour pass had forced the
-     question text dark on purple); back face label darkened
-   ============================================================ */
 
 .flashcards-section {
   border: 1.5px solid #111827 !important;
@@ -13041,14 +10597,6 @@ section.result-section,
   -webkit-text-fill-color: #475569;
 }
 
-/* ============================================================
-   ROUND 22 (2026-11-24) — from Muhammad's screenshots
-   - Selected-file chip: outer border removed
-   - Test Concepts panel (.games-panel): border to black
-   - Previous Test Concepts items: only "Test Concepts" +
-     date + time shown — the "Files: ..." line (the only
-     <small> in history info blocks) is hidden
-   ============================================================ */
 
 .selected-file {
   border: none !important;
@@ -13062,14 +10610,6 @@ section.result-section,
   display: none !important;
 }
 
-/* ============================================================
-   ROUND 24 (2026-11-24) — splash / loading screen fix.
-   The original dark background was overridden to light by
-   the redesign and the "#root > div transparent" rule, while
-   the "Loading StudyFlow AI..." text stayed near-white —
-   invisible on the light screen. Now: deep indigo
-   background (matches navbar/footer) with white text.
-   ============================================================ */
 
 #root > div.auth-loading-screen {
   color: #ffffff !important;
@@ -13080,19 +10620,6 @@ section.result-section,
   -webkit-text-fill-color: #ffffff;
 }
 
-/* ============================================================
-   ROUND 25 (2026-11-24) — splash screen background: brand
-   indigo-violet gradient (matches the logo gradient and
-   the site's primary buttons), replacing the flat indigo.
-   ============================================================ */
-
-
-
-/* ============================================================
-   ROUND 26 (2026-11-24) — test navigation layout
-   (Muhammad): Next Question button centred; Submit Test
-   button shorter and pushed fully to the right.
-   ============================================================ */
 
 .test-navigation-buttons {
   position: relative !important;
@@ -13132,11 +10659,6 @@ section.result-section,
   border: none !important;
 }
 
-/* ============================================================
-   ROUND 28 (2026-11-24) — selected file rows: white
-   background removed too (Muhammad), so they sit directly
-   on the section background.
-   ============================================================ */
 
 .selected-file,
 .selected-file-item,
@@ -13145,11 +10667,6 @@ section.result-section,
   background-color: transparent !important;
 }
 
-/* ============================================================
-   ROUND 29 (2026-11-24) — splash screen: back to the
-   previous flat deep indigo (#1e1b4b), per Muhammad
-   ("retain the previous splash screen color").
-   ============================================================ */
 
 #root > div.auth-loading-screen {
   background: #1e1b4b !important;
@@ -13243,20 +10760,6 @@ section.result-section,
   .sf2-page h1 { font-size: 25px; }
 }
 
-/* ============================================================
-   ROUND — UI FIXES 2026-11-26 (user screenshots)
-   Root causes found while fixing:
-   - .app h2 / .app p / .app li set dark ink colors, which beat
-     the inherited white text on the dark onboarding modal.
-   - Phase 2 pages (Plans / Privacy / Terms / Settings) render
-     on the LIGHT logged-in app background, but their styles
-     assumed a dark page (white headings, translucent-white
-     cards/inputs/buttons) — white-on-light and invisible cards.
-   - The sample-lecture pill and the Convert nav button used
-     near-transparent/dark backgrounds that vanished on their
-     surfaces. Footer links were dark indigo on the dark footer.
-   ============================================================ */
-
 /* --- Convert nav button: primary gradient CTA, keep dropdown dark --- */
 .app-nav-links .converters-nav-wrap > button {
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
@@ -13307,10 +10810,6 @@ section.result-section,
   background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
 }
 
-/* --- Footer links: white on the dark indigo footer --- */
-/* NOTE: the sign-in/sign-up footer links are NOT white — they sit on
-   the WHITE auth card, so white text would be invisible there. They
-   are indigo instead (see the auth-card rules below). */
 .public-footer .sf2-footer-links button,
 .sf2-footer-links-dark button,
 .sf2-cookie-policy-link {
@@ -13322,9 +10821,6 @@ section.result-section,
   color: #e0e7ff;
 }
 
-/* --- Auth card (white card on the light auth page): the Google button,
-   divider and footer links were styled for a dark card and vanished
-   on white. Give them light-card treatments. --- */
 .sf2-google-button {
   border: 1px solid #cbd5e1;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
@@ -13393,14 +10889,6 @@ section.result-section,
 .sf2-page .sf2-settings-message { color: #15803d; }
 .sf2-page .sf2-error { color: #dc2626; }
 
-/* ============================================================
-   ROUND 34 (2026-11-26) — dark SVG icons, shorter Settings
-   display-name field, footer copyright + links in one row
-   ============================================================ */
-
-/* Pale #e3e3e3 SVG icons on light backgrounds -> dark indigo.
-   (The fill attributes in App.jsx are changed too; these rules
-   are the belt-and-braces override.) */
 .upload-icon svg { fill: #4338ca !important; }
 .converter-folder-icon svg { fill: #4338ca !important; }
 /* The dashboard-history-open buttons are now indigo->violet gradient
@@ -13422,13 +10910,6 @@ footer p { margin: 0 !important; }
 footer h3 { margin: 0; }
 footer .sf2-footer-links { margin: 0; }
 
-/* ============================================================
-   ROUND 35 (2026-11-26) — footer spacing, navbar cleanup,
-   gear replaces user avatar
-   ============================================================ */
-
-/* Footer: clear space between the text items ("Developed by:
-   M. Talha") and the links — the old 12px gap read as cramped. */
 footer { gap: 6px 32px; }
 .public-footer { gap: 4px 28px; }
 
@@ -13436,18 +10917,6 @@ footer { gap: 6px 32px; }
    now that the user pill is gone. */
 .app-navbar .desktop-nav-user { gap: 10px; align-items: center; }
 
-/* ============================================================
-   ROUND 36 (2026-11-26) — footer phrase, transcript card layout,
-   transcribe drag & drop + Transcribe button contrast
-   Root causes found while fixing:
-   - The footer "Developed by:" text and the "M. Talha" name were
-     separate flex items, so the 32px footer gap pulled them apart.
-   - The transcript textarea was 130% wide (!important), overflowing
-     the card and breaking the result header layout.
-   - The Transcribe button is disabled (opacity .55) until a file is
-     chosen, so its blue gradient rendered as pale lavender with
-     unreadable white text.
-   ============================================================ */
 
 /* --- Transcript result: output must fit the card, header must fit --- */
 textarea.transcription-output { width: 100% !important; max-width: 100% !important; }
@@ -13474,15 +10943,6 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
 .transcription-card-dragging { border: 2px dashed #4f46e5 !important; background: #eef2ff !important; }
 .transcription-card { transition: border-color .2s ease, background .2s ease; }
 
-/* ============================================================
-   ROUND 39 (2026-11-26) — navbar Pricing opens Plans directly
-   (JSX change in App.jsx) + mobile public-navbar fix
-   Root cause of the mobile bug: the four public-nav buttons are
-   flex items with default shrink and no nowrap, so on a narrow
-   screen the "Sign Up" button squeezed and its text wrapped
-   onto two lines. Fix: never wrap, never shrink, and hide the
-   brand wordmark a little earlier so all four buttons fit.
-   ============================================================ */
 
 /* --- Public navbar buttons: one line each, never shrink --- */
 .public-navbar .public-nav-actions .nav-link-button,
@@ -13518,20 +10978,6 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
   }
 }
 
-/* ============================================================
-   ROUND 41 — Navbar hover flicker fix (2026-11-26)
-   Root cause: every navbar button lifted on hover
-   (translateY(-1px)/translateY(-2px) in several competing
-   :hover rules). With the cursor parked at a button's bottom
-   edge — as in the user's video — the lift moved the button
-   out from under the pointer, :hover dropped, the button fell
-   back, :hover re-engaged, and the cycle repeated: the button
-   flashed between its resting and hover backgrounds. The
-   individual translateY lines are removed above; this block
-   pins transform: none on every navbar-button hover state so
-   no earlier layer can reintroduce the lift. The hover
-   highlight itself (background / border / shadow) is kept.
-   ============================================================ */
 .app-navbar .app-nav-links > button:hover,
 .app-navbar .app-nav-links .converters-nav-wrap > button:hover,
 .app-navbar .logout-button:hover,
@@ -13545,20 +10991,6 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
   transform: none !important;
 }
 
-/* ============================================================
-   MIND MAP (2026-11-26)
-   Interactive concept tree generated from lecture material.
-   NOTE — theme: the app is LIGHT today. The pre-existing
-   `#root section { background: transparent !important; }`
-   rule forces this section transparent (same as the
-   flashcards/test sections), so it reads as a light card
-   over the .app light gradient — NOT the dark gradient
-   below (kept only to match the flashcards-section rule).
-   Header/toolbar text is therefore DARK ink; only the
-   map canvas is a light panel with indigo nodes. Nodes
-   never move on hover — no translate, only a
-   border/shadow change.
-   ============================================================ */
 .mindmap-section {
   width: min(1050px, calc(100% - 32px));
   margin: 34px auto 0;
@@ -13587,11 +11019,6 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
   font-size: 13px;
 }
 
-/* ============================================================
-   ROUND 67 (2026-11-27) — Download PNG beside Regenerate
-   - The Regenerate + Download PNG buttons sit together in a
-     .mindmap-header-actions row on the right of the header.
-   ============================================================ */
 
 .mindmap-header-actions {
   display: flex;
@@ -13839,45 +11266,12 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
     font-size: 11px;
   }
 }
-
-/* ============================================================
-   ROUND 47 (2026-11-27) — header gear + Logout a little left
-   on desktop (Muhammad: "move these a little towards left
-   side in desktop view").
-   Follow-up (2026-11-27): Muhammad asked for MORE left, so the
-   extra right padding went from +20px to +50px total.
-   Follow-up 2 (2026-11-27): Muhammad asked for EVEN MORE left,
-   so the extra right padding went from +50px to +90px total.
-   Root cause: the desktop navbar rule (@media min-width: 901px)
-   sets padding: 10px clamp(12px, 2.5vw, 32px) — at 1280px that
-   is only 32px on the right, so the gear + Logout sat close to
-   the viewport edge. Fix: +90px on the right padding only, in
-   the same desktop breakpoint, so the two buttons shift left as
-   a group. Left padding, mobile header, and every other header
-   element are untouched.
-   ============================================================ */
 @media (min-width: 901px) {
   .app-navbar {
     padding-right: calc(clamp(12px, 2.5vw, 32px) + 90px);
   }
 }
 
-/* ============================================================
-   ROUND 58 (2026-11-27) — logo + "StudyFlow AI" brand a little
-   right on desktop (Muhammad: "move site logo and name little
-   towards right side on welcome page and loged in user page
-   for desktop view only"). Corrected twice: first "a little"
-   = 20px, then about 50px, then about 80px.
-   Both navbars share the .brand-mark element (welcome page:
-   <BrandMark /> inside .public-navbar; logged-in: the <a> /
-   <button> .brand-mark inside .app-navbar, main header and
-   sub-view header). An 80px left margin on the brand itself
-   moves only the logo + name, in the same
-   @media (min-width: 901px) breakpoint as the ROUND 47 header
-   shift. The ROUND 47 rule (gear + Logout +90px right padding)
-   is untouched; mobile headers (max-width: 700px / 380px
-   rules) are untouched.
-   ============================================================ */
 @media (min-width: 901px) {
   .public-navbar .brand-mark,
   .app-navbar .brand-mark {
@@ -13885,25 +11279,6 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
   }
 }
 
-/* ============================================================
-   ROUND 51 (2026-11-27) — footer content centered
-   (Muhammad: "align this in center in footer").
-   The footer group (copyright + links) was already laid out
-   with justify-content: center (ROUND 34), and it measures
-   exactly centered in the harness and the real app at
-   1280/1396/375px — the screenshot's small left/right
-   asymmetry does not reproduce with the current build
-   (its numbers fit a ~18px crop off the right edge of the
-   image). This block pins the centering explicitly so it
-   survives any cascade reordering: it also neutralises the
-   old `footer p { margin: 0 auto !important; }` rule, whose
-   auto margins on flex items would spread the two groups
-   apart. Single-row layout, gaps, colors, text, links and
-   behavior are unchanged; mobile still wraps to two
-   centered rows. Applies to all three footer variants
-   (signed-out .public-footer, sub-view and logged-in
-   plain <footer>), which share these rules.
-   ============================================================ */
 footer,
 .public-footer {
   justify-content: center !important;
@@ -14125,35 +11500,12 @@ footer > p,
   }
 }
 
-/* ============================================================
-   ROUND 56 (2026-11-27) — footer text vertically centered
-   (Muhammad: "all the text in footer should be in the center
-   not upwards in user page").
-   The logged-in/sub-view <footer> is display:flex with
-   min-height: 120px, but align-items: baseline (line ~16382),
-   so the copyright + links hugged the TOP of the tall bar
-   with empty space below (see his screenshot). Centering the
-   flex items — and the wrapped rows on mobile, via
-   align-content — puts the text in the middle of the bar.
-   .public-footer already centers its column; the same rules
-   are pinned here for all footer variants. Horizontal
-   centering, gaps, colors, text and links are unchanged.
-   ============================================================ */
 footer,
 .public-footer {
   align-items: center !important;
   align-content: center !important;
 }
 
-/* ============================================================
-   ROUND 57 (2026-11-27) — quiz options modal in the indigo
-   design system (Muhammad: "fix UI colors of pop up box") +
-   visible "generating" progress card (Muhammad: quiz "taking
-   too much long time" — the wait had no visible feedback).
-   Layout, sizes, defaults and behavior are unchanged.
-   ============================================================ */
-
-/* --- Quiz options modal: indigo system, not flat gray/white --- */
 .quiz-options-overlay {
   background: rgba(30, 27, 75, .55);
 }
@@ -14250,32 +11602,6 @@ footer,
     transform: rotate(360deg);
   }
 }
-
-/* ============================================================
-   ROUND 59 — Explicit save for generated results
-   Generated results are no longer auto-saved to history. A
-   green Save button sits in each generated section; after a
-   successful save it flips to a soft-green "✓ Saved" state
-   and is disabled so it can never write a duplicate entry.
-   ============================================================ */
-
-
-
-
-
-
-/* The result row has a generic disabled fade; the saved state must
-   stay a readable soft green instead of fading out. */
-
-
-
-
-
-/* ============================================================
-   ROUND 60 (2026-11-27) — Study Planner (local schedules,
-   no AI call). Light theme to match the Plans/Settings pages:
-   white cards, indigo primary buttons, slate text.
-   ============================================================ */
 
 .sf-planner-toolbar {
   display: flex;
@@ -14652,13 +11978,6 @@ footer,
   }
 }
 
-/* ============================================================
-   ROUND 61 (2026-11-27) — Dashboard Analytics (client-side
-   stats from existing history + user-doc counters). Light
-   theme to match the Plans/Planner pages: white cards, indigo
-   accents, slate text. No chart library — pure CSS bars.
-   ============================================================ */
-
 .sf-progress-analytics {
   margin-top: 24px;
   min-width: 0;
@@ -14777,17 +12096,6 @@ footer,
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 @media (max-width: 700px) {
   .sf-progress-section {
     padding: 18px 16px;
@@ -14800,12 +12108,6 @@ footer,
   }
 }
 
-/* ============================================================
-   ROUND 62 (2026-11-27) — Streak chip in the Dashboard header
-   (the big purple streak banner and Recent activity are gone).
-   Small pill beside the dashboard close button: light-indigo
-   background, indigo text/border, flame icon, readable at 375px.
-   ============================================================ */
 
 .sf-streak-chip {
   display: inline-flex;
@@ -14828,28 +12130,6 @@ footer,
   color: #4f46e5;
 }
 
-/* ============================================================
-   ROUND 63 (2026-11-27) — Light / dark mode
-   A `theme` state in App.jsx ("light" | "dark", saved in
-   localStorage under "sf-theme", OS setting as the default)
-   sets data-theme on <html>; index.html sets the same value
-   before first paint so dark mode never flashes white.
-   The navbar and footer stay deep indigo #1e1b4b in BOTH
-   themes (already dark), as does the splash screen.
-   Dark rules are ALL scoped under html[data-theme="dark"] and
-   appended last, so the light theme is pixel-identical:
-   - The redesign's var(--sf-*) tokens are redefined below,
-     which flips every token-styled surface (auth card, forms,
-     cards, panels, history, mode buttons, result sections,
-     flashcard back, close buttons, upload boxes) in one move.
-   - The hardcoded light overrides from ROUND 1–62 (page
-     canvas, welcome hero, feature grid, dashboard panels,
-     quiz modal, Planner, Analytics, Phase 2 pages, feedback
-     content, chat popup) are overridden one by one below.
-   ============================================================ */
-
-/* --- Theme toggle buttons: one style serves both themes,
-   because every navbar they sit in is deep indigo. --- */
 .theme-toggle-button {
   display: inline-flex;
   align-items: center;
