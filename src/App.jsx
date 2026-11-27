@@ -2428,6 +2428,7 @@ function App() {
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
     setFlashcardsSaved(true);
+    setOpenedFromHistory(true);
     setDashboardHistoryType(null);
 
     setTimeout(() => {
@@ -6172,6 +6173,7 @@ function App() {
 
                 </button>
 
+                {!openedFromHistory && (
                 <button
                   type="button"
                   onClick={handleSaveResult}
@@ -6188,6 +6190,7 @@ function App() {
                     </>
                   )}
                 </button>
+                )}
 
                 <button
                   type="button"
@@ -6329,6 +6332,7 @@ function App() {
               </div>
 
               <div className="generated-header-actions">
+                {!openedFromHistory && (
                 <button
                   type="button"
                   className="save-history-button"
@@ -6338,6 +6342,7 @@ function App() {
                 >
                   {flashcardsSaved ? "✓ Saved" : "💾 Save"}
                 </button>
+                )}
                 <button
                   type="button"
                   className="secondary-button"
@@ -6489,6 +6494,7 @@ function App() {
               </div>
 
               <div className="generated-header-actions">
+                {!openedFromHistory && (
                 <button
                   type="button"
                   className="save-history-button"
@@ -6498,6 +6504,7 @@ function App() {
                 >
                   {mindmapSaved ? "✓ Saved" : "💾 Save"}
                 </button>
+                )}
                 <button
                   type="button"
                   className="secondary-button"
@@ -6573,6 +6580,7 @@ function App() {
                 <p>Timed multiple-choice questions generated from your study material.</p>
               </div>
               <div className="generated-header-actions">
+                {!openedFromHistory && (
                 <button
                   type="button"
                   className="save-history-button"
@@ -6582,6 +6590,7 @@ function App() {
                 >
                   {testSaved ? "✓ Saved" : "💾 Save"}
                 </button>
+                )}
                 <button
                   type="button"
                   className="secondary-button"
