@@ -407,8 +407,6 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
           <button type="button" onClick={onTerms}>Terms of Service</button>
           <span aria-hidden="true">·</span>
           <button type="button" onClick={onSignup}>Plans</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={onFeedback}>Feedback</button>
         </p>
       </footer>
       <CookieConsent onPrivacy={onPrivacy} />
