@@ -11603,6 +11603,71 @@ footer,
   }
 }
 
+/* ============================================================
+   ROUND 59 — Explicit save for generated results
+   Generated results are no longer auto-saved to history. A
+   green Save button sits in each generated section; after a
+   successful save it flips to a soft-green "✓ Saved" state
+   and is disabled so it can never write a duplicate entry.
+   ============================================================ */
+.save-history-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  border: 1px solid #16a34a;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .18s ease, filter .18s ease, background .18s ease;
+}
+
+.save-history-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.save-history-button:disabled {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+  cursor: default;
+  opacity: 1;
+  transform: none;
+}
+
+/* The result row has a generic disabled fade; the saved state must
+   stay a readable soft green instead of fading out. */
+.result-actions .save-history-button:disabled {
+  opacity: 1;
+}
+
+.save-history-button svg {
+  flex-shrink: 0;
+}
+
+.generated-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .result-actions .save-history-button {
+    min-height: 42px;
+  }
+  .generated-header-actions {
+    width: 100%;
+  }
+}
+
 .sf-planner-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -12109,27 +12174,6 @@ footer,
 }
 
 
-.sf-streak-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #eef2ff;
-  color: #4338ca;
-  border: 1px solid #c7d2fe;
-  border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.sf-streak-chip svg {
-  flex-shrink: 0;
-  color: #4f46e5;
-}
-
 .theme-toggle-button {
   display: inline-flex;
   align-items: center;
@@ -12423,15 +12467,6 @@ html[data-theme="dark"] .sf-progress-bar-label,
 html[data-theme="dark"] .sf-progress-chart-note {
   color: #94a3b8 !important;
 }
-html[data-theme="dark"] .sf-streak-chip {
-  background: #312e81 !important;
-  color: #c7d2fe !important;
-  border-color: #4f46e5 !important;
-}
-html[data-theme="dark"] .sf-streak-chip svg {
-  color: #a5b4fc !important;
-}
-
 /* --- 5. Converter / transcription / mode buttons --- */
 html[data-theme="dark"] .input-card .card-header h2,
 html[data-theme="dark"] .transcription-heading h2,
