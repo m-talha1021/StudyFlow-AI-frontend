@@ -16840,3 +16840,47 @@ footer > p,
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+/* ============================================================
+   ROUND 52 — StudyFlow AI agent icon: robot image replaces the robot emoji
+   The agent icon is now the supplied robot avatar (src/agentIcon.js,
+   base64 data URI). Sizes match what the emoji occupied at each spot.
+   ============================================================ */
+.heading-robot-icon img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: block;
+}
+
+.popup-robot-icon {
+  background: transparent;
+}
+
+.popup-robot-icon img {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: block;
+}
+
+.feature-agent-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: block;
+}
+
+.oral-ai-icon img {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: block;
+}
+
+.message-avatar img {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: block;
+}

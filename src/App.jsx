@@ -19,6 +19,7 @@ import {
 
 import { auth, db } from "./firebase";
 import { LOGO_PNG_DATA_URI } from "./logoPng.js";
+import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
 
 import {
@@ -389,7 +390,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
             <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
             <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
             <div><span>📚</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
-            <div><span>🤖</span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
+            <div><span><img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" /></span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
             <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
             <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
@@ -5509,7 +5510,7 @@ function App() {
             >
 
               <span className="heading-robot-icon">
-                🤖
+                <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
               </span>
 
             </button>
@@ -6643,7 +6644,7 @@ function App() {
               </div>
 
               <div className="oral-question-box">
-                <span className="oral-ai-icon">🤖</span>
+                <span className="oral-ai-icon"><img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" /></span>
                 <p dir={oralExam.language === "arabic" || oralExam.language === "urdu" ? "rtl" : "ltr"}>{oralExam.question}</p>
               </div>
 
@@ -6683,7 +6684,7 @@ function App() {
               <div className="chatbot-popup-title">
 
                 <span className="popup-robot-icon">
-                  🤖
+                  <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
                 </span>
 
                 <div>
@@ -6791,7 +6792,7 @@ function App() {
                         {message.role ===
                           "user"
                           ? "👤"
-                          : "🤖"}
+                          : <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />}
 
                       </div>
 
@@ -6828,7 +6829,7 @@ function App() {
                 <div className="chat-message assistant-message">
 
                   <div className="message-avatar">
-                    🤖
+                    <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
                   </div>
 
                   <div className="message-content">
