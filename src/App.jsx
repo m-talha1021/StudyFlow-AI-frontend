@@ -714,6 +714,57 @@ function FeedbackModal({ user, onClose }) {
   );
 }
 
+// Quiz question counts: MCQs 1-20 (default 10), short-answer
+// questions 0-10 (default 5). Empty or invalid input falls back
+// to the default instead of crashing.
+function clampQuizCount(value, fallback, min, max) {
+  const parsed = parseInt(value, 10);
+  if (Number.isNaN(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
+}
+
+function QuizOptionsModal({ mcqValue, shortValue, onMcqChange, onShortChange, onClose, onGenerate }) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="quiz-options-overlay" role="presentation" onMouseDown={(event) => {
+      if (event.target === event.currentTarget) onClose();
+    }}>
+      <section className="quiz-options-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-options-title">
+        <button className="quiz-options-close" type="button" onClick={onClose} aria-label="Close quiz options">×</button>
+        <h2 id="quiz-options-title">How many questions?</h2>
+        <p className="quiz-options-subtitle">Choose how many questions your quiz should have.</p>
+        <div className="quiz-options-fields">
+          <div className="quiz-options-field">
+            <div className="quiz-options-field-text">
+              <label htmlFor="quiz-mcq-count">Multiple-choice questions</label>
+              <span>1 to 20 questions</span>
+            </div>
+            <input id="quiz-mcq-count" type="number" min="1" max="20" inputMode="numeric" value={mcqValue} onChange={(event) => onMcqChange(event.target.value)} />
+          </div>
+          <div className="quiz-options-field">
+            <div className="quiz-options-field-text">
+              <label htmlFor="quiz-short-count">Short-answer questions</label>
+              <span>0 to 10 questions</span>
+            </div>
+            <input id="quiz-short-count" type="number" min="0" max="10" inputMode="numeric" value={shortValue} onChange={(event) => onShortChange(event.target.value)} />
+          </div>
+        </div>
+        <div className="quiz-options-actions">
+          <button type="button" className="quiz-options-cancel" onClick={onClose}>Cancel</button>
+          <button type="button" className="quiz-options-generate" onClick={() => onGenerate(clampQuizCount(mcqValue, 10, 1, 20), clampQuizCount(shortValue, 5, 0, 10))}>✨ Generate Quiz</button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function CookieConsent({ onPrivacy }) {
   const [showCookieBar, setShowCookieBar] = useState(false);
 
@@ -1022,6 +1073,12 @@ function App() {
 
   const [text, setText] = useState("");
   const [mode, setMode] = useState("summary");
+  // Quiz question counts (defaults match the previous fixed quiz:
+  // 10 MCQs, 5 short-answer questions). The picker opens when
+  // Generate is pressed in Quiz mode.
+  const [quizOptionsOpen, setQuizOptionsOpen] = useState(false);
+  const [mcqCountInput, setMcqCountInput] = useState("10");
+  const [shortCountInput, setShortCountInput] = useState("5");
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
@@ -3387,7 +3444,7 @@ function App() {
   // GENERATE RESULT
   // ========================================================
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (quizCounts) => {
     if (mode === "flashcards") {
       await handleGenerateFlashcards();
       return;
@@ -3405,6 +3462,29 @@ function App() {
 
     if (mode === "oral") {
       await handleStartOralExam();
+      return;
+    }
+
+    // Quiz mode: ask how many MCQs and short-answer questions
+    // before generating. The picker supplies the counts on the
+    // second call; Cancel just closes it without generating.
+    if (mode === "quiz" && !quizCounts) {
+      if (processing) {
+        alert("Your material is still processing. Please wait until processing finishes.");
+        return;
+      }
+
+      const hasMaterial =
+        materialReady || files.length > 0 || Boolean(file) || text.trim();
+
+      if (!hasMaterial) {
+        alert(
+          "Please upload document(s)/image(s) or paste your study content."
+        );
+        return;
+      }
+
+      setQuizOptionsOpen(true);
       return;
     }
 
@@ -3461,6 +3541,9 @@ function App() {
           body: JSON.stringify({
             mode: mode,
             materialText: processedMaterialText || (text.trim() ? text.trim() : ""),
+            ...(mode === "quiz" && quizCounts
+              ? { mcq_count: quizCounts.mcqCount, short_count: quizCounts.shortCount }
+              : {}),
           }),
           signal: generationController.signal,
         }
@@ -4738,6 +4821,20 @@ function App() {
 
       {feedbackOpen && (
         <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
+      )}
+
+      {quizOptionsOpen && (
+        <QuizOptionsModal
+          mcqValue={mcqCountInput}
+          shortValue={shortCountInput}
+          onMcqChange={setMcqCountInput}
+          onShortChange={setShortCountInput}
+          onClose={() => setQuizOptionsOpen(false)}
+          onGenerate={(mcqCount, shortCount) => {
+            setQuizOptionsOpen(false);
+            handleGenerate({ mcqCount, shortCount });
+          }}
+        />
       )}
 
       {quotaNotice && (

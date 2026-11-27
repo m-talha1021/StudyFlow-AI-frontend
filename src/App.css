@@ -16884,3 +16884,186 @@ footer > p,
   border-radius: 6px;
   display: block;
 }
+
+/* ============================================================
+   ROUND 55 — Quiz question-count picker
+   The modal asks for the number of MCQs (1-20) and short-answer
+   questions (0-10) before a quiz is generated.
+   ============================================================ */
+
+.quiz-options-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: rgba(3, 3, 12, .6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.quiz-options-modal {
+  position: relative;
+  width: min(420px, 100%);
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 20px;
+  padding: 28px 26px 24px;
+  box-shadow: 0 30px 80px rgba(2, 6, 23, .35);
+  box-sizing: border-box;
+}
+
+.quiz-options-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.quiz-options-close:hover {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.quiz-options-modal h2 {
+  margin: 0 30px 6px 0;
+  font-size: 22px;
+  letter-spacing: -.02em;
+  color: #0f172a;
+}
+
+.quiz-options-subtitle {
+  margin: 0 0 20px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.quiz-options-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.quiz-options-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.quiz-options-field-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.quiz-options-field-text label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.quiz-options-field-text span {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.quiz-options-field input {
+  flex: none;
+  width: 84px;
+  padding: 10px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.quiz-options-field input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+}
+
+.quiz-options-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.quiz-options-cancel {
+  padding: 12px 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #334155;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quiz-options-cancel:hover {
+  background: #f1f5f9;
+}
+
+.quiz-options-generate {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #7c3aed, #6366f1);
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(99, 102, 241, .3);
+}
+
+.quiz-options-generate:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .quiz-options-overlay {
+    padding: 14px;
+  }
+
+  .quiz-options-modal {
+    padding: 24px 20px 20px;
+  }
+
+  .quiz-options-actions {
+    flex-direction: column-reverse;
+  }
+
+  .quiz-options-cancel,
+  .quiz-options-generate {
+    width: 100%;
+  }
+}
