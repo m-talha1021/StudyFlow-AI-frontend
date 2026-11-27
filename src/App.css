@@ -16815,12 +16815,12 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
    ROUND 58 (2026-11-27) — logo + "StudyFlow AI" brand a little
    right on desktop (Muhammad: "move site logo and name little
    towards right side on welcome page and loged in user page
-   for desktop view only"). Corrected to ~50px (first asked
-   "a little" = 20px, then corrected to about 50px).
+   for desktop view only"). Corrected twice: first "a little"
+   = 20px, then about 50px, then about 80px.
    Both navbars share the .brand-mark element (welcome page:
    <BrandMark /> inside .public-navbar; logged-in: the <a> /
    <button> .brand-mark inside .app-navbar, main header and
-   sub-view header). A 50px left margin on the brand itself
+   sub-view header). An 80px left margin on the brand itself
    moves only the logo + name, in the same
    @media (min-width: 901px) breakpoint as the ROUND 47 header
    shift. The ROUND 47 rule (gear + Logout +90px right padding)
@@ -16830,7 +16830,7 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
 @media (min-width: 901px) {
   .public-navbar .brand-mark,
   .app-navbar .brand-mark {
-    margin-left: 50px;
+    margin-left: 80px;
   }
 }
 
