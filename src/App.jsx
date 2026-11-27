@@ -22,6 +22,7 @@ import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
 import { StudyPlannerPage } from "./Planner.jsx";
+import { DashboardAnalytics } from "./Analytics.jsx";
 
 import {
   doc,
@@ -5066,6 +5067,7 @@ function App() {
             ) : (
               <>
                 {!dashboardHistoryType && (
+                  <>
                   <div className="dashboard-stats-grid">
                     {[
                       {
@@ -5089,6 +5091,44 @@ function App() {
                           : "Maximum rank reached",
                         icon: "🏆",
                         rankCard: true,
+                      },
+                      {
+                        title: "Flashcards created",
+                        value: dashboardStats.flashcardsCreated,
+                        text: "Flashcards generated",
+                        icon: (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="13" height="14" rx="2" />
+                            <rect x="8" y="7" width="13" height="14" rx="2" />
+                          </svg>
+                        ),
+                      },
+                      {
+                        title: "Quizzes completed",
+                        value: dashboardStats.completedQuizzes,
+                        text: "Tests finished",
+                        icon: (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        ),
+                      },
+                      {
+                        title: "Average quiz score",
+                        value:
+                          dashboardStats.completedQuizzes > 0
+                            ? `${dashboardStats.averageQuizScore}%`
+                            : "—",
+                        text:
+                          dashboardStats.completedQuizzes > 0
+                            ? "Across all finished tests"
+                            : "Finish a test to see your score",
+                        icon: (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M3 17l5-5 4 4 8-8" />
+                            <path d="M15 8h6v6" />
+                          </svg>
+                        ),
                       },
                     ].map((stat) => (
                       <div
@@ -5154,6 +5194,13 @@ function App() {
                       </div>
                     ))}
                   </div>
+                  <DashboardAnalytics
+                    stats={dashboardStats}
+                    materials={dashboardMaterialsHistory}
+                    flashcards={dashboardFlashcardHistory}
+                    generated={dashboardGeneratedHistory}
+                  />
+                  </>
                 )}
 
                 {dashboardHistoryType && (
