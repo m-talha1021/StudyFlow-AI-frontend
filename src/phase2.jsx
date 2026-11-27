@@ -317,7 +317,7 @@ export function PlansPage({ currentPlan, onBack, backLabel = "Go back" }) {
   return (
     <SubPageShell
       title="Plans"
-      subtitle="StudyFlow AI is free for now. Pro — with 10x the daily limits — is coming soon."
+      subtitle="StudyFlow AI is free for now. Pro — with 30x the AI calls and 14x the transcription minutes — is coming soon."
       onBack={onBack}
       backLabel={backLabel}
     >
