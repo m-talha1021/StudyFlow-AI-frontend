@@ -131,8 +131,7 @@ const apiRequest = async (endpoint, options = {}) => {
   // window event) so it can show a banner with a link to Plans.
   if (response.status === 429) {
     const quotaError = new Error(
-      "You've reached today's Free plan limit (5 AI calls or 20 transcription minutes a day). " +
-      "Your limit resets tomorrow — Pro (coming soon) will raise it to 150 AI calls and 280 transcription minutes a day. See Plans for details."
+      "You've reached today's Free plan limit. Upgrade Plan!"
     );
     quotaError.quotaExceeded = true;
     if (typeof window !== "undefined") {
@@ -354,7 +353,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
         <section className="welcome-hero">
           <div className="welcome-badge">✦ AI-powered learning</div>
           <h1>
-            Study smarter.<br />
+            Study smarter,<br />
             <span>Understand faster.</span>
           </h1>
           <p>
