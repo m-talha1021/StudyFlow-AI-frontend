@@ -416,7 +416,7 @@ async function deleteCollectionDocs(userId, collectionName) {
   return snapshot.docs.length;
 }
 
-export function SettingsPage({ user, currentPlan, onBack, onViewPlans, onSignOut, onAccountDeleted }) {
+export function SettingsPage({ user, currentPlan, onBack, onViewPlans, onSignOut, onAccountDeleted, theme = "light", onThemeChange }) {
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
@@ -537,6 +537,29 @@ export function SettingsPage({ user, currentPlan, onBack, onViewPlans, onSignOut
           </button>
         </form>
         {profileMessage && <p role="status" className="sf2-settings-message">{profileMessage}</p>}
+      </section>
+
+      <section className="sf2-settings-section">
+        <h2>Appearance</h2>
+        <p>Choose how StudyFlow looks on this device.</p>
+        <div className="sf2-theme-picker" role="group" aria-label="Appearance">
+          <button
+            type="button"
+            className={theme === "light" ? "sf2-theme-option sf2-theme-option-active" : "sf2-theme-option"}
+            aria-pressed={theme === "light"}
+            onClick={() => onThemeChange && onThemeChange("light")}
+          >
+            Light
+          </button>
+          <button
+            type="button"
+            className={theme === "dark" ? "sf2-theme-option sf2-theme-option-active" : "sf2-theme-option"}
+            aria-pressed={theme === "dark"}
+            onClick={() => onThemeChange && onThemeChange("dark")}
+          >
+            Dark
+          </button>
+        </div>
       </section>
 
       <section className="sf2-settings-section">

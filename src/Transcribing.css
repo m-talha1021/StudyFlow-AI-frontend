@@ -355,3 +355,93 @@
 .transcription-result-header p strong {
   color: #0f172a;
 }
+
+/* ============================================================
+   ROUND 63 (2026-11-27) — Light / dark mode
+   Dark overrides for the transcription section. The light
+   rules above are untouched; these apply only when the root
+   carries data-theme="dark" (theme state in App.jsx, saved
+   in localStorage under "sf-theme", OS setting as default).
+   The section/card turn deep slate, inputs stay dark with
+   light text, and every muted note stays above 4.5:1 on its
+   surface. (This file is imported after App.css, so these
+   rules also win on document order.)
+   ============================================================ */
+html[data-theme="dark"] .transcription-section,
+html[data-theme="dark"] .transcription-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="dark"] .transcription-heading {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .transcription-output,
+html[data-theme="dark"] .transcription-result {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+html[data-theme="dark"] .transcription-secondary-button,
+html[data-theme="dark"] .transcription-choose-button {
+  background: #1e293b;
+  color: #c7d2fe;
+  border-color: #475569;
+}
+
+html[data-theme="dark"] .transcription-language-select,
+html[data-theme="dark"] .transcription-section input,
+html[data-theme="dark"] .transcription-section textarea,
+html[data-theme="dark"] .transcription-section select {
+  background: #0f172a;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+html[data-theme="dark"] .transcription-selected-file {
+  background: #312e81;
+  color: #c7d2fe;
+  border-color: #4338ca;
+}
+
+html[data-theme="dark"] .transcription-selected-file strong {
+  color: #e0e7ff;
+}
+
+html[data-theme="dark"] .transcription-selected-file small {
+  color: #a5b4fc;
+}
+
+html[data-theme="dark"] .transcription-message,
+html[data-theme="dark"] .transcription-formats,
+html[data-theme="dark"] .transcription-original-language-note {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .transcription-message.error {
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .transcription-message.success {
+  background: #052e16;
+  border-color: #166534;
+  color: #86efac;
+}
+
+html[data-theme="dark"] .transcription-result-header p {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .transcription-result-header p strong {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .transcription-progress {
+  background: #334155;
+}

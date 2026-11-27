@@ -33,6 +33,27 @@
       content="Upload a lecture or your notes and get summaries, quizzes, flashcards, tests, and an AI study assistant — in seconds."
     />
     <meta name="twitter:image" content="https://study-flow-ai-lac.vercel.app/favicon.svg" />
+
+    <!-- Theme: set data-theme before first paint so a saved dark mode
+         never flashes white on reload. Mirrors the "sf-theme" key
+         used by the App (localStorage, falls back to the OS setting). -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("sf-theme");
+          if (t !== "light" && t !== "dark") {
+            t =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          }
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

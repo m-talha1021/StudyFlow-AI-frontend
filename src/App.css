@@ -17838,3 +17838,709 @@ footer,
   flex-shrink: 0;
   color: #4f46e5;
 }
+
+/* ============================================================
+   ROUND 63 (2026-11-27) — Light / dark mode
+   A `theme` state in App.jsx ("light" | "dark", saved in
+   localStorage under "sf-theme", OS setting as the default)
+   sets data-theme on <html>; index.html sets the same value
+   before first paint so dark mode never flashes white.
+   The navbar and footer stay deep indigo #1e1b4b in BOTH
+   themes (already dark), as does the splash screen.
+   Dark rules are ALL scoped under html[data-theme="dark"] and
+   appended last, so the light theme is pixel-identical:
+   - The redesign's var(--sf-*) tokens are redefined below,
+     which flips every token-styled surface (auth card, forms,
+     cards, panels, history, mode buttons, result sections,
+     flashcard back, close buttons, upload boxes) in one move.
+   - The hardcoded light overrides from ROUND 1–62 (page
+     canvas, welcome hero, feature grid, dashboard panels,
+     quiz modal, Planner, Analytics, Phase 2 pages, feedback
+     content, chat popup) are overridden one by one below.
+   ============================================================ */
+
+/* --- Theme toggle buttons: one style serves both themes,
+   because every navbar they sit in is deep indigo. --- */
+.theme-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+}
+.theme-toggle-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.theme-toggle-button svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+/* Mobile-menu toggle: hidden on desktop like .mobile-account-block;
+   it only appears inside the opened mobile menu (<=900px). */
+.mobile-theme-toggle {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.mobile-theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+@media (max-width: 900px) {
+  .app-navbar .app-nav-links.mobile-open .mobile-theme-toggle {
+    display: flex;
+  }
+}
+
+/* --- Settings > Appearance picker (works in both themes) --- */
+.sf2-theme-picker {
+  display: inline-flex;
+  gap: 0;
+  border: 1px solid #94a3b8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.sf2-theme-option {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sf2-theme-option-active {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+/* --- Dark tokens (flips all var(--sf-*) surfaces) --- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --sf-indigo: #818cf8;
+  --sf-indigo-strong: #6366f1;
+  --sf-violet: #a78bfa;
+  --sf-accent: #a78bfa;
+  --sf-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --sf-gradient-soft: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  --sf-ink: #e2e8f0;
+  --sf-ink-soft: #cbd5e1;
+  --sf-muted: #94a3b8;
+  --sf-faint: #64748b;
+  --sf-bg: #0f172a;
+  --sf-surface: #1e293b;
+  --sf-surface-soft: #16213a;
+  --sf-surface-tint: #1e1b4b;
+  --sf-border: #334155;
+  --sf-border-strong: #475569;
+  --sf-success: #4ade80;
+  --sf-success-bg: #052e16;
+  --sf-danger: #f87171;
+  --sf-danger-bg: #450a0a;
+  --sf-warning: #fbbf24;
+  --sf-warning-bg: #451a03;
+  --sf-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
+  --sf-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+  --sf-shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+  --sf-ring: 0 0 0 3px rgba(129, 140, 248, 0.35);
+}
+
+/* --- 1. Page canvas --- */
+html[data-theme="dark"] body {
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 340px) !important;
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .app {
+  background:
+    radial-gradient(720px 420px at 8% -6%, rgba(99, 102, 241, 0.25), transparent 62%),
+    radial-gradient(680px 420px at 96% -4%, rgba(139, 92, 246, 0.2), transparent 60%),
+    linear-gradient(180deg, #1e1b4b 0%, #0f172a 340px) !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] #root {
+  background-color: #0f172a !important;
+  background-image: linear-gradient(180deg, #312e81 0%, #0f172a 55%) !important;
+}
+html[data-theme="dark"] #root main.welcome-page,
+html[data-theme="dark"] #root > div.auth-shell,
+html[data-theme="dark"] #root > div.app {
+  background-color: #0f172a !important;
+  background-image: linear-gradient(180deg, #312e81 0%, #0f172a 55%) !important;
+}
+html[data-theme="dark"] .auth-shell {
+  background:
+    radial-gradient(760px 460px at 12% -8%, rgba(99, 102, 241, 0.25), transparent 62%),
+    radial-gradient(700px 440px at 95% 0%, rgba(139, 92, 246, 0.2), transparent 60%),
+    linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%) !important;
+}
+html[data-theme="dark"] .welcome-page,
+html[data-theme="dark"] .auth-shell {
+  background-color: #0f172a !important;
+  background-image: linear-gradient(180deg, #312e81 0%, #0f172a 55%) !important;
+}
+
+/* --- 2. Welcome / hero / feature cards --- */
+html[data-theme="dark"] .welcome-page {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .welcome-hero h1 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .welcome-hero p,
+html[data-theme="dark"] .welcome-hero > p,
+html[data-theme="dark"] .welcome-page .welcome-hero p {
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] #root section.hero {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+html[data-theme="dark"] #root section.hero h1 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] #root section.hero .spann {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] #root section.hero p {
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .feature-grid > div {
+  background: linear-gradient(160deg, #1e293b 0%, #1e1b4b 100%) !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.5) !important;
+}
+html[data-theme="dark"] .feature-grid > div:hover {
+  border-color: #818cf8 !important;
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.6) !important;
+}
+html[data-theme="dark"] .feature-grid span {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .feature-grid strong {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .feature-grid small {
+  color: #94a3b8 !important;
+}
+/* The APK button's background is var(--sf-ink), which flips light in
+   dark mode while its text stays white — pin it dark. */
+html[data-theme="dark"] .download-apk {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+}
+
+/* --- 3. Dashboard --- */
+html[data-theme="dark"] section.dashboard-section > div.dashboard-welcome {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+  background-color: #1e1b4b !important;
+}
+html[data-theme="dark"] section.dashboard-section > div.dashboard-welcome h2 {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+html[data-theme="dark"] .dashboard-motivational-quote {
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .dashboard-panel {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .dashboard-panel .dashboard-heading p {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-history-panel {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .dashboard-history-header h3 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .dashboard-history-header p {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-history-close {
+  background: #312e81 !important;
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .history-item,
+html[data-theme="dark"] .dashboard-flashcard-history-item {
+  background: #16213a !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .history-item-content strong,
+html[data-theme="dark"] .dashboard-flashcard-history-info strong {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .history-item-content small,
+html[data-theme="dark"] .history-item-content time,
+html[data-theme="dark"] .dashboard-flashcard-history-info small,
+html[data-theme="dark"] .dashboard-flashcard-history-info time,
+html[data-theme="dark"] .dashboard-flashcard-history-info span {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-history-empty {
+  background: #16213a !important;
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-stat-card {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(129, 140, 248, 0.4) !important;
+}
+html[data-theme="dark"] .dashboard-stat-card strong {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .dashboard-stat-card p,
+html[data-theme="dark"] .dashboard-card-hint {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-rank-progress-track {
+  background: #334155 !important;
+}
+html[data-theme="dark"] .dashboard-rank-progress small {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .dashboard-stat-icon {
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .dashboard-rank-card {
+  border-color: #4f46e5 !important;
+}
+
+/* --- 4. Dashboard analytics (ROUND 61) --- */
+html[data-theme="dark"] .sf-progress-empty {
+  background: #1e293b !important;
+}
+html[data-theme="dark"] .sf-progress-empty h2 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .sf-progress-empty p {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .sf-progress-section {
+  background: #1e293b !important;
+}
+html[data-theme="dark"] .sf-progress-section h2 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .sf-progress-week-total {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .sf-progress-bar-count {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .sf-progress-bar-label,
+html[data-theme="dark"] .sf-progress-chart-note {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .sf-streak-chip {
+  background: #312e81 !important;
+  color: #c7d2fe !important;
+  border-color: #4f46e5 !important;
+}
+html[data-theme="dark"] .sf-streak-chip svg {
+  color: #a5b4fc !important;
+}
+
+/* --- 5. Converter / transcription / mode buttons --- */
+html[data-theme="dark"] .input-card .card-header h2,
+html[data-theme="dark"] .transcription-heading h2,
+html[data-theme="dark"] .dashboard-panel .dashboard-heading h2 {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+html[data-theme="dark"] .input-card .card-header p,
+html[data-theme="dark"] .transcription-heading p {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .transcription-formats {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .mode {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .mode strong {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .mode small {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .mode > span {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .selected-file-item {
+  background: #1e293b !important;
+}
+html[data-theme="dark"] .selected-file-item strong,
+html[data-theme="dark"] .selected-file strong {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+html[data-theme="dark"] .selected-file-item small,
+html[data-theme="dark"] .selected-file small {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .selected-file-remove {
+  background: #450a0a !important;
+  color: #fca5a5 !important;
+  -webkit-text-fill-color: #fca5a5 !important;
+}
+html[data-theme="dark"] .transcription-selected-file strong {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .transcription-selected-file small {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .transcription-kicker {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .transcription-card-dragging {
+  background: #1e1b4b !important;
+}
+html[data-theme="dark"] .result-generating strong {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .result-generating-sub {
+  color: #94a3b8 !important;
+}
+
+/* --- 6. Generated results / flashcards / mind map --- */
+html[data-theme="dark"] .result-actions .secondary-button {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .flashcard .flashcard-back .flashcard-label {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .mindmap-viewport {
+  background: radial-gradient(circle at 1px 1px, #334155 1px, transparent 0), #0f172a !important;
+}
+html[data-theme="dark"] .mindmap-node {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .mindmap-node-depth-1 {
+  background: #312e81 !important;
+}
+html[data-theme="dark"] .mindmap-node-depth-2 {
+  background: #1e293b !important;
+}
+html[data-theme="dark"] .mindmap-node-depth-3 {
+  background: #16213a !important;
+}
+html[data-theme="dark"] .mindmap-node-detail {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .mindmap-control-button {
+  background: #1e293b !important;
+  color: #a5b4fc !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .mindmap-count,
+html[data-theme="dark"] .mindmap-hint,
+html[data-theme="dark"] .mindmap-empty {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .mindmap-zoom-label {
+  color: #c7d2fe !important;
+}
+
+/* --- 7. Study Planner (ROUND 60) --- */
+html[data-theme="dark"] .sf-planner-form,
+html[data-theme="dark"] .sf-planner-empty,
+html[data-theme="dark"] .sf-planner-card,
+html[data-theme="dark"] .sf-planner-day-row {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .sf-planner-field {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .sf-planner-field input,
+html[data-theme="dark"] .sf-planner-field textarea {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+html[data-theme="dark"] .sf-planner-field-hint {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .sf-planner-weekday {
+  background: #16213a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .sf-planner-weekday-checked {
+  background: #312e81 !important;
+  border-color: #818cf8 !important;
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .sf-planner-form-error {
+  color: #f87171 !important;
+}
+html[data-theme="dark"] .sf-planner-empty h2,
+html[data-theme="dark"] .sf-planner-card-top h2,
+html[data-theme="dark"] .sf-planner-detail-head h2 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .sf-planner-empty p,
+html[data-theme="dark"] .sf-planner-meta,
+html[data-theme="dark"] .sf-planner-progress-text,
+html[data-theme="dark"] .sf-planner-detail-meta {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .sf-planner-progress {
+  background: #334155 !important;
+}
+html[data-theme="dark"] .sf-planner-delete-button {
+  background: #1e293b !important;
+  color: #f87171 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .sf-planner-delete-button:hover {
+  background: #450a0a !important;
+}
+html[data-theme="dark"] .sf-planner-exam-done {
+  background: #052e16 !important;
+  color: #86efac !important;
+}
+html[data-theme="dark"] .sf-planner-day-date {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .sf-planner-day-topic {
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .sf-planner-day-topic-revision {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .sf-planner-day-minutes {
+  color: #94a3b8 !important;
+}
+
+/* --- 8. Phase 2 pages: revert the light flip to the original
+   dark Phase 2 styling --- */
+html[data-theme="dark"] .sf2-page {
+  color: #e0e7ff !important;
+}
+html[data-theme="dark"] .sf2-page h1 {
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-back-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-back-button:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+html[data-theme="dark"] .sf2-legal h2 {
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-legal p {
+  color: #e0e7ff !important;
+}
+html[data-theme="dark"] .sf2-plan-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+html[data-theme="dark"] .sf2-plan-card-pro {
+  background: rgba(99, 102, 241, 0.14) !important;
+  border-color: #818cf8 !important;
+}
+html[data-theme="dark"] .sf2-plan-card h2,
+html[data-theme="dark"] .sf2-plan-price {
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-plan-limits,
+html[data-theme="dark"] .sf2-plan-card ul {
+  color: #e0e7ff !important;
+}
+html[data-theme="dark"] .sf2-plans-note {
+  color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .sf2-settings-section {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+html[data-theme="dark"] .sf2-settings-section h2 {
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-settings-section p {
+  color: #e0e7ff !important;
+}
+html[data-theme="dark"] .sf2-settings-form input,
+html[data-theme="dark"] .sf2-delete-confirm input {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-page .sf2-secondary-button {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .sf2-page .sf2-settings-message {
+  color: #86efac !important;
+}
+html[data-theme="dark"] .sf2-page .sf2-error {
+  color: #fca5a5 !important;
+}
+html[data-theme="dark"] .sf2-quota-banner {
+  background: #451a03 !important;
+  color: #fde68a !important;
+}
+html[data-theme="dark"] .sf2-quota-banner .sf2-quota-dismiss {
+  color: #fde68a !important;
+}
+html[data-theme="dark"] .sf2-oral-unsupported {
+  background: #451a03 !important;
+  color: #fde68a !important;
+}
+html[data-theme="dark"] .sf2-auth-footer-links button {
+  color: #a5b4fc !important;
+}
+
+/* --- 9. Auth card (white in light mode) --- */
+html[data-theme="dark"] .auth-card {
+  background: rgba(10, 24, 40, 0.92) !important;
+  border-color: rgba(96, 165, 250, 0.25) !important;
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .auth-card h1 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .auth-card > p {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .auth-card label {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+html[data-theme="dark"] .auth-card input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(96, 165, 250, 0.25) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .forgot-password-button {
+  color: #a5b4fc !important;
+  -webkit-text-fill-color: #a5b4fc !important;
+}
+html[data-theme="dark"] .forgot-password-button:hover {
+  background: #312e81 !important;
+  color: #c7d2fe !important;
+  -webkit-text-fill-color: #c7d2fe !important;
+}
+html[data-theme="dark"] .password-eye-button {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+html[data-theme="dark"] .password-eye-button:hover {
+  background: #312e81 !important;
+  color: #a5b4fc !important;
+  -webkit-text-fill-color: #a5b4fc !important;
+}
+/* Nav-link hover fills are indigo in the light rules; keep them pale
+   on the dark navbar hover background. */
+html[data-theme="dark"] .nav-link-button:hover,
+html[data-theme="dark"] .public-navbar .nav-link-button:hover {
+  -webkit-text-fill-color: #c7d2fe !important;
+}
+
+/* --- 10. Modals / chat popup --- */
+html[data-theme="dark"] .quiz-options-modal {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .quiz-options-modal h2 {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .quiz-options-subtitle {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .quiz-options-field {
+  background: #16213a !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .quiz-options-field-text label {
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .quiz-options-field-text span {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .quiz-options-field input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+html[data-theme="dark"] .quiz-options-close {
+  background: #312e81 !important;
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .quiz-options-cancel {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .feedback-content {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .chatbot-popup {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+/* --- 11. Generic: placeholders, native selects, autofill,
+   shared-result page --- */
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+html[data-theme="dark"] select option {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] input:-webkit-autofill,
+html[data-theme="dark"] input:-webkit-autofill:hover,
+html[data-theme="dark"] input:-webkit-autofill:focus,
+html[data-theme="dark"] input:-webkit-autofill:active,
+html[data-theme="dark"] textarea:-webkit-autofill,
+html[data-theme="dark"] select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+  box-shadow: 0 0 0 1000px #1e293b inset !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+  caret-color: #f1f5f9 !important;
+}
+html[data-theme="dark"] .shared-result-page,
+html[data-theme="dark"] .shared-result-viewer {
+  color: #e2e8f0 !important;
+}

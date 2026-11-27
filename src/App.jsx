@@ -324,7 +324,7 @@ function BrandMark() {
   );
 }
 
-function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans }) {
+function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans, theme, onToggleTheme }) {
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
@@ -348,6 +348,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
           <button type="button" className="nav-signup-button" onClick={onSignup}>
             Sign Up
           </button>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </nav>
 
@@ -415,7 +416,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
   );
 }
 
-function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, successMessage, form, setForm, onGoogleSignIn, googleLoading, onPrivacy, onTerms }) {
+function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, error, successMessage, form, setForm, onGoogleSignIn, googleLoading, onPrivacy, onTerms, theme, onToggleTheme }) {
   const isSignup = mode === "signup";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -424,13 +425,16 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
     <div className="auth-shell">
       <nav className="public-navbar">
         <BrandMark />
-        <button
-          type="button"
-          className="nav-link-button"
-          onClick={() => onModeChange("welcome")}
-        >
-          Back
-        </button>
+        <div className="public-nav-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <button
+            type="button"
+            className="nav-link-button"
+            onClick={() => onModeChange("welcome")}
+          >
+            Back
+          </button>
+        </div>
       </nav>
 
       <main className="auth-page">
@@ -948,6 +952,44 @@ function pickMotivationalQuote(previousQuote = "") {
 }
 
 // ========================================================
+// THEME TOGGLE (light / dark mode)
+// Sun icon when the app is dark (tap to go light), moon icon
+// when the app is light (tap to go dark). Inlined SVGs, no emoji.
+// ========================================================
+
+function ThemeToggle({ theme, onToggle, className = "theme-toggle-button", label }) {
+  const isDark = theme === "dark";
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={onToggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {isDark ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+      )}
+      {label ? <span>{label}</span> : null}
+    </button>
+  );
+}
+
+// ========================================================
 // APP
 // ========================================================
 
@@ -972,6 +1014,29 @@ function App() {
   });
   // In-app view for a signed-in user: "app" (workspace) or a Phase 2 page.
   const [appView, setAppView] = useState("app");
+  // Light / dark mode: saved choice in localStorage ("sf-theme"),
+  // otherwise the OS setting. Applied to <html data-theme> so the
+  // CSS can scope dark overrides; index.html sets the same value
+  // before first paint to avoid a white flash on reload.
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem("sf-theme");
+      if (saved === "light" || saved === "dark") return saved;
+    } catch (e) {}
+    return typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    try {
+      localStorage.setItem("sf-theme", theme);
+    } catch (e) {}
+  }, [theme]);
+  const toggleTheme = () =>
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
   // Plan from users/{uid}.plan; a missing field means "free".
   const [userPlan, setUserPlan] = useState("free");
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -4287,6 +4352,8 @@ function App() {
           googleLoading={googleLoading}
           onPrivacy={() => openPublicPage("privacy")}
           onTerms={() => openPublicPage("terms")}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
       );
     }
@@ -4300,6 +4367,8 @@ function App() {
           onTerms={() => openPublicPage("terms")}
           onFeedback={() => setFeedbackOpen(true)}
           onPlans={() => openPublicPage("plans")}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
         {feedbackOpen && (
           <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
@@ -4602,6 +4671,7 @@ function App() {
           </button>
           <div className="app-nav-user desktop-nav-user">
             <span className="sf2-nav-plan">Plan: {getPlanId(userPlan) === "pro" ? "Pro" : "Free"}</span>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
             <button type="button" className="logout-button" onClick={handleLogout}>
               Logout
             </button>
@@ -4619,6 +4689,8 @@ function App() {
             onViewPlans={() => setAppView("plans")}
             onSignOut={handleLogout}
             onAccountDeleted={handleAccountDeleted}
+            theme={theme}
+            onThemeChange={setTheme}
           />
         )}
         {appView === "planner" && (
@@ -4795,6 +4867,13 @@ function App() {
           </div>
 
 
+          <ThemeToggle
+            theme={theme}
+            onToggle={toggleTheme}
+            className="mobile-theme-toggle"
+            label={theme === "dark" ? "Light mode" : "Dark mode"}
+          />
+
           <div className="mobile-account-block">
             <span>
               👤 {user.displayName || user.email || "Account"}
@@ -4810,6 +4889,8 @@ function App() {
         </nav>
 
         <div className="app-nav-user desktop-nav-user">
+
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
           <button
             type="button"
