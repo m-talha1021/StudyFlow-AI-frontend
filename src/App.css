@@ -17787,96 +17787,17 @@ footer,
   margin: 14px 0 0;
 }
 
-.sf-progress-streak {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  border-radius: 12px;
-  padding: 20px 22px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
 
-.sf-progress-streak-number {
-  font-size: 44px;
-  line-height: 1;
-  font-weight: 800;
-}
 
-.sf-progress-streak-label {
-  font-size: 15px;
-  font-weight: 600;
-  margin-left: 8px;
-}
 
-.sf-progress-streak p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.6;
-  flex: 1;
-  min-width: 200px;
-}
 
-.sf-progress-muted {
-  color: #64748b;
-  font-size: 15px;
-  margin: 0;
-}
 
-.sf-progress-activity {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
-.sf-progress-activity-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
-  min-width: 0;
-}
 
-.sf-progress-activity-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
 
-.sf-progress-activity-row:first-child {
-  padding-top: 0;
-}
 
-.sf-progress-activity-kind {
-  flex-shrink: 0;
-  background: #eef2ff;
-  color: #4338ca;
-  border: 1px solid #c7d2fe;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
 
-.sf-progress-activity-title {
-  flex: 1;
-  min-width: 0;
-  color: #0f172a;
-  font-size: 15px;
-  line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
-.sf-progress-activity-date {
-  flex-shrink: 0;
-  color: #64748b;
-  font-size: 13px;
-  white-space: nowrap;
-}
 
 @media (max-width: 700px) {
   .sf-progress-section {
@@ -17888,16 +17809,32 @@ footer,
   .sf-progress-bar-label {
     font-size: 11px;
   }
-  .sf-progress-activity-row {
-    flex-wrap: wrap;
-    row-gap: 4px;
-  }
-  .sf-progress-activity-title {
-    flex-basis: 100%;
-    order: 3;
-    white-space: normal;
-  }
-  .sf-progress-activity-date {
-    margin-left: auto;
-  }
+}
+
+/* ============================================================
+   ROUND 62 (2026-11-27) — Streak chip in the Dashboard header
+   (the big purple streak banner and Recent activity are gone).
+   Small pill beside the dashboard close button: light-indigo
+   background, indigo text/border, flame icon, readable at 375px.
+   ============================================================ */
+
+.sf-streak-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sf-streak-chip svg {
+  flex-shrink: 0;
+  color: #4f46e5;
 }

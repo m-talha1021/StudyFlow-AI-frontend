@@ -22,7 +22,7 @@ import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
 import { StudyPlannerPage } from "./Planner.jsx";
-import { DashboardAnalytics } from "./Analytics.jsx";
+import { DashboardAnalytics, computeStreaks, collectActivityDays } from "./Analytics.jsx";
 
 import {
   doc,
@@ -5049,6 +5049,31 @@ function App() {
                     </button>
                   </>
                 )}
+                {!dashboardLoading &&
+                  (() => {
+                    const streak = computeStreaks(
+                      collectActivityDays([
+                        ...dashboardMaterialsHistory,
+                        ...dashboardFlashcardHistory,
+                        ...dashboardGeneratedHistory,
+                      ])
+                    );
+                    return (
+                      <span
+                        className="sf-streak-chip"
+                        title={`Best streak: ${streak.best} ${
+                          streak.best === 1 ? "day" : "days"
+                        }`}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
+                        </svg>
+                        {streak.current > 0
+                          ? `${streak.current} day streak`
+                          : "No streak yet"}
+                      </span>
+                    );
+                  })()}
                 <button
                   type="button"
                   className="dashboard-history-close"
@@ -5091,44 +5116,6 @@ function App() {
                           : "Maximum rank reached",
                         icon: "🏆",
                         rankCard: true,
-                      },
-                      {
-                        title: "Flashcards created",
-                        value: dashboardStats.flashcardsCreated,
-                        text: "Flashcards generated",
-                        icon: (
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <rect x="3" y="4" width="13" height="14" rx="2" />
-                            <rect x="8" y="7" width="13" height="14" rx="2" />
-                          </svg>
-                        ),
-                      },
-                      {
-                        title: "Quizzes completed",
-                        value: dashboardStats.completedQuizzes,
-                        text: "Tests finished",
-                        icon: (
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        ),
-                      },
-                      {
-                        title: "Average quiz score",
-                        value:
-                          dashboardStats.completedQuizzes > 0
-                            ? `${dashboardStats.averageQuizScore}%`
-                            : "—",
-                        text:
-                          dashboardStats.completedQuizzes > 0
-                            ? "Across all finished tests"
-                            : "Finish a test to see your score",
-                        icon: (
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c7d2fe" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M3 17l5-5 4 4 8-8" />
-                            <path d="M15 8h6v6" />
-                          </svg>
-                        ),
                       },
                     ].map((stat) => (
                       <div

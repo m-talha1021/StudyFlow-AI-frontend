@@ -61,17 +61,6 @@ export function createdAtMillis(value) {
   return 0;
 }
 
-export function formatActivityDate(ms) {
-  const d = new Date(ms);
-  if (!Number.isFinite(d.getTime())) return "";
-  return d.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 // Set of local "YYYY-MM-DD" keys on which at least one history
 // item was created.
 export function collectActivityDays(items) {
@@ -143,69 +132,6 @@ export function computeStreaks(activeDays, today = new Date()) {
   return { current, best };
 }
 
-const GENERATED_KIND_LABELS = {
-  mindmap: "Mind Map",
-  flashcards: "Flashcards",
-  test: "Test",
-  text: "Generated",
-};
-
-// Merge the three history collections into one recent-activity
-// list: { id, title, kindLabel, createdAt }, newest first.
-export function recentActivityItems(
-  materials,
-  flashcards,
-  generated,
-  limit = 8
-) {
-  const items = [];
-  for (const item of materials || []) {
-    items.push({
-      id: `material-${item.id}`,
-      title:
-        Array.isArray(item.fileNames) && item.fileNames.length
-          ? item.fileNames.join(", ")
-          : "Uploaded material",
-      kindLabel: "Material",
-      createdAt: createdAtMillis(item.createdAt),
-    });
-  }
-  for (const item of flashcards || []) {
-    const firstFile =
-      Array.isArray(item.fileNames) && item.fileNames[0]
-        ? item.fileNames[0]
-        : "study material";
-    items.push({
-      id: `flashcards-${item.id}`,
-      title: `Flashcards — ${firstFile}`,
-      kindLabel: "Flashcards",
-      createdAt: createdAtMillis(item.createdAt),
-    });
-  }
-  for (const item of generated || []) {
-    items.push({
-      id: `generated-${item.id}`,
-      title: String(item.title || item.type || "Generated content"),
-      kindLabel:
-        String(item.type || "") ||
-        GENERATED_KIND_LABELS[item.kind] ||
-        "Generated",
-      createdAt: createdAtMillis(item.createdAt),
-    });
-  }
-  return items
-    .filter((item) => item.createdAt > 0)
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .slice(0, limit)
-    .map((item) => ({
-      ...item,
-      title:
-        item.title.length > 90
-          ? `${item.title.slice(0, 89)}…`
-          : item.title,
-    }));
-}
-
 // --- Dashboard analytics section (props-driven, no fetching) ---
 
 export function DashboardAnalytics({
@@ -234,16 +160,6 @@ export function DashboardAnalytics({
     [buckets]
   );
   const maxBucket = Math.max(1, ...buckets.map((b) => b.count));
-
-  const { current: currentStreak, best: bestStreak } = useMemo(
-    () => computeStreaks(collectActivityDays(allItems)),
-    [allItems]
-  );
-
-  const recent = useMemo(
-    () => recentActivityItems(materials, flashcards, generated, 8),
-    [materials, flashcards, generated]
-  );
 
   const hasAnyData =
     allItems.length > 0 ||
@@ -320,51 +236,6 @@ export function DashboardAnalytics({
             </p>
           </section>
 
-          <section className="sf-progress-section" aria-label="Study streak">
-            <div className="sf-progress-streak">
-              <div>
-                <strong className="sf-progress-streak-number">
-                  {currentStreak}
-                </strong>
-                <span className="sf-progress-streak-label">day streak</span>
-              </div>
-              <p>
-                {currentStreak > 0
-                  ? `You have studied ${currentStreak} ${
-                      currentStreak === 1 ? "day" : "days"
-                    } in a row.`
-                  : "Study today to start a streak."}
-                {` Best streak: ${bestStreak} ${
-                  bestStreak === 1 ? "day" : "days"
-                }.`}
-              </p>
-            </div>
-          </section>
-
-          <section className="sf-progress-section" aria-label="Recent activity">
-            <h2>Recent activity</h2>
-            {recent.length === 0 ? (
-              <p className="sf-progress-muted">
-                No recent activity to show yet.
-              </p>
-            ) : (
-              <ul className="sf-progress-activity">
-                {recent.map((item) => (
-                  <li key={item.id} className="sf-progress-activity-row">
-                    <span className="sf-progress-activity-kind">
-                      {item.kindLabel}
-                    </span>
-                    <span className="sf-progress-activity-title">
-                      {item.title}
-                    </span>
-                    <span className="sf-progress-activity-date">
-                      {formatActivityDate(item.createdAt)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
         </>
       )}
     </div>
