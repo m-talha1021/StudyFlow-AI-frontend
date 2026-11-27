@@ -14995,9 +14995,11 @@ html[data-theme="dark"] #root section.hero {
 }
 html[data-theme="dark"] #root section.hero h1 {
   color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
 }
 html[data-theme="dark"] #root section.hero .spann {
   color: #a5b4fc !important;
+  -webkit-text-fill-color: #a5b4fc !important;
 }
 html[data-theme="dark"] #root section.hero p {
   color: #cbd5e1 !important;
@@ -15534,4 +15536,69 @@ html[data-theme="dark"] select:-webkit-autofill {
 html[data-theme="dark"] .shared-result-page,
 html[data-theme="dark"] .shared-result-viewer {
   color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   ROUND 66 (2026-11-27) — mobile public-navbar room for the
+   theme toggle + (Fix 1 lives in the dark hero rules above:
+   -webkit-text-fill-color added to the dark h1 / .spann rules)
+   Baseline: at 375px the navbar row was flush to the edges
+   (navbar 367px of a 375px viewport, toggle right edge at 357,
+   brand logo squished by flex-shrink) and at 320px the toggle
+   overflowed the viewport outright (right edge 334 of 320).
+   Fix: trim paddings/gaps/brand/toggle on <=480px, tighter
+   still on <=360px, so the toggle sits inside the row,
+   rightmost, with slack — no button removed, no JSX change.
+   Desktop (>=901px) untouched; AuthPage shares these classes
+   and benefits the same way.
+   ============================================================ */
+@media (max-width: 480px) {
+  .public-navbar {
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .public-navbar .brand-mark {
+    flex-shrink: 0;
+  }
+  .public-navbar .brand-mark img {
+    width: 28px;
+    height: 28px;
+  }
+  .public-nav-actions {
+    gap: 4px;
+  }
+  .public-navbar .public-nav-actions .nav-link-button,
+  .public-navbar .public-nav-actions .nav-signup-button {
+    padding: 7px 8px;
+  }
+  .public-navbar .public-nav-actions .theme-toggle-button {
+    width: 34px;
+    height: 34px;
+  }
+  .public-navbar .public-nav-actions .theme-toggle-button svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+@media (max-width: 360px) {
+  .public-navbar {
+    padding: 0 6px;
+    gap: 5px;
+  }
+  .public-navbar .brand-mark img {
+    width: 24px;
+    height: 24px;
+  }
+  .public-nav-actions {
+    gap: 3px;
+  }
+  .public-navbar .public-nav-actions .nav-link-button,
+  .public-navbar .public-nav-actions .nav-signup-button {
+    padding: 7px 7px;
+    font-size: 11px;
+  }
+  .public-navbar .public-nav-actions .theme-toggle-button {
+    width: 32px;
+    height: 32px;
+  }
 }
