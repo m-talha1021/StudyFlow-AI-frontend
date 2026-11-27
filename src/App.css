@@ -18194,6 +18194,26 @@ html[data-theme="dark"] .mode small {
 html[data-theme="dark"] .mode > span {
   color: #a5b4fc !important;
 }
+/* ROUND 64 (2026-11-27): in dark mode the SELECTED mode tile gets a
+   pure black background so it stands out from the unselected tiles
+   (the dark .mode rule above was flattening it). Light mode untouched. */
+html[data-theme="dark"] .mode-buttons button.active,
+html[data-theme="dark"] .mode-buttons .mode.active,
+html[data-theme="dark"] .mode-buttons button.selected {
+  background: #000000 !important;
+  border-color: #334155 !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .mode-buttons button.active strong,
+html[data-theme="dark"] .mode-buttons .mode.active strong,
+html[data-theme="dark"] .mode-buttons button.selected strong {
+  color: #f8fafc !important;
+}
+html[data-theme="dark"] .mode-buttons button.active small,
+html[data-theme="dark"] .mode-buttons .mode.active small,
+html[data-theme="dark"] .mode-buttons button.selected small {
+  color: #cbd5e1 !important;
+}
 html[data-theme="dark"] .selected-file-item {
   background: #1e293b !important;
 }
