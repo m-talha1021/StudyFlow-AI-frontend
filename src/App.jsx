@@ -3445,6 +3445,18 @@ function App() {
   // ========================================================
 
   const handleGenerate = async (quizCounts) => {
+    // Only a real { mcqCount, shortCount } object counts as supplied
+    // counts. React passes the click event when a handler is wired as
+    // onClick={handleGenerate}, and that truthy event used to skip the
+    // quiz question-count picker entirely (the modal never opened and
+    // the quiz generated straight away with default counts).
+    const counts =
+      quizCounts &&
+      typeof quizCounts.mcqCount === "number" &&
+      typeof quizCounts.shortCount === "number"
+        ? quizCounts
+        : undefined;
+
     if (mode === "flashcards") {
       await handleGenerateFlashcards();
       return;
@@ -3468,7 +3480,7 @@ function App() {
     // Quiz mode: ask how many MCQs and short-answer questions
     // before generating. The picker supplies the counts on the
     // second call; Cancel just closes it without generating.
-    if (mode === "quiz" && !quizCounts) {
+    if (mode === "quiz" && !counts) {
       if (processing) {
         alert("Your material is still processing. Please wait until processing finishes.");
         return;
@@ -3541,8 +3553,8 @@ function App() {
           body: JSON.stringify({
             mode: mode,
             materialText: processedMaterialText || (text.trim() ? text.trim() : ""),
-            ...(mode === "quiz" && quizCounts
-              ? { mcq_count: quizCounts.mcqCount, short_count: quizCounts.shortCount }
+            ...(mode === "quiz" && counts
+              ? { mcq_count: counts.mcqCount, short_count: counts.shortCount }
               : {}),
           }),
           signal: generationController.signal,
@@ -5813,7 +5825,7 @@ function App() {
 
           <button
             className="generate-button"
-            onClick={handleGenerate}
+            onClick={() => handleGenerate()}
             disabled={
               processing ||
               generating ||

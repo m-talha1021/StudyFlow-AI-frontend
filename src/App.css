@@ -17067,3 +17067,23 @@ footer > p,
     width: 100%;
   }
 }
+
+/* ============================================================
+   ROUND 56 (2026-11-27) — footer text vertically centered
+   (Muhammad: "all the text in footer should be in the center
+   not upwards in user page").
+   The logged-in/sub-view <footer> is display:flex with
+   min-height: 120px, but align-items: baseline (line ~16382),
+   so the copyright + links hugged the TOP of the tall bar
+   with empty space below (see his screenshot). Centering the
+   flex items — and the wrapped rows on mobile, via
+   align-content — puts the text in the middle of the bar.
+   .public-footer already centers its column; the same rules
+   are pinned here for all footer variants. Horizontal
+   centering, gaps, colors, text and links are unchanged.
+   ============================================================ */
+footer,
+.public-footer {
+  align-items: center !important;
+  align-content: center !important;
+}
