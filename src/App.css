@@ -13587,6 +13587,19 @@ textarea.transcription-output { width: 100% !important; max-width: 100% !importa
   font-size: 13px;
 }
 
+/* ============================================================
+   ROUND 67 (2026-11-27) — Download PNG beside Regenerate
+   - The Regenerate + Download PNG buttons sit together in a
+     .mindmap-header-actions row on the right of the header.
+   ============================================================ */
+
+.mindmap-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .mindmap {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 
 // ============================================================
 // MIND MAP — interactive concept tree
@@ -6,6 +8,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // branching to the right. Nodes expand/collapse on click, the
 // canvas pans by dragging and zooms with buttons or the wheel.
 // Pure layout helpers are exported so they can be unit-tested.
+// Download PNG: the component exposes downloadPng() through its
+// ref. The export renders the FULL tree (every branch open) onto
+// a 2x canvas, reading computed styles from a temporary
+// off-screen fully-expanded copy, so the PNG matches the screen
+// in light and dark mode without touching the visible map.
 // ============================================================
 
 const NODE_WIDTH = 200;
@@ -17,6 +24,11 @@ const DEPTH_GAP = 56;
 const DEPTH_GAP_COMPACT = 32;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 1.8;
+
+// PNG export: rendered at 2x so text stays sharp, with a margin
+// around the map so no node sits flush against the image edge.
+const EXPORT_SCALE = 2;
+const EXPORT_PAD = 24;
 
 export function mindmapNodeCount(tree) {
   if (!tree || typeof tree !== "object") return 0;
@@ -129,7 +141,70 @@ function collectDefaultCollapsed(tree) {
   return ids;
 }
 
-export default function MindMap({ tree }) {
+// --- PNG export helpers (module scope, no DOM) ----------------
+
+function parseFirstColor(value) {
+  if (!value) return null;
+  const match = value.match(/rgba?\([^)]+\)|#[0-9a-fA-F]{3,8}/);
+  return match ? match[0] : null;
+}
+
+function parseGradientColors(value) {
+  if (!value) return [];
+  return value.match(/rgba?\([^)]+\)|#[0-9a-fA-F]{3,8}/g) || [];
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  if (typeof ctx.roundRect === "function") {
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// Word-wrap like the DOM node does (overflow-wrap: anywhere):
+// words wrap at spaces, and a single word longer than the line
+// is broken character by character.
+function wrapText(ctx, text, maxWidth) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width <= maxWidth) {
+      line = test;
+      continue;
+    }
+    if (line) {
+      lines.push(line);
+      line = "";
+    }
+    if (ctx.measureText(word).width <= maxWidth) {
+      line = word;
+      continue;
+    }
+    let chunk = "";
+    for (const ch of word) {
+      if (chunk && ctx.measureText(chunk + ch).width > maxWidth) {
+        lines.push(chunk);
+        chunk = ch;
+      } else {
+        chunk += ch;
+      }
+    }
+    line = chunk;
+  }
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
+}
+
+const MindMap = forwardRef(function MindMap({ tree, collapsedOverride = null }, ref) {
   const viewportRef = useRef(null);
   const dragRef = useRef(null);
   const [collapsed, setCollapsed] = useState(() => collectDefaultCollapsed(tree));
@@ -139,9 +214,14 @@ export default function MindMap({ tree }) {
     () => typeof window !== "undefined" && window.innerWidth <= 560
   );
 
+  // The export clone passes collapsedOverride (an empty set) so the
+  // PNG shows the whole tree; the visible map always uses its own
+  // collapsed state.
+  const effectiveCollapsed = collapsedOverride ?? collapsed;
+
   const layout = useMemo(
-    () => layoutMindMap(tree, collapsed, compact),
-    [tree, collapsed, compact]
+    () => layoutMindMap(tree, effectiveCollapsed, compact),
+    [tree, effectiveCollapsed, compact]
   );
 
   const fitView = useCallback(() => {
@@ -212,6 +292,216 @@ export default function MindMap({ tree }) {
     ids.delete("0");
     setCollapsed(ids);
   }, [tree]);
+
+  // --- Download PNG: full tree, always fully expanded -----------
+  // Renders a temporary off-screen copy of this map with an empty
+  // collapsed set, reads that copy's computed styles (so light and
+  // dark mode export exactly as shown), draws the whole tree onto
+  // a 2x canvas, and triggers a browser download. The visible map
+  // is never touched: its collapsed state, zoom and pan are left
+  // exactly as they were.
+  const downloadPng = useCallback(
+    async (filename) => {
+      if (!tree || typeof tree !== "object" || !tree.topic) {
+        throw new Error("No mind map to download.");
+      }
+      // Let the caller's "Downloading…" state paint before the work.
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      const fullLayout = layoutMindMap(tree, new Set(), compact);
+      const host = document.createElement("div");
+      host.setAttribute("aria-hidden", "true");
+      host.style.cssText =
+        "position:fixed;left:-10000px;top:0;width:1200px;pointer-events:none;opacity:0;";
+      document.body.appendChild(host);
+      let cloneRoot = null;
+      try {
+        cloneRoot = createRoot(host);
+        flushSync(() => {
+          cloneRoot.render(
+            <MindMap tree={tree} collapsedOverride={new Set()} />
+          );
+        });
+        const viewportEl = host.querySelector(".mindmap-viewport");
+        const linkEl = host.querySelector(".mindmap-links path");
+        const nodeEls = [...host.querySelectorAll(".mindmap-node")];
+        if (
+          !viewportEl ||
+          nodeEls.length !== fullLayout.nodes.length
+        ) {
+          throw new Error("Could not render the mind map for download.");
+        }
+
+        const width = fullLayout.contentWidth + EXPORT_PAD * 2;
+        const height = fullLayout.contentHeight + EXPORT_PAD * 2;
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(width * EXPORT_SCALE);
+        canvas.height = Math.round(height * EXPORT_SCALE);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas is not available.");
+        ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
+        ctx.translate(EXPORT_PAD, EXPORT_PAD);
+
+        // Background: the viewport's own background colour, plus its
+        // dot grid (same 22px grid as on screen).
+        const viewportCs = getComputedStyle(viewportEl);
+        ctx.fillStyle = viewportCs.backgroundColor || "#f8fafc";
+        ctx.fillRect(-EXPORT_PAD, -EXPORT_PAD, width, height);
+        const dotColor = parseFirstColor(viewportCs.backgroundImage);
+        if (dotColor) {
+          ctx.fillStyle = dotColor;
+          for (let gy = -EXPORT_PAD + 1; gy < height - EXPORT_PAD; gy += 22) {
+            for (let gx = -EXPORT_PAD + 1; gx < width - EXPORT_PAD; gx += 22) {
+              ctx.beginPath();
+              ctx.arc(gx, gy, 1, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+
+        // Connector curves.
+        const linkCs = linkEl ? getComputedStyle(linkEl) : null;
+        ctx.strokeStyle = (linkCs && linkCs.stroke) || "#a5b4fc";
+        ctx.lineWidth = parseFloat((linkCs && linkCs.strokeWidth) || "2") || 2;
+        ctx.lineCap = "round";
+        for (const link of fullLayout.links) {
+          const mx = (link.x1 + link.x2) / 2;
+          ctx.beginPath();
+          ctx.moveTo(link.x1, link.y1);
+          ctx.bezierCurveTo(mx, link.y1, mx, link.y2, link.x2, link.y2);
+          ctx.stroke();
+        }
+
+        // Nodes, in layout order (same order as the clone's DOM).
+        fullLayout.nodes.forEach((node, index) => {
+          const el = nodeEls[index];
+          const cs = getComputedStyle(el);
+          const labelEl = el.querySelector(".mindmap-node-label");
+          const detailEl = el.querySelector(".mindmap-node-detail");
+          const toggleEl = el.querySelector(".mindmap-node-toggle");
+          const labelCs = labelEl ? getComputedStyle(labelEl) : cs;
+          const detailCs = detailEl ? getComputedStyle(detailEl) : null;
+          const borderWidth = parseFloat(cs.borderWidth) || 1.5;
+          const family = cs.fontFamily || "inherit";
+
+          // Fill (solid, or the root node's indigo gradient).
+          ctx.save();
+          ctx.shadowColor = "rgba(30, 27, 75, 0.08)";
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
+          roundRectPath(ctx, node.x, node.y, node.width, NODE_HEIGHT, 12);
+          const bgImage = cs.backgroundImage || "";
+          if (bgImage.includes("linear-gradient")) {
+            const stops = parseGradientColors(bgImage);
+            if (stops.length >= 2) {
+              const gradient = ctx.createLinearGradient(
+                node.x + node.width,
+                node.y,
+                node.x,
+                node.y + NODE_HEIGHT
+              );
+              gradient.addColorStop(0, stops[0]);
+              gradient.addColorStop(1, stops[stops.length - 1]);
+              ctx.fillStyle = gradient;
+            } else {
+              ctx.fillStyle = cs.backgroundColor;
+            }
+          } else {
+            ctx.fillStyle = cs.backgroundColor;
+          }
+          ctx.fill();
+          ctx.restore();
+
+          // Border.
+          roundRectPath(ctx, node.x, node.y, node.width, NODE_HEIGHT, 12);
+          ctx.strokeStyle = cs.borderColor;
+          ctx.lineWidth = borderWidth;
+          ctx.stroke();
+
+          // Text: label, then detail (max 2 lines), vertically
+          // centred like the DOM node's justify-content: center.
+          const textMaxWidth = node.width - 42; // 12px left + 30px right pad
+          const labelSize = parseFloat(labelCs.fontSize) || 13.5;
+          const labelLineHeight = labelSize * 1.25;
+          ctx.font = `${labelCs.fontWeight || "700"} ${labelSize}px ${family}`;
+          const labelLines = wrapText(ctx, node.label, textMaxWidth);
+          let detailLines = [];
+          let detailSize = 11.5;
+          let detailLineHeight = 15;
+          if (detailEl && node.detail && detailCs) {
+            detailSize = parseFloat(detailCs.fontSize) || 11.5;
+            detailLineHeight = detailSize * 1.3;
+            ctx.font = `${detailCs.fontWeight || "400"} ${detailSize}px ${family}`;
+            detailLines = wrapText(ctx, node.detail, textMaxWidth).slice(0, 2);
+          }
+          const blockHeight =
+            labelLines.length * labelLineHeight +
+            (detailLines.length
+              ? 2 + detailLines.length * detailLineHeight
+              : 0);
+          let textY = node.y + (NODE_HEIGHT - blockHeight) / 2;
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillStyle = labelCs.color || cs.color;
+          ctx.font = `${labelCs.fontWeight || "700"} ${labelSize}px ${family}`;
+          for (const line of labelLines) {
+            ctx.fillText(line, node.x + 12, textY);
+            textY += labelLineHeight;
+          }
+          if (detailLines.length && detailCs) {
+            textY += 2;
+            ctx.fillStyle = detailCs.color;
+            ctx.font = `${detailCs.fontWeight || "400"} ${detailSize}px ${family}`;
+            for (const line of detailLines) {
+              ctx.fillText(line, node.x + 12, textY);
+              textY += detailLineHeight;
+            }
+          }
+
+          // Expand/collapse badge, as shown in the full tree.
+          if (node.hasChildren && toggleEl) {
+            const toggleCs = getComputedStyle(toggleEl);
+            const cx = node.x + node.width - 18;
+            const cy = node.y + NODE_HEIGHT / 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+            ctx.fillStyle = toggleCs.backgroundColor;
+            ctx.fill();
+            ctx.fillStyle = toggleCs.color;
+            ctx.font = `700 14px ${family}`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(node.collapsed ? "+" : "−", cx, cy + 0.5);
+          }
+        });
+
+        const blob = await new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (result) =>
+              result
+                ? resolve(result)
+                : reject(new Error("Could not encode the PNG.")),
+            "image/png"
+          );
+        });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename || "studyflow-mindmap.png";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        return true;
+      } finally {
+        if (cloneRoot) cloneRoot.unmount();
+        host.remove();
+      }
+    },
+    [tree, compact]
+  );
+
+  useImperativeHandle(ref, () => ({ downloadPng }), [downloadPng]);
 
   const onPointerDown = (event) => {
     // Drag-to-pan starts on the canvas background only; node buttons
@@ -352,4 +642,6 @@ export default function MindMap({ tree }) {
       <p className="mindmap-hint">Drag the map to pan • Scroll over it to zoom</p>
     </div>
   );
-}
+});
+
+export default MindMap;

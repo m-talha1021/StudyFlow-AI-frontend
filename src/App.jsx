@@ -1197,6 +1197,8 @@ function App() {
   // Interactive mind map (concept tree) for the current material.
   const [mindmap, setMindmap] = useState(null);
   const [mindmapLoading, setMindmapLoading] = useState(false);
+  const mindmapDownloadRef = useRef(null);
+  const [mindmapDownloading, setMindmapDownloading] = useState(false);
 
   // ========================================================
   // TEST CONCEPTS
@@ -3043,6 +3045,29 @@ function App() {
   // ========================================================
   // MIND MAP
   // ========================================================
+
+  // Download the mind map as a PNG. The map is exported fully
+  // expanded (every branch open) at 2x scale, whatever is collapsed
+  // on screen — the export lives in MindMap.jsx and leaves the
+  // visible map exactly as it was.
+  const handleDownloadMindmapPng = async () => {
+    if (mindmapDownloading || !mindmapDownloadRef.current) return;
+    setMindmapDownloading(true);
+    try {
+      const slug = (mindmap?.topic || "mindmap")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      await mindmapDownloadRef.current.downloadPng(
+        `mindmap-${slug || "map"}.png`
+      );
+    } catch (error) {
+      console.error("Mind map PNG download failed:", error);
+      alert("Could not download the mind map PNG. Please try again.");
+    } finally {
+      setMindmapDownloading(false);
+    }
+  };
 
   const handleGenerateMindmap = async () => {
     if (processing) { alert("Your study material is still processing. Please wait."); return; }
@@ -6496,19 +6521,31 @@ function App() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleGenerateMindmap}
-                disabled={mindmapLoading}
-              >
-                {mindmapLoading
-                  ? "⏳ Generating..."
-                  : "🔄 Regenerate"}
-              </button>
+              <div className="mindmap-header-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleGenerateMindmap}
+                  disabled={mindmapLoading}
+                >
+                  {mindmapLoading
+                    ? "⏳ Generating..."
+                    : "🔄 Regenerate"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleDownloadMindmapPng}
+                  disabled={mindmapLoading || mindmapDownloading}
+                >
+                  {mindmapDownloading
+                    ? "Downloading…"
+                    : "⬇️ Download PNG"}
+                </button>
+              </div>
             </div>
 
-            <MindMap tree={mindmap} />
+            <MindMap ref={mindmapDownloadRef} tree={mindmap} />
 
           </section>
         )}
