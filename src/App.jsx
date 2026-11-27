@@ -3513,6 +3513,12 @@ function App() {
 
     stopSpeech();
 
+    setTimeout(() => {
+      document
+        .getElementById("result-section")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+
     try {
       let ready = materialReady || files.length > 0 || Boolean(file);
 
@@ -5970,9 +5976,13 @@ function App() {
             GENERATED RESULT
         ================================================= */}
 
-        {result && (
+        {(result || generating) && (
           <section
-            className="result-section"
+            className={
+              generating && !result
+                ? "result-section result-generating-state"
+                : "result-section"
+            }
             id="result-section"
           >
 
@@ -6107,6 +6117,22 @@ function App() {
                   : "ltr"
               }
             >
+
+              {generating && !result && (
+                <div className="result-generating" role="status">
+                  <span className="result-generating-spinner" aria-hidden="true" />
+                  <strong>
+                    {mode === "quiz"
+                      ? "Generating your quiz…"
+                      : mode === "summary"
+                        ? "Generating your summary…"
+                        : "Generating your explanation…"}
+                  </strong>
+                  <span className="result-generating-sub">
+                    This can take up to a minute for a long quiz — please keep this page open.
+                  </span>
+                </div>
+              )}
 
               {result
                 .split("\n")
