@@ -311,7 +311,7 @@ export function StudyPlannerPage({ user, onBack }) {
   return (
     <SubPageShell
       title="Study Planner"
-      subtitle="Your exam countdown, planned day by day. Schedules are built instantly on your device — no AI calls used."
+      subtitle="Your exam countdown, planned day by day. Schedules are built instantly."
       onBack={onBack}
     >
       {openPlan ? (
@@ -460,8 +460,7 @@ export function StudyPlannerPage({ user, onBack }) {
               <h2>No study plans yet</h2>
               <p>
                 Pick an exam date and your topics, and StudyQue will lay
-                out a day-by-day plan for you — with revision days saved
-                for the end.
+                out a day-by-day plan for you.
               </p>
               <button
                 type="button"

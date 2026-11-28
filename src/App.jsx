@@ -21,7 +21,7 @@ import { auth, db } from "./firebase";
 import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
-import { checkPlagiarism, plagiarismReportAsText } from "./plagiarism.js";
+import { detectAIText, aiDetectionReportAsText, remainingAIDetectorChecks, recordAIDetectorCheck, AI_DETECTOR_DAILY_LIMIT } from "./plagiarism.js";
 import { StudyPlannerPage } from "./Planner.jsx";
 import { DashboardAnalytics } from "./Analytics.jsx";
 
@@ -326,6 +326,7 @@ function BrandMark() {
 }
 
 function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans, theme, onToggleTheme }) {
+  const [featureDetail, setFeatureDetail] = useState(null);
   return (
     <div className="auth-shell">
       <nav className="public-navbar">
@@ -389,16 +390,31 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
           </div>
 
           <div className="feature-grid" id="features">
-            <div><span>📝</span><strong>Summaries</strong><small>Key ideas from your material</small></div>
-            <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
-            <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
-            <div><span>📚</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
-            <div><span><img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyQue" /></span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
-            <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
-            <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
-            <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
-            <div><span>🗂️</span><strong>Content History</strong><small>View content from history</small></div>
-            <div><span>⇆</span><strong>Convert files</strong><small>Convert files to other formats</small></div>
+            {FEATURE_DETAILS.map((feature) => (
+              <div
+                key={feature.title}
+                role="button"
+                tabIndex={0}
+                aria-label={`${feature.title} — ${feature.tagline}`}
+                onClick={() => setFeatureDetail(feature)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setFeatureDetail(feature);
+                  }
+                }}
+              >
+                <span>
+                  {feature.icon === "__agent__" ? (
+                    <img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyQue" />
+                  ) : (
+                    feature.icon
+                  )}
+                </span>
+                <strong>{feature.title}</strong>
+                <small>{feature.tagline}</small>
+              </div>
+            ))}
           </div>
         </section>
       </main>
@@ -413,6 +429,9 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
         </p>
       </footer>
       <CookieConsent onPrivacy={onPrivacy} />
+      {featureDetail && (
+        <FeatureDetailModal feature={featureDetail} onClose={() => setFeatureDetail(null)} />
+      )}
     </div>
   );
 }
@@ -727,6 +746,198 @@ function clampQuizCount(value, fallback, min, max) {
   const parsed = parseInt(value, 10);
   if (Number.isNaN(parsed)) return fallback;
   return Math.max(min, Math.min(max, parsed));
+}
+
+
+// ------------------------------------------------------------
+// WELCOME FEATURE DETAILS (Round 72, Task H) — each welcome
+// feature card opens a small modal with a 4–5 line description.
+// Descriptions state only what the app actually does.
+// ------------------------------------------------------------
+const FEATURE_DETAILS = [
+{
+    icon: "🎙️",
+    title: "Lecture Transcribing",
+    tagline: "Convert video/audio lectures to text",
+    lines: [
+      "Upload an audio or video lecture and get a written transcript.",
+      "Long recordings are split automatically so nothing is cut off.",
+      "Transcripts are saved in your history and can be summarised or quizzed.",
+      "Supports long lectures up to 100 MB.",
+    ],
+  },
+{
+    icon: "📝",
+    title: "Summaries",
+    tagline: "Key ideas from your material",
+    lines: [
+      "Upload a lecture, PDF or notes and get a clear summary of the key ideas in minutes.",
+      "The summary keeps the important points and drops the filler.",
+      "Copy it, download it as a PDF, or share it with a link.",
+      "Works in English, Urdu and Arabic.",
+    ],
+  },
+{
+    icon: "💡",
+    title: "Explanation",
+    tagline: "Understand difficult concepts",
+    lines: [
+      "Stuck on a difficult concept? Ask for a simple explanation in plain language.",
+      "The explainer breaks hard ideas into small, clear steps with examples.",
+      "Great for revision the night before an exam.",
+      "Works in English, Urdu and Arabic.",
+    ],
+  },
+{
+    icon: "🗺️",
+    title: "Mind Map",
+    tagline: "See your lecture as a concept map",
+    lines: [
+      "AI builds a concept tree from your material — main ideas branching into smaller ones.",
+      "Expand or collapse any node to focus on one branch at a time.",
+      "Zoom and pan around a big map, or fit the whole tree on screen.",
+      "Download the full map as a PNG, fully expanded, to keep or share.",
+    ],
+  },
+{
+    icon: "📚",
+    title: "Flashcards",
+    tagline: "Active recall made easy",
+    lines: [
+      "Generate flashcards from your lectures for active recall.",
+      "Flip through cards and test yourself, then focus on the ones you keep missing.",
+      "Sets are saved in your history so you can review them anytime.",
+      "The fastest way to memorise definitions and facts.",
+    ],
+  },
+{
+    icon: "🧠",
+    title: "Quizzes",
+    tagline: "Generate quizzes from material",
+    lines: [
+      "Turn any material into a quiz with multiple-choice and short-answer questions.",
+      "Choose how many questions you want — from 1 to 20 multiple-choice questions.",
+      "Instant answers show you what you got wrong.",
+      "Your score is tracked on your dashboard.",
+    ],
+  },
+{
+    icon: "⏱️",
+    title: "Test Concepts",
+    tagline: "Test your concepts from content",
+    lines: [
+      "Take a timed multiple-choice test built from your material.",
+      "Questions come with four options and instant marking.",
+      "Your score and completed tests are tracked on the dashboard.",
+      "A quick way to check if you are exam-ready.",
+    ],
+  },
+{
+    icon: "__agent__",
+    title: "AI Chat",
+    tagline: "Ask questions about your material",
+    lines: [
+      "Chat with your own material — ask questions and get answers drawn from your lectures.",
+      "The chat remembers the document you uploaded, so answers stay on topic.",
+      "Use it to clarify doubts while you study.",
+      "Your chats are private to your account.",
+    ],
+  },
+  {
+    icon: "📅",
+    title: "Study Planner",
+    tagline: "Plan your exam prep day by day",
+    lines: [
+      "Pick an exam date and your topics, and it builds a day-by-day study schedule.",
+      "The last two study days are kept for revision.",
+      "Tick days off as you study and watch your progress bar fill up.",
+      "Plans are saved to your account, so they are there on any device.",
+    ],
+  },
+{
+    icon: "🛡️",
+    title: "AI Detector",
+    tagline: "Check if text was written by AI or a human",
+    lines: [
+      "Paste text or upload a PDF or Word document to check it.",
+      "Statistical signals — sentence patterns, vocabulary and phrasing — score how likely it is AI-written.",
+      "You get a percentage, a verdict, and the reasons behind the score.",
+      "2 free checks per day.",
+      "A statistical estimate, not a certainty — short texts are less reliable.",
+    ],
+  },
+{
+    icon: "⇆",
+    title: "Convert files",
+    tagline: "Convert files to other formats",
+    lines: [
+      "Convert PDFs, Word files, slides and images into text you can study from.",
+      "Files are converted right in your browser — nothing is uploaded for conversion.",
+      "The extracted text feeds straight into summaries, quizzes and flashcards.",
+      "Drag and drop works too.",
+    ],
+  },
+{
+    icon: "🔗",
+    title: "Share Content",
+    tagline: "Share content with others",
+    lines: [
+      "Share any summary or result with a public link — no sign-in needed to view it.",
+      "Shared pages can be downloaded as a PDF.",
+      "Perfect for sending notes to classmates.",
+      "Nothing is public unless you share it.",
+    ],
+  },
+{
+    icon: "🗂️",
+    title: "Content History",
+    tagline: "View content from history",
+    lines: [
+      "Everything you generate is kept in your Content History.",
+      "Reopen any summary, quiz, flashcard set, test or mind map with one tap.",
+      "Saved items stay on your account across devices.",
+      "Delete anything you no longer need.",
+    ],
+  },
+];
+
+function FeatureDetailModal({ feature, onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  if (!feature) return null;
+  return (
+    <div className="feature-modal-overlay" role="presentation" onMouseDown={(event) => {
+      if (event.target === event.currentTarget) onClose();
+    }}>
+      <section className="feature-modal" role="dialog" aria-modal="true" aria-labelledby="feature-modal-title">
+        <button className="feature-modal-close" type="button" onClick={onClose} aria-label="Close feature details">×</button>
+        <div className="feature-modal-head">
+          <span className="feature-modal-icon">
+            {feature.icon === "__agent__" ? (
+              <img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyQue" />
+            ) : (
+              feature.icon
+            )}
+          </span>
+          <div>
+            <h2 id="feature-modal-title">{feature.title}</h2>
+            <small>{feature.tagline}</small>
+          </div>
+        </div>
+        <div className="feature-modal-lines">
+          {feature.lines.map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function QuizOptionsModal({ mcqValue, shortValue, onMcqChange, onShortChange, onClose, onGenerate }) {
@@ -1209,10 +1420,6 @@ function App() {
   // Interactive mind map (concept tree) for the current material.
   const [mindmap, setMindmap] = useState(null);
   const [mindmapLoading, setMindmapLoading] = useState(false);
-  const [mindmapSaved, setMindmapSaved] = useState(false);
-  // Language of the last generated mind map (used by its Save button,
-  // since the generation response is gone by the time the user saves).
-  const [mindmapLanguage, setMindmapLanguage] = useState("english");
   const mindmapDownloadRef = useRef(null);
   const [mindmapDownloading, setMindmapDownloading] = useState(false);
 
@@ -1223,12 +1430,18 @@ function App() {
   const [testLoading, setTestLoading] = useState(false);
   const [testSaved, setTestSaved] = useState(false);
 
-  // Plagiarism check (local only, no backend): the report for the
-  // current document compared against the user's own saved library.
-  const [plagiarismReport, setPlagiarismReport] = useState(null);
-  const [plagiarismSaved, setPlagiarismSaved] = useState(false);
-  const [plagiarismChecking, setPlagiarismChecking] = useState(false);
-  const [plagiarismNotice, setPlagiarismNotice] = useState("");
+  // AI Detector (local only, no backend, no quota): the report
+  // for the current document — AI likelihood + verdict + signals.
+  // The report is NEVER auto-saved; see handleSaveAIDetection.
+  // Daily limit (2 checks/day) is a localStorage counter; see
+  // src/plagiarism.js (AI_DETECTOR_DAILY_LIMIT).
+  const [aiDetectionReport, setAiDetectionReport] = useState(null);
+  const [aiDetectionSaved, setAiDetectionSaved] = useState(false);
+  const [aiDetectionChecking, setAiDetectionChecking] = useState(false);
+  const [aiDetectionNotice, setAiDetectionNotice] = useState("");
+  const [aiDetectionRemaining, setAiDetectionRemaining] = useState(() =>
+    remainingAIDetectorChecks()
+  );
   const [testQuestions, setTestQuestions] = useState([]);
   const [testAnswers, setTestAnswers] = useState({});
   const [testIndex, setTestIndex] = useState(0);
@@ -2101,9 +2314,8 @@ function App() {
     setTestScore(0);
     setResultSaved(false);
     setFlashcardsSaved(false);
-    setMindmapSaved(false);
     setTestSaved(false);
-    setPlagiarismSaved(false);
+    setAiDetectionSaved(false);
     setDashboardStats({
       totalMaterials: 0,
       studySessions: 0,
@@ -2141,9 +2353,9 @@ function App() {
     stopSpeech();
     setResult("");
     setResultLanguage("");
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
-    setPlagiarismNotice("");
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
+    setAiDetectionNotice("");
     setFlashcards([]);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
@@ -2298,26 +2510,7 @@ function App() {
     }
   };
 
-  const handleSaveMindmap = async () => {
-    if (!mindmap?.topic || mindmapSaved || saveBusyRef.current.mindmap) return;
-    if (!user?.uid) { alert("Please sign in to save this mind map."); return; }
-    saveBusyRef.current.mindmap = true;
-    try {
-      const saved = await saveGeneratedHistory({
-        title: `Mind Map - ${new Date().toLocaleDateString()}`,
-        type: "Mind Map",
-        kind: "mindmap",
-        content: { kind: "mindmap", mindmap },
-        sourceFiles: getCurrentSourceFileNames(),
-        language: mindmapLanguage || "english",
-        contentMode: "mindmap",
-      });
-      if (saved) setMindmapSaved(true);
-      else alert("Could not save this mind map. Please try again.");
-    } finally {
-      saveBusyRef.current.mindmap = false;
-    }
-  };
+;
 
   const handleSaveTest = async () => {
     if (!testQuestions?.length || testSaved || saveBusyRef.current.test) return;
@@ -2339,89 +2532,64 @@ function App() {
     }
   };
 
-  // ========================================================
-  // PLAGIARISM CHECK — local only, no backend, no quota, no
-  // AI call. Compares the current material against the user's
-  // own saved library (generated + flashcard history). The
-  // report is NEVER auto-saved; see handleSavePlagiarism.
-  // ========================================================
-
-  const buildPlagiarismCorpus = () => {
-    const items = [];
-    for (const historyItem of dashboardGeneratedHistory) {
-      // A saved plagiarism report is a report, not source material.
-      if (historyItem.kind === "plagiarism" || historyItem.content?.kind === "plagiarism") continue;
-      const text = historyContentAsText(historyItem);
-      if (text?.trim()) {
-        items.push({
-          title: historyItem.title || historyItem.type || "Saved content",
-          text,
-        });
-      }
-    }
-    for (const historyItem of dashboardFlashcardHistory) {
-      const text = (historyItem.cards || [])
-        .map((card) => `${card.front || ""} ${card.back || ""}`.trim())
-        .filter(Boolean)
-        .join(" ");
-      if (text.trim()) {
-        items.push({
-          title: historyItem.fileNames?.[0]
-            ? `Flashcards - ${historyItem.fileNames[0]}`
-            : "Flashcards",
-          text,
-        });
-      }
-    }
-    return items;
-  };
-
-  const handleCheckPlagiarism = async () => {
+  const handleCheckAIDetection = async () => {
     if (processing) { alert("Your study material is still processing. Please wait."); return; }
     const documentText = getCurrentMaterialText();
-    setPlagiarismNotice("");
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
+    setAiDetectionNotice("");
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
     setResult("");
     setResultSaved(false);
     if (!documentText) {
-      setPlagiarismNotice("Please upload a PDF or Word document, or paste your text above, then tap Check Plagiarism.");
+      setAiDetectionNotice("Please upload a PDF or Word document, or paste your text above, then tap Check if AI-written.");
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
-    setPlagiarismChecking(true);
+    // Daily limit: 2 AI Detector checks per day (localStorage counter).
+    if (remainingAIDetectorChecks() <= 0) {
+      setAiDetectionNotice(`You've used your ${AI_DETECTOR_DAILY_LIMIT} AI Detector checks for today — come back tomorrow.`);
+      setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+    setAiDetectionChecking(true);
     stopSpeech();
     setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     try {
       // Local and synchronous — one tick so the "Checking…" state paints.
       await new Promise((resolve) => setTimeout(resolve, 50));
-      const report = checkPlagiarism(documentText, buildPlagiarismCorpus());
-      setPlagiarismReport(report);
+      const report = detectAIText(documentText);
+      recordAIDetectorCheck();
+      setAiDetectionRemaining(remainingAIDetectorChecks());
+      setAiDetectionReport(report);
     } finally {
-      setPlagiarismChecking(false);
+      setAiDetectionChecking(false);
     }
   };
 
-  const handleSavePlagiarism = async () => {
-    if (!plagiarismReport || plagiarismSaved || saveBusyRef.current.plagiarism) return;
-    if (!user?.uid) { alert("Please sign in to save this plagiarism report."); return; }
-    saveBusyRef.current.plagiarism = true;
+;
+
+  const handleSaveAIDetection = async () => {
+    if (!aiDetectionReport || aiDetectionSaved || saveBusyRef.current.aiDetector) return;
+    if (!user?.uid) { alert("Please sign in to save this AI detection report."); return; }
+    saveBusyRef.current.aiDetector = true;
     try {
       const sourceNames = getCurrentSourceFileNames().filter((name) => name !== "Pasted study material");
       const saved = await saveGeneratedHistory({
-        title: sourceNames[0] ? `Plagiarism Check - ${sourceNames[0]}` : "Plagiarism Check",
-        type: "Plagiarism Check",
-        kind: "plagiarism",
-        content: { kind: "plagiarism", report: plagiarismReport },
+        title: sourceNames[0] ? `AI Check - ${sourceNames[0]}` : "AI Check",
+        type: "AI Check",
+        kind: "ai-detector",
+        content: { kind: "ai-detector", report: aiDetectionReport },
         sourceFiles: getCurrentSourceFileNames(),
-        contentMode: "plagiarism",
+        contentMode: "ai-detector",
       });
-      if (saved) setPlagiarismSaved(true);
-      else alert("Could not save this plagiarism report. Please try again.");
+      if (saved) setAiDetectionSaved(true);
+      else alert("Could not save this AI detection report. Please try again.");
     } finally {
-      saveBusyRef.current.plagiarism = false;
+      saveBusyRef.current.aiDetector = false;
     }
   };
+
+;
 
   const historyContentAsText = (historyItem) => {
     const value = historyItem?.content;
@@ -2440,7 +2608,7 @@ function App() {
       return mindmapToText(value?.mindmap || value);
     }
     if (value?.kind === "plagiarism" || value?.report) {
-      return plagiarismReportAsText(value?.report || value);
+      return aiDetectionReportAsText(value?.report || value);
     }
     if (value?.text) return value.text;
     return JSON.stringify(value ?? "", null, 2);
@@ -2531,9 +2699,9 @@ function App() {
   const openGeneratedHistoryItem = (historyItem) => {
     const value = historyItem?.content;
     setOpenedFromHistory(true);
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
-    setPlagiarismNotice("");
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
+    setAiDetectionNotice("");
     setDashboardHistoryType(null);
     setShowDashboard(false);
     stopSpeech();
@@ -2570,18 +2738,27 @@ function App() {
       const tree = value?.mindmap || value;
       if (!tree?.topic) return;
       setMindmap(tree);
-      setMindmapLanguage(historyItem.language || "english");
-      setMindmapSaved(true);
       setTimeout(() => document.getElementById("mindmap-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    if (historyItem.kind === "ai-detector" || value?.kind === "ai-detector") {
+      const report = value?.report || value;
+      if (!report || typeof report.percentage !== "number") return;
+      setMode("ai-detector");
+      setAiDetectionReport(report);
+      setAiDetectionSaved(true);
+      setResult("");
+      setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
 
     if (historyItem.kind === "plagiarism" || value?.kind === "plagiarism") {
       const report = value?.report || value;
       if (!report || typeof report.percentage !== "number") return;
-      setMode("plagiarism");
-      setPlagiarismReport(report);
-      setPlagiarismSaved(true);
+      setMode("ai-detector");
+      setAiDetectionReport({ ...report, legacy: true });
+      setAiDetectionSaved(true);
       setResult("");
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
@@ -3174,8 +3351,8 @@ function App() {
     setResult("");
     setResultSaved(false);
     setFlashcardsSaved(false);
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
 
     stopSpeech();
 
@@ -3305,11 +3482,10 @@ function App() {
     generationAbortControllerRef.current = generationController;
     setMindmapLoading(true);
     setMindmap(null);
-    setMindmapSaved(false);
     setResult("");
     setResultSaved(false);
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
 
     stopSpeech();
 
@@ -3356,7 +3532,6 @@ function App() {
       }
 
       setMindmap(data.mindmap);
-      setMindmapLanguage(data.language || "english");
 
       setTimeout(() => {
         document
@@ -3482,8 +3657,8 @@ function App() {
     setResult("");
     setResultSaved(false);
     setTestSaved(false);
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
     stopSpeech();
 
     try {
@@ -3781,8 +3956,8 @@ function App() {
       return;
     }
 
-    if (mode === "plagiarism") {
-      await handleCheckPlagiarism();
+    if (mode === "ai-detector") {
+      await handleCheckAIDetection();
       return;
     }
 
@@ -3825,8 +4000,8 @@ function App() {
     setGenerating(true);
     setResult("");
     setResultSaved(false);
-    setPlagiarismReport(null);
-    setPlagiarismSaved(false);
+    setAiDetectionReport(null);
+    setAiDetectionSaved(false);
 
     stopSpeech();
 
@@ -5614,6 +5789,7 @@ function App() {
                               "explanation",
                               "quiz",
                               "mind map",
+                              "ai check",
                               "plagiarism check"
                             ].includes(type);
                           })
@@ -6153,15 +6329,15 @@ function App() {
               </div>
             </button>
 
-            {/* PLAGIARISM CHECKER */}
+            {/* AI DETECTOR */}
 
             <button type="button"
               className={
-                mode === "plagiarism"
+                mode === "ai-detector"
                   ? "mode active"
                   : "mode"
               }
-              onClick={() => setMode("plagiarism")}
+              onClick={() => setMode("ai-detector")}
             >
               <span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
@@ -6172,8 +6348,8 @@ function App() {
                 </svg>
               </span>
               <div>
-                <strong>Plagiarism</strong>
-                <small>Check your document against saved work</small>
+                <strong>AI Detector</strong>
+                <small>Check if text is AI or human-written</small>
               </div>
             </button>
 
@@ -6207,18 +6383,18 @@ function App() {
               flashcardsLoading ||
               testLoading ||
               mindmapLoading ||
-              plagiarismChecking ||
+              aiDetectionChecking ||
               oralExam.listening
             }
           >
-            {plagiarismChecking
+            {aiDetectionChecking
               ? "⏳ Checking…"
               : testLoading
               ? "⏳ Generating..."
               : generating || flashcardsLoading || mindmapLoading
                 ? "⏳ Generating..."
-                : mode === "plagiarism"
-                  ? "🔍 Check Plagiarism"
+                : mode === "ai-detector"
+                  ? "🔍 Check if AI-written"
                   : mode === "flashcards"
                   ? "✨ Generate Flashcards"
                   : mode === "oral"
@@ -6229,6 +6405,14 @@ function App() {
                         ? "✨ Generate Mind Map"
                         : `✨ Generate ${mode}`}
           </button>
+
+          {mode === "ai-detector" && (
+            <p className="ai-detector-limit">
+              {aiDetectionRemaining > 0
+                ? `${aiDetectionRemaining} free check${aiDetectionRemaining === 1 ? "" : "s"} left today`
+                : "No checks left today — come back tomorrow."}
+            </p>
+          )}
 
         </section>
 
@@ -6350,10 +6534,10 @@ function App() {
             GENERATED RESULT
         ================================================= */}
 
-        {(result || generating || (mode === "plagiarism" && (plagiarismReport || plagiarismChecking || plagiarismNotice))) && (
+        {(result || generating || (mode === "ai-detector" && (aiDetectionReport || aiDetectionChecking || aiDetectionNotice))) && (
           <section
             className={
-              (generating && !result) || (mode === "plagiarism" && plagiarismChecking && !plagiarismReport)
+              (generating && !result) || (mode === "ai-detector" && aiDetectionChecking && !aiDetectionReport)
                 ? "result-section result-generating-state"
                 : "result-section"
             }
@@ -6366,7 +6550,7 @@ function App() {
 
                 <span className="result-icon">
 
-                  {mode === "plagiarism"
+                  {mode === "ai-detector"
                     ? (
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
                         <g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -6387,8 +6571,8 @@ function App() {
 
                   <h2>
 
-                    {mode === "plagiarism"
-                      ? "Plagiarism Check"
+                    {mode === "ai-detector"
+                      ? "AI Detector"
                       : mode === "summary"
                         ? "Summary"
                         : mode === "explain"
@@ -6399,7 +6583,7 @@ function App() {
 
                   <small>
 
-                    {mode === "plagiarism"
+                    {mode === "ai-detector"
                       ? (getCurrentSourceFileNames()[0] || "Your document")
                       : resultLanguage ===
                         "arabic"
@@ -6422,7 +6606,7 @@ function App() {
 
               <div className="result-actions">
 
-                {mode !== "plagiarism" && (<>
+                {mode !== "ai-detector" && (<>
                 <button
                   onClick={
                     handleCopy
@@ -6474,16 +6658,16 @@ function App() {
                 {!openedFromHistory && (
                 <button
                   type="button"
-                  onClick={mode === "plagiarism" ? handleSavePlagiarism : handleSaveResult}
+                  onClick={mode === "ai-detector" ? handleSaveAIDetection : handleSaveResult}
                   className="save-history-button"
-                  title={mode === "plagiarism"
-                    ? (plagiarismSaved ? "Saved to history" : "Save this plagiarism report to history")
+                  title={mode === "ai-detector"
+                    ? (aiDetectionSaved ? "Saved to history" : "Save this AI detection report to history")
                     : (resultSaved ? "Saved to history" : "Save this result to history")}
-                  disabled={mode === "plagiarism"
-                    ? (plagiarismSaved || !plagiarismReport)
+                  disabled={mode === "ai-detector"
+                    ? (aiDetectionSaved || !aiDetectionReport)
                     : (resultSaved || !result?.trim())}
                 >
-                  {(mode === "plagiarism" ? plagiarismSaved : resultSaved) ? (
+                  {(mode === "ai-detector" ? aiDetectionSaved : resultSaved) ? (
                     "✓ Saved"
                   ) : (
                     <>
@@ -6500,11 +6684,11 @@ function App() {
                   onClick={() => {
                     if (openedFromHistory) {
                       closeOpenedHistoryContent();
-                    } else if (mode === "plagiarism") {
+                    } else if (mode === "ai-detector") {
                       stopSpeech();
-                      setPlagiarismReport(null);
-                      setPlagiarismSaved(false);
-                      setPlagiarismNotice("");
+                      setAiDetectionReport(null);
+                      setAiDetectionSaved(false);
+                      setAiDetectionNotice("");
                     } else {
                       stopSpeech();
                       setResult("");
@@ -6552,73 +6736,108 @@ function App() {
                 </div>
               )}
 
-              {mode === "plagiarism" && plagiarismChecking && !plagiarismReport && (
+              {mode === "ai-detector" && aiDetectionChecking && !aiDetectionReport && (
                 <div className="result-generating" role="status">
                   <span className="result-generating-spinner" aria-hidden="true" />
-                  <strong>Checking for matches…</strong>
+                  <strong>Checking if AI-written…</strong>
                   <span className="result-generating-sub">
-                    Comparing against your saved materials.
+                    Analysing writing patterns…
                   </span>
                 </div>
               )}
 
-              {mode === "plagiarism" && plagiarismNotice && !plagiarismReport && (
-                <p className="plagiarism-notice" role="alert">{plagiarismNotice}</p>
+              {mode === "ai-detector" && aiDetectionNotice && !aiDetectionReport && (
+                <p className="ai-detector-notice" role="alert">{aiDetectionNotice}</p>
               )}
 
-              {mode === "plagiarism" && plagiarismReport && (
-                <div className="plagiarism-report">
-                  <div className="plagiarism-score-row">
-                    <div className={`plagiarism-score plagiarism-${plagiarismReport.percentage < 20 ? "low" : plagiarismReport.percentage <= 50 ? "medium" : "high"}`}>
-                      <strong>{plagiarismReport.percentage}%</strong>
-                      <span>similarity</span>
-                    </div>
-                    <div className="plagiarism-summary">
-                      <p>
-                        {plagiarismReport.matchedSentences} of {plagiarismReport.totalSentences} sentence{plagiarismReport.totalSentences === 1 ? "" : "s"} matched a saved item.
-                      </p>
-                      <p className="plagiarism-scope">
-                        Checked against {plagiarismReport.checkedItems} saved item{plagiarismReport.checkedItems === 1 ? "" : "s"} in your StudyQue library — your own saved materials only, not the internet.
-                      </p>
-                      {plagiarismReport.shortDocument && (
-                        <p className="plagiarism-note">Very short document — results are less reliable with fewer than 2 sentences.</p>
-                      )}
-                      {plagiarismReport.checkedItems === 0 && (
-                        <p className="plagiarism-note">Your saved library is empty, so there was nothing to compare against yet. Generate and save some content first.</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {plagiarismReport.sources.length > 0 && (
-                    <div className="plagiarism-sources">
-                      <h3>Matched sources</h3>
-                      {plagiarismReport.sources.map((source) => (
-                        <div className="plagiarism-source-row" key={source.title}>
-                          <span className="plagiarism-source-title">{source.title}</span>
-                          <span className="plagiarism-source-percent">{source.percent}%</span>
-                          <small>{source.matchedCount} sentence{source.matchedCount === 1 ? "" : "s"}</small>
+              {mode === "ai-detector" && aiDetectionReport && (
+                <div className="ai-detector-report">
+                  {aiDetectionReport.legacy ? (
+                    <>
+                      <div className="ai-detector-score-row">
+                        <div className={`ai-detector-score ai-detector-${aiDetectionReport.percentage < 20 ? "low" : aiDetectionReport.percentage <= 50 ? "medium" : "high"}`}>
+                          <strong>{aiDetectionReport.percentage}%</strong>
+                          <span>similarity</span>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <div className="ai-detector-summary">
+                          <p>
+                            {aiDetectionReport.matchedSentences} of {aiDetectionReport.totalSentences} sentence{aiDetectionReport.totalSentences === 1 ? "" : "s"} matched a saved item.
+                          </p>
+                          <p className="ai-detector-note">Saved before the AI detector update — this report compared your document with your saved library.</p>
+                        </div>
+                      </div>
 
-                  {plagiarismReport.matches.length > 0 ? (
-                    <div className="plagiarism-matches">
-                      <h3>Matched sentences</h3>
-                      {plagiarismReport.matches.map((match, index) => (
-                        <blockquote className="plagiarism-match" key={index}>
-                          <p>&ldquo;{match.sentence}&rdquo;</p>
-                          <cite>Source: {match.sourceTitle}</cite>
-                        </blockquote>
-                      ))}
-                    </div>
+                      {aiDetectionReport.sources?.length > 0 && (
+                        <div className="ai-detector-sources">
+                          <h3>Matched sources</h3>
+                          {aiDetectionReport.sources.map((source) => (
+                            <div className="ai-detector-source-row" key={source.title}>
+                              <span className="ai-detector-source-title">{source.title}</span>
+                              <span className="ai-detector-source-percent">{source.percent}%</span>
+                              <small>{source.matchedCount} sentence{source.matchedCount === 1 ? "" : "s"}</small>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {aiDetectionReport.matches?.length > 0 ? (
+                        <div className="ai-detector-matches">
+                          <h3>Matched sentences</h3>
+                          {aiDetectionReport.matches.map((match, index) => (
+                            <blockquote className="ai-detector-match" key={index}>
+                              <p>&ldquo;{match.sentence}&rdquo;</p>
+                              <cite>Source: {match.sourceTitle}</cite>
+                            </blockquote>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="ai-detector-no-match">No matches found — this document does not overlap with your saved materials.</p>
+                      )}
+                    </>
                   ) : (
-                    <p className="plagiarism-no-match">No matches found — this document does not overlap with your saved materials.</p>
+                    <>
+                      <div className="ai-detector-score-row">
+                        <div className={`ai-detector-score ai-detector-${aiDetectionReport.percentage >= 70 ? "high" : aiDetectionReport.percentage >= 40 ? "medium" : "low"}`}>
+                          <strong>{aiDetectionReport.percentage}%</strong>
+                          <span>AI likelihood</span>
+                        </div>
+                        <div className="ai-detector-summary">
+                          <p className="ai-detector-verdict">{aiDetectionReport.verdict}</p>
+                          <p>
+                            {aiDetectionReport.totalWords} word{aiDetectionReport.totalWords === 1 ? "" : "s"}, {aiDetectionReport.totalSentences} sentence{aiDetectionReport.totalSentences === 1 ? "" : "s"} analysed.
+                          </p>
+                          <p className="ai-detector-scope">
+                            A statistical estimate, not a certainty — short texts are less reliable.
+                          </p>
+                          {aiDetectionReport.lowConfidence && (
+                            <p className="ai-detector-note">Short document (under 50 words or fewer than 3 sentences) — treat this result with extra caution.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {Array.isArray(aiDetectionReport.signals) && aiDetectionReport.signals.length > 0 && (
+                        <div className="ai-detector-signals">
+                          <h3>Why this score</h3>
+                          {aiDetectionReport.signals.map((signal) => (
+                            <div className="ai-detector-signal-row" key={signal.id}>
+                              <div className="ai-detector-signal-head">
+                                <span className="ai-detector-signal-label">{signal.label}</span>
+                                <span className="ai-detector-signal-points">{signal.points} pts</span>
+                              </div>
+                              <div className="ai-detector-signal-bar" aria-hidden="true">
+                                <span style={{ width: `${Math.round(100 * signal.value)}%` }} />
+                              </div>
+                              <small>{signal.display}</small>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
 
-              {mode !== "plagiarism" && result
+              {mode !== "ai-detector" && result
                 .split("\n")
                 .map(
                   (line, index) => (
@@ -6850,7 +7069,6 @@ function App() {
                   closeOpenedHistoryContent();
                 } else {
                   setMindmap(null);
-                  setMindmapSaved(false);
                 }
               }}
             >×</button>
@@ -6867,17 +7085,6 @@ function App() {
               </div>
 
               <div className="mindmap-header-actions">
-                {!openedFromHistory && (
-                <button
-                  type="button"
-                  className="save-history-button"
-                  onClick={handleSaveMindmap}
-                  title={mindmapSaved ? "Saved to history" : "Save this mind map to history"}
-                  disabled={mindmapSaved || !mindmap?.topic}
-                >
-                  {mindmapSaved ? "✓ Saved" : "💾 Save"}
-                </button>
-                )}
                 <button
                   type="button"
                   className="secondary-button"
