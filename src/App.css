@@ -13366,10 +13366,13 @@ html[data-theme="dark"] .feature-modal-lines p {
 
 /* ============================================================
    ROUND 74 — rich footer (brand + STUDY TOOLS / EXPLORE / LEGAL)
-   ROUND 75: footer background is the navbar color — solid deep indigo
-   #1e1b4b in BOTH themes, all text light-on-dark. Footer links are
-   plain text with NO background in any state. Bottom-row credit is
-   centered. Selectors use footer.rich-footer so they beat the older
+   ROUND 75: footer background was the navbar color (#1e1b4b in both
+   themes), links plain text, bottom-row credit centered.
+   ROUND 76: footer background is back to the website background —
+   pure white #ffffff in light mode, #0f172a in dark mode; link colors
+   flip back with it. Hover changes NOTHING except an underline: no
+   background, no border, no color change, in either theme.
+   Selectors use footer.rich-footer so they beat the older
    global footer rules, including the !important indigo backgrounds.
    ============================================================ */
 footer.rich-footer {
@@ -13378,10 +13381,10 @@ footer.rich-footer {
   min-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
-  background: #1e1b4b !important;
-  background-color: #1e1b4b !important;
-  border-top: 1px solid #312e81 !important;
-  color: #e2e8f0 !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
   text-align: left !important;
   font-size: 15px !important;
   box-sizing: border-box;
@@ -13390,12 +13393,12 @@ footer.rich-footer p {
   margin: 0 !important;
   padding: 0 !important;
   text-align: left !important;
-  color: #cbd5e1 !important;
-  -webkit-text-fill-color: #cbd5e1;
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569;
 }
 footer.rich-footer strong {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
 }
 footer.rich-footer h3 {
   margin: 0 0 14px !important;
@@ -13404,8 +13407,8 @@ footer.rich-footer h3 {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
 }
 .rich-footer-grid {
   display: grid;
@@ -13425,8 +13428,8 @@ footer.rich-footer h3 {
 }
 .rich-footer-brand .brand-mark span,
 .rich-footer-brand .brand-mark b {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
 }
 .rich-footer-brand p {
   margin-top: 16px !important;
@@ -13439,12 +13442,12 @@ footer.rich-footer h3 {
   gap: 8px;
   margin-top: 18px;
   padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid #e2e8f0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ffffff;
   font-size: 13px;
-  color: #e2e8f0;
-  -webkit-text-fill-color: #e2e8f0;
+  color: #334155;
+  -webkit-text-fill-color: #334155;
 }
 .rich-footer-status-dot {
   width: 8px;
@@ -13469,14 +13472,15 @@ footer.rich-footer h3 {
   font-size: 14px;
   text-align: left;
   cursor: pointer;
-  color: #e0e7ff !important;
-  -webkit-text-fill-color: #e0e7ff;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155;
 }
 .rich-footer-col button:hover {
   background: transparent !important;
   background-image: none !important;
-  color: #a5b4fc !important;
-  -webkit-text-fill-color: #a5b4fc;
+  border: none !important;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155;
   text-decoration: underline;
 }
 .rich-footer-col button:focus,
@@ -13489,15 +13493,15 @@ footer.rich-footer h3 {
   background: transparent;
 }
 .rich-footer-bottom {
-  border-top: 1px solid #312e81;
+  border-top: 1px solid #e2e8f0;
   padding: 18px 24px;
   text-align: center;
 }
 footer.rich-footer .rich-footer-bottom p {
   text-align: center !important;
   font-size: 14px;
-  color: #cbd5e1 !important;
-  -webkit-text-fill-color: #cbd5e1;
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569;
 }
 @media (max-width: 768px) {
   .rich-footer-grid {
@@ -13510,14 +13514,14 @@ footer.rich-footer .rich-footer-bottom p {
   }
 }
 html[data-theme="dark"] footer.rich-footer {
-  background: #1e1b4b !important;
-  background-color: #1e1b4b !important;
-  border-top-color: #312e81 !important;
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  border-top-color: #1e293b !important;
   color: #e2e8f0 !important;
 }
 html[data-theme="dark"] footer.rich-footer p {
-  color: #cbd5e1 !important;
-  -webkit-text-fill-color: #cbd5e1;
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8;
 }
 html[data-theme="dark"] footer.rich-footer strong,
 html[data-theme="dark"] .rich-footer-brand .brand-mark span,
@@ -13527,22 +13531,24 @@ html[data-theme="dark"] footer.rich-footer h3 {
   -webkit-text-fill-color: #f8fafc;
 }
 html[data-theme="dark"] .rich-footer-status {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: #1e293b;
+  border-color: #334155;
   color: #e2e8f0;
   -webkit-text-fill-color: #e2e8f0;
 }
 html[data-theme="dark"] .rich-footer-col button {
   background: transparent !important;
   background-image: none !important;
-  color: #e0e7ff !important;
-  -webkit-text-fill-color: #e0e7ff;
+  color: #cbd5e1 !important;
+  -webkit-text-fill-color: #cbd5e1;
 }
 html[data-theme="dark"] .rich-footer-col button:hover {
   background: transparent !important;
   background-image: none !important;
-  color: #a5b4fc !important;
-  -webkit-text-fill-color: #a5b4fc;
+  border: none !important;
+  color: #cbd5e1 !important;
+  -webkit-text-fill-color: #cbd5e1;
+  text-decoration: underline;
 }
 html[data-theme="dark"] .rich-footer-col button:focus,
 html[data-theme="dark"] .rich-footer-col button:focus-visible,
@@ -13551,9 +13557,9 @@ html[data-theme="dark"] .rich-footer-col button:active {
   background-image: none !important;
 }
 html[data-theme="dark"] .rich-footer-bottom {
-  border-top-color: #312e81;
+  border-top-color: #1e293b;
 }
 html[data-theme="dark"] footer.rich-footer .rich-footer-bottom p {
-  color: #cbd5e1 !important;
-  -webkit-text-fill-color: #cbd5e1;
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8;
 }
