@@ -129,7 +129,7 @@ export function PrivacyPolicyPage({ onBack }) {
   return (
     <LegalPage title="Privacy Policy" updated="26 November 2026" onBack={onBack}>
       <p>
-        StudyFlow AI (“we”, “the app”) helps you turn your study material —
+        StudyQue (“we”, “the app”) helps you turn your study material —
         notes, documents, images, and lecture recordings — into summaries,
         explanations, quizzes, flashcards, tests, and an AI study assistant.
         This policy explains what data we collect, why we collect it, and
@@ -203,7 +203,7 @@ export function PrivacyPolicyPage({ onBack }) {
       </p>
       <h2>7. Children</h2>
       <p>
-        StudyFlow AI is intended for students aged 13 and over. If you are
+        StudyQue is intended for students aged 13 and over. If you are
         under 13, please only use the app with a parent or guardian’s
         permission.
       </p>
@@ -226,13 +226,13 @@ export function TermsOfServicePage({ onBack }) {
   return (
     <LegalPage title="Terms of Service" updated="26 November 2026" onBack={onBack}>
       <p>
-        These Terms of Service (“Terms”) govern your use of StudyFlow AI.
+        These Terms of Service (“Terms”) govern your use of StudyQue.
         By creating an account or using the app, you agree to these Terms.
         If you do not agree, please do not use the app.
       </p>
-      <h2>1. What StudyFlow AI does</h2>
+      <h2>1. What StudyQue does</h2>
       <p>
-        StudyFlow AI turns your study material into summaries, explanations,
+        StudyQue turns your study material into summaries, explanations,
         quizzes, flashcards, tests, oral exams, and an AI chat assistant,
         and can transcribe lecture recordings into text. Features may change
         over time as we improve the app.
@@ -268,7 +268,7 @@ export function TermsOfServicePage({ onBack }) {
       </p>
       <h2>5. Plans and limits</h2>
       <p>
-        StudyFlow AI is currently free to use. The Free plan includes daily
+        StudyQue is currently free to use. The Free plan includes daily
         limits (5 AI calls and 20 transcription minutes per day). A paid
         Pro plan with higher limits is planned and will be announced in the
         app when it becomes available; no payment is collected today. Limits
@@ -317,7 +317,7 @@ export function PlansPage({ currentPlan, onBack, backLabel = "Go back" }) {
   return (
     <SubPageShell
       title="Plans"
-      subtitle="StudyFlow AI is free for now. Pro — with 30x the AI calls and 14x the transcription minutes — is coming soon."
+      subtitle="StudyQue is free for now. Pro — with 30x the AI calls and 14x the transcription minutes — is coming soon."
       onBack={onBack}
       backLabel={backLabel}
     >
@@ -374,7 +374,7 @@ export function OnboardingModal({ onLoadSample, onSkip }) {
   return (
     <div className="sf2-onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="sf2-onboarding-title">
       <div className="sf2-onboarding-card">
-        <h2 id="sf2-onboarding-title">Welcome to StudyFlow AI 👋</h2>
+        <h2 id="sf2-onboarding-title">Welcome to StudyQue 👋</h2>
         <p>
           Turn any lecture or notes into a summary, quiz, flashcards, or a
           test — in seconds. Here is the fastest way to try it:
@@ -541,7 +541,7 @@ export function SettingsPage({ user, currentPlan, onBack, onViewPlans, onSignOut
 
       <section className="sf2-settings-section">
         <h2>Appearance</h2>
-        <p>Choose how StudyFlow looks on this device.</p>
+        <p>Choose how StudyQue looks on this device.</p>
         <div className="sf2-theme-picker" role="group" aria-label="Appearance">
           <button
             type="button"

@@ -2766,7 +2766,7 @@ html {
 
 /* ============================================================
    FINAL LAYOUT STABILITY OVERRIDES
-   Keep the original StudyFlow UI width and spacing unchanged
+   Keep the original StudyQue UI width and spacing unchanged
    when generated results, flashcards, or tests appear.
 ============================================================ */
 
@@ -7355,7 +7355,7 @@ nav button:hover *,
   .feedback-submit, .feedback-type-chip { transition: none; }
 }
 
-/* StudyFlow AI logo inside the feedback modal */
+/* StudyQue logo inside the feedback modal */
 .feedback-icon {
   display: flex;
   align-items: center;
@@ -7744,7 +7744,7 @@ textarea.transcription-output {
   }
 }
 
-/* FORCE resize StudyFlowAI feature cards */
+/* FORCE resize StudyQue feature cards */
 .feature-grid {
     width: 90% !important;
     max-width: 1000px !important;
@@ -7805,7 +7805,7 @@ textarea.transcription-output {
 }
 
 
-/* StudyFlowAI: Full-width footer fixed at bottom */
+/* StudyQue: Full-width footer fixed at bottom */
 html,
 body,
 #root {
@@ -8073,7 +8073,7 @@ footer p {
    {
       text-align: left !important;
    }
-/* Reduce StudyFlow mobile navigation drawer width */
+/* Reduce StudyQue mobile navigation drawer width */
 @media screen and (max-width: 768px) {
 
   .app-navbar .app-nav-links.mobile-open {
@@ -8423,7 +8423,7 @@ footer p {
 }
 
 /* ============================================================
-   StudyFlow AI — FULL UI REDESIGN LAYER (2026-11-24)
+   StudyQue — FULL UI REDESIGN LAYER (2026-11-24)
    ------------------------------------------------------------
    ============================================================ */
 
@@ -11291,7 +11291,7 @@ footer > p,
 }
 
 /* ============================================================
-   ROUND 52 — StudyFlow AI agent icon: robot image replaces the robot emoji
+   ROUND 52 — StudyQue agent icon: robot image replaces the robot emoji
    The agent icon is now the supplied robot avatar (src/agentIcon.js,
    base64 data URI). Sizes match what the emoji occupied at each spot.
    ============================================================ */
@@ -12926,7 +12926,7 @@ html[data-theme="dark"] .shared-result-viewer {
 /* ============================================================
    ROUND 70 (2026-11-28) — Plagiarism Checker report card.
    Local check only: the document is compared against the user's
-   own saved StudyFlow library (never the internet). Score is
+   own saved StudyQue library (never the internet). Score is
    color-coded: green < 20%, amber 20-50%, red > 50%.
    ============================================================ */
 .plagiarism-report {

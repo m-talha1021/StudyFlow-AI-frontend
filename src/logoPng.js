@@ -1,9 +1,9 @@
-// StudyFlow AI logo as an embedded PNG data URI.
+// StudyQue logo as an embedded PNG data URI.
 //
 // The site header uses /favicon.svg, which renders fine in the browser —
 // but html2canvas (used for client-side PDF export) cannot render SVG
 // <img> elements reliably, so PDFs came out with a broken-image mark
-// beside "StudyFlow AI". A PNG data URI embeds directly and renders
+// beside "StudyQue". A PNG data URI embeds directly and renders
 // correctly in every PDF. Regenerated from public/favicon.svg (128px,
 // deviceScaleFactor 2) — if the logo ever changes, regenerate this file
 // the same way and keep the export the same size or smaller.

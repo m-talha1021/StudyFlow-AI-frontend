@@ -1,4 +1,4 @@
-# StudyFlow AI — Firestore security rules
+# StudyQue — Firestore security rules
 #
 # Derived from the app's actual data model in src/App.jsx:
 # - users/{uid} — profile + counters (totalMaterials, studySessions,

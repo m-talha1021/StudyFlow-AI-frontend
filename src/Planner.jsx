@@ -459,7 +459,7 @@ export function StudyPlannerPage({ user, onBack }) {
               </svg>
               <h2>No study plans yet</h2>
               <p>
-                Pick an exam date and your topics, and StudyFlow will lay
+                Pick an exam date and your topics, and StudyQue will lay
                 out a day-by-day plan for you — with revision days saved
                 for the end.
               </p>

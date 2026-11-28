@@ -319,8 +319,8 @@ const transcribeFileInSegments = async (file, onProgress, forcedLanguage) => {
 function BrandMark() {
   return (
     <div className="brand-mark">
-      <img src="/favicon.svg" alt="StudyFlow AI" />
-      <span><b>StudyFlow AI</b></span>
+      <img src="/favicon.svg" alt="StudyQue" />
+      <span><b>StudyQue</b></span>
     </div>
   );
 }
@@ -361,7 +361,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
             <span>Understand faster.</span>
           </h1>
           <p>
-            StudyFlow AI turns your notes, documents and images into summaries,
+            StudyQue turns your notes, documents and images into summaries,
             explanations, quizzes, flashcards and an interactive study assistant.
           </p>
 
@@ -393,7 +393,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
             <div><span>💡</span><strong>Explanation</strong><small>Understand difficult concepts</small></div>
             <div><span>🧠</span><strong>Quizzes</strong><small>Generate quizzes from material</small></div>
             <div><span>📚</span><strong>Flashcards</strong><small>Active recall made easy</small></div>
-            <div><span><img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" /></span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
+            <div><span><img className="feature-agent-icon" src={AGENT_ICON_DATA_URI} alt="StudyQue" /></span><strong>AI Chat</strong><small>Ask questions about your material</small></div>
             <div><span>⏱️</span><strong>Test Concepts</strong><small>Test your concepts from content</small></div>
             <div><span>🎙️</span><strong>Lecture Transcribing</strong><small>Convert video/audio lectures to text</small></div>
             <div><span>🔗</span><strong>Share Content</strong><small>Share content with others</small></div>
@@ -403,7 +403,7 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
         </section>
       </main>
       <footer className="public-footer">
-        <p>© StudyFlow AI · Learn better. Grow faster.</p>
+        <p>© StudyQue · Learn better. Grow faster.</p>
         <p className="sf2-footer-links">
           <button type="button" onClick={onPrivacy}>Privacy Policy</button>
           <span aria-hidden="true">·</span>
@@ -441,13 +441,13 @@ function AuthPage({ mode, onModeChange, onSubmit, onForgotPassword, loading, err
       <main className="auth-page">
         <form className="auth-card" onSubmit={onSubmit}>
           <div className="auth-card-brand">
-            <span>StudyFlow AI</span>
+            <span>StudyQue</span>
           </div>
 
           <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
           <p>
             {isSignup
-              ? "Start your personalized StudyFlow experience."
+              ? "Start your personalized StudyQue experience."
               : "Log in to continue learning."}
           </p>
 
@@ -663,7 +663,7 @@ function FeedbackModal({ user, onClose }) {
         body: JSON.stringify({
           type: feedbackType,
           message: message.trim(),
-          name: user?.displayName || "StudyFlow AI user",
+          name: user?.displayName || "StudyQue user",
         }),
       });
       setStatus({ type: "success", message: "Thanks! Your feedback has been submitted." });
@@ -687,7 +687,7 @@ function FeedbackModal({ user, onClose }) {
           <div className="feedback-icon">
             <img
               src="/favicon.svg"
-              alt="StudyFlow AI logo"
+              alt="StudyQue logo"
             />
           </div>
           <span className="feedback-art-caption">YOUR VOICE MATTERS</span>
@@ -712,7 +712,7 @@ function FeedbackModal({ user, onClose }) {
             <button className="feedback-submit" type="submit" disabled={sending}>
               <span>{sending ? "Submitting feedback…" : "Submit feedback"}</span>
             </button>
-            <p className="feedback-privacy">🔒 Your feedback is sent privately to the StudyFlow AI team.</p>
+            <p className="feedback-privacy">🔒 Your feedback is sent privately to the StudyQue team.</p>
           </form>
         </div>
       </section>
@@ -808,7 +808,7 @@ function CookieConsent({ onPrivacy }) {
         <span className="cookie-consent-icon">🍪</span>
 
         <p className="cookie-consent-text">
-          We use cookies to improve your StudyFlow AI experience.{" "}
+          We use cookies to improve your StudyQue experience.{" "}
           {onPrivacy && (
             <button type="button" className="sf2-cookie-policy-link" onClick={onPrivacy}>
               Read our Privacy Policy
@@ -1991,7 +1991,7 @@ function App() {
       } else if (error.code === "auth/popup-closed-by-user") {
         setAuthError("The Google sign-in window was closed before finishing. Please try again.");
       } else if (error.code === "auth/operation-not-allowed") {
-        setAuthError("Google sign-in is not enabled yet. Ask the StudyFlow AI team to enable Google in Firebase Authentication → Sign-in method.");
+        setAuthError("Google sign-in is not enabled yet. Ask the StudyQue team to enable Google in Firebase Authentication → Sign-in method.");
       } else if (error.code === "auth/cancelled-popup-request") {
         setAuthError("Another sign-in window is already open. Please finish it and try again.");
       } else {
@@ -2472,7 +2472,7 @@ function App() {
       // Embedded PNG data URI: html2canvas cannot render SVG <img>
       // elements reliably, so the SVG came out as a broken-image mark.
       logo.src = LOGO_PNG_DATA_URI;
-      logo.alt = "StudyFlow AI Logo";
+      logo.alt = "StudyQue Logo";
 
       logo.style.cssText = `
   width: 48px;
@@ -2482,7 +2482,7 @@ function App() {
 
       const heading = document.createElement("h1");
 
-      heading.textContent = "StudyFlow AI";
+      heading.textContent = "StudyQue";
 
       heading.style.cssText = `
   font-size: 28px;
@@ -2500,7 +2500,7 @@ function App() {
       try {
         await logo.decode();
       } catch (error) {
-        console.warn("Could not load StudyFlow AI logo:", error);
+        console.warn("Could not load StudyQue logo:", error);
       }
       const metadata = document.createElement("p");
       const date = new Date(Number(historyItem.createdAt || Date.now()));
@@ -2516,7 +2516,7 @@ function App() {
 
       await html2pdf().set({
         margin: [10, 10, 12, 10],
-        filename: `StudyFlow AI ${historyItem.type || "Generated Content"}`.replace(/[^a-z0-9-_ ]+/gi, "").trim(),
+        filename: `StudyQue ${historyItem.type || "Generated Content"}`.replace(/[^a-z0-9-_ ]+/gi, "").trim(),
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -4060,7 +4060,7 @@ function App() {
       link.href = url;
 
       link.download =
-        `StudyFlow AI ${mode}.pdf`;
+        `StudyQue ${mode}.pdf`;
 
       document.body.appendChild(
         link
@@ -4111,10 +4111,10 @@ function App() {
       brandHeader.style.cssText = "display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; width: 100%;";
       const logo = document.createElement("img");
       logo.src = LOGO_PNG_DATA_URI;
-      logo.alt = "StudyFlow AI Logo";
+      logo.alt = "StudyQue Logo";
       logo.style.cssText = "width: 48px; height: 48px; object-fit: contain;";
       const heading = document.createElement("h1");
-      heading.textContent = "StudyFlow AI";
+      heading.textContent = "StudyQue";
       heading.style.cssText = "font-size: 28px; font-weight: 700; margin: 0; color: #0511b3;";
       brandHeader.appendChild(logo);
       brandHeader.appendChild(heading);
@@ -4123,7 +4123,7 @@ function App() {
       try {
         await logo.decode();
       } catch (error) {
-        console.warn("Could not load StudyFlow AI logo:", error);
+        console.warn("Could not load StudyQue logo:", error);
       }
 
       const sharedCreatedAt = sharedPublicData?.createdAt;
@@ -4131,7 +4131,7 @@ function App() {
         ? sharedCreatedAt.toDate()
         : new Date(Number(sharedCreatedAt || Date.now()));
       const metadata = document.createElement("p");
-      metadata.textContent = `${sharedPublicData?.title || (mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary")} • ${sharedDate.toLocaleString()} • Shared using StudyFlow AI`;
+      metadata.textContent = `${sharedPublicData?.title || (mode === "explain" ? "Explanation" : mode === "quiz" ? "Quiz" : "Summary")} • ${sharedDate.toLocaleString()} • Shared using StudyQue`;
       metadata.style.cssText = "font-size: 13px; color: #5b6475; border-bottom: 1px solid #dce3ef; padding-bottom: 12px; margin-bottom: 18px;";
       wrapper.appendChild(metadata);
 
@@ -4144,7 +4144,7 @@ function App() {
       const fileTitle = (sharedPublicData?.title || mode || "Shared Result").replace(/[^a-z0-9-_ ]+/gi, "").trim() || "Shared Result";
       await html2pdf().set({
         margin: [10, 10, 12, 10],
-        filename: `StudyFlow AI ${fileTitle}`,
+        filename: `StudyQue ${fileTitle}`,
         image: { type: "jpeg", quality: 0.96 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -4521,7 +4521,7 @@ function App() {
       <div className="app shared-result-page">
         <section className="result-section shared-result-viewer">
           <div className="result-header">
-            <div><span className="result-icon">📄</span><div><h2>{sharedPublicData?.title || "Shared StudyFlow Result"}</h2><small>Shared using StudyFlow AI</small></div></div>
+            <div><span className="result-icon">📄</span><div><h2>{sharedPublicData?.title || "Shared StudyQue Result"}</h2><small>Shared using StudyQue</small></div></div>
             <div className="result-actions">
               <button type="button" className="download-button" onClick={handleDownloadSharedPDF} disabled={!result}>📄 Download PDF</button>
               <button type="button" className="secondary-button" onClick={handleCopy} disabled={!result}>📋 Copy</button>
@@ -4540,8 +4540,8 @@ function App() {
   if (!authChecked) {
     return (
       <div className="auth-loading-screen">
-        <img src="/favicon.svg" alt="StudyFlow AI" />
-        <span>Loading StudyFlow AI...</span>
+        <img src="/favicon.svg" alt="StudyQue" />
+        <span>Loading StudyQue...</span>
       </div>
     );
   }
@@ -4657,7 +4657,7 @@ function App() {
 
   const downloadConvertedFile = () => {
     if (!converterResult) return;
-    downloadBlob(converterResult, converterDownloadName || "StudyFlowAI-Converted-File");
+    downloadBlob(converterResult, converterDownloadName || "StudyQue-Converted-File");
   };
 
   const safeDownloadBase = (name) => name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9-_]+/gi, "-").replace(/^-+|-+$/g, "") || "converted-file";
@@ -4905,10 +4905,10 @@ function App() {
             type="button"
             className="brand-mark sf2-brand-button"
             onClick={goBackToApp}
-            aria-label="StudyFlow AI home"
+            aria-label="StudyQue home"
           >
-            <img src="/favicon.svg" alt="StudyFlow AI logo" />
-            <span>StudyFlow AI</span>
+            <img src="/favicon.svg" alt="StudyQue logo" />
+            <span>StudyQue</span>
           </button>
           <div className="app-nav-user desktop-nav-user">
             <span className="sf2-nav-plan">Plan: {getPlanId(userPlan) === "pro" ? "Pro" : "Free"}</span>
@@ -4950,7 +4950,7 @@ function App() {
         )}
         <footer>
           <p style={{ color: "white", fontSize: "18px" }}>
-            <b>© StudyFlow AI • Learn better, Grow faster. Developed by:{" "}
+            <b>© StudyQue • Learn better, Grow faster. Developed by:{" "}
               <strong style={{ fontSize: "20px" }}>M. Talha</strong></b>
           </p>
           <p className="sf2-footer-links sf2-footer-links-dark">
@@ -4985,10 +4985,10 @@ function App() {
           className="brand-mark"
           href="#heroclass"
           onClick={() => setMobileMenuOpen(false)}
-          aria-label="StudyFlow AI home"
+          aria-label="StudyQue home"
         >
-          <img src="/favicon.svg" alt="StudyFlow AI logo" />
-          <span>StudyFlow AI</span>
+          <img src="/favicon.svg" alt="StudyQue logo" />
+          <span>StudyQue</span>
         </a>
 
         <nav
@@ -5347,7 +5347,7 @@ function App() {
                       ? "Open a previous flashcard set to review it again."
                       : dashboardHistoryType === "previous-tests"
                         ? "Open a previous test to attempt it again."
-                        : "Your personal StudyFlow AI progress and activity."}
+                        : "Your personal StudyQue progress and activity."}
                 </p>
               </div>
 
@@ -5963,12 +5963,12 @@ function App() {
               title={
                 chatOpen
                   ? "Close AI chatbot"
-                  : "Ask StudyFlow AI"
+                  : "Ask StudyQue"
               }
             >
 
               <span className="heading-robot-icon">
-                <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
+                <img src={AGENT_ICON_DATA_URI} alt="StudyQue" />
               </span>
 
             </button>
@@ -6578,7 +6578,7 @@ function App() {
                         {plagiarismReport.matchedSentences} of {plagiarismReport.totalSentences} sentence{plagiarismReport.totalSentences === 1 ? "" : "s"} matched a saved item.
                       </p>
                       <p className="plagiarism-scope">
-                        Checked against {plagiarismReport.checkedItems} saved item{plagiarismReport.checkedItems === 1 ? "" : "s"} in your StudyFlow library — your own saved materials only, not the internet.
+                        Checked against {plagiarismReport.checkedItems} saved item{plagiarismReport.checkedItems === 1 ? "" : "s"} in your StudyQue library — your own saved materials only, not the internet.
                       </p>
                       {plagiarismReport.shortDocument && (
                         <p className="plagiarism-note">Very short document — results are less reliable with fewer than 2 sentences.</p>
@@ -7086,7 +7086,7 @@ function App() {
 
       {
         gamesOpen && (
-          <div className="games-overlay" role="dialog" aria-modal="true" aria-label="StudyFlow games">
+          <div className="games-overlay" role="dialog" aria-modal="true" aria-label="StudyQue games">
             <div className="games-panel">
               <button
                 type="button"
@@ -7105,7 +7105,7 @@ function App() {
 
               <div className="games-panel-heading">
                 <span className="section-kicker">FUN ZONE</span>
-                <h2>🎮 StudyFlow Games</h2>
+                <h2>🎮 StudyQue Games</h2>
                 <p>Take a quick break and have some fun while learning.</p>
               </div>
 
@@ -7283,7 +7283,7 @@ function App() {
           <h2>🎙️ Oral Exam needs speech recognition</h2>
           <p>
             Your browser does not support speech recognition, so the Oral
-            Exam cannot listen to your answers here. Please open StudyFlow AI
+            Exam cannot listen to your answers here. Please open StudyQue
             in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> —
             on desktop or Android — to use the Oral Exam. Summaries, quizzes,
             flashcards, and all other features work in this browser.
@@ -7313,7 +7313,7 @@ function App() {
               </div>
 
               <div className="oral-question-box">
-                <span className="oral-ai-icon"><img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" /></span>
+                <span className="oral-ai-icon"><img src={AGENT_ICON_DATA_URI} alt="StudyQue" /></span>
                 <p dir={oralExam.language === "arabic" || oralExam.language === "urdu" ? "rtl" : "ltr"}>{oralExam.question}</p>
               </div>
 
@@ -7353,13 +7353,13 @@ function App() {
               <div className="chatbot-popup-title">
 
                 <span className="popup-robot-icon">
-                  <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
+                  <img src={AGENT_ICON_DATA_URI} alt="StudyQue" />
                 </span>
 
                 <div>
 
                   <strong>
-                    StudyFlow AI
+                    StudyQue
                   </strong>
 
                   <small>
@@ -7419,7 +7419,7 @@ function App() {
                     </h3>
 
                     <p>
-                      Hi! I'm StudyFlow AI,
+                      Hi! I'm StudyQue,
                       your AI-powered study
                       assistant. You can ask me
                       questions about your
@@ -7461,7 +7461,7 @@ function App() {
                         {message.role ===
                           "user"
                           ? "👤"
-                          : <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />}
+                          : <img src={AGENT_ICON_DATA_URI} alt="StudyQue" />}
 
                       </div>
 
@@ -7498,7 +7498,7 @@ function App() {
                 <div className="chat-message assistant-message">
 
                   <div className="message-avatar">
-                    <img src={AGENT_ICON_DATA_URI} alt="StudyFlow AI" />
+                    <img src={AGENT_ICON_DATA_URI} alt="StudyQue" />
                   </div>
 
                   <div className="message-content">
@@ -7579,7 +7579,7 @@ function App() {
         >
 
           <b>
-            © StudyFlow AI • Learn better, Grow faster. Developed by:{" "}
+            © StudyQue • Learn better, Grow faster. Developed by:{" "}
             <strong style={{ fontSize: "20px" }}>M. Talha</strong>
           </b>
 

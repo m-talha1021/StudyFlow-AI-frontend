@@ -1,7 +1,7 @@
 // ============================================================
 // PLAGIARISM CHECKER (Round 70) — pure, dependency-free helpers.
 // The check compares a document ONLY against the user's own saved
-// StudyFlow library (generated history + flashcard history).
+// StudyQue library (generated history + flashcard history).
 // It never touches the internet, Turnitin or any academic
 // database, and the UI must say so. A 0% result is legitimate.
 // ============================================================
@@ -179,7 +179,7 @@ export function plagiarismReportAsText(report) {
   if (!report || typeof report.percentage !== "number") return "";
   const lines = [
     `Plagiarism check: ${report.percentage}% similarity.`,
-    `Checked against ${report.checkedItems || 0} saved items in your StudyFlow library (your own saved materials only — not the internet).`,
+    `Checked against ${report.checkedItems || 0} saved items in your StudyQue library (your own saved materials only — not the internet).`,
     `${report.matchedSentences || 0} of ${report.totalSentences || 0} sentences matched a saved item.`,
   ];
   if (Array.isArray(report.sources) && report.sources.length) {

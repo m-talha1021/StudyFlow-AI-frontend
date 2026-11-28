@@ -1,4 +1,4 @@
-/* StudyFlow AI — Lecture Transcribing */
+/* StudyQue — Lecture Transcribing */
 .transcription-section { width: calc(100% - 32px); max-width: 1100px; margin: 28px auto; scroll-margin-top: 100px; }
 .transcription-heading { margin-bottom: 18px; }
 .transcription-kicker { display: inline-block; color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
@@ -229,7 +229,7 @@
 }
 
 /* ============================================================
-   StudyFlow AI — Transcribing redesign layer (2026-11-24)
+   StudyQue — Transcribing redesign layer (2026-11-24)
    Visual-only overrides aligned with the App.css redesign
    tokens (indigo/violet + slate, light surfaces). All original
    rules above are preserved; layout properties are untouched.

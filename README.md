@@ -1,6 +1,6 @@
-# StudyFlow AI — Frontend
+# StudyQue — Frontend
 
-StudyFlow AI turns lectures, notes, and documents into summaries,
+StudyQue turns lectures, notes, and documents into summaries,
 explanations, quizzes, flashcards, tests, oral exams, and an AI study
 assistant. This repository is the **frontend** (React 19 + Vite 8 +
 Firebase 12). The backend is a separate Flask service:
@@ -82,7 +82,7 @@ deploys automatically.
 
 ## Plans
 
-StudyFlow AI is free for now. The Free plan allows 5 AI calls and 20
+StudyQue is free for now. The Free plan allows 5 AI calls and 20
 transcription minutes per day. A Pro plan (150 AI calls / 280
 transcription minutes per day) is shown in the app as “coming soon” —
 no payment flow is wired up yet. The backend reads a `plan` field on

@@ -47,7 +47,7 @@ function FirebaseSetupNeeded() {
       <div style={{ maxWidth: '520px', textAlign: 'center' }}>
         <h1 style={{ fontSize: '28px', margin: '0 0 12px' }}>Setup needed</h1>
         <p style={{ fontSize: '16px', lineHeight: 1.6, opacity: 0.9 }}>
-          StudyFlow AI is not configured yet. The following environment
+          StudyQue is not configured yet. The following environment
           variables are missing — set them in Vercel (Project Settings →
           Environment Variables) and redeploy:
         </p>

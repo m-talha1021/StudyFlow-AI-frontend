@@ -13,7 +13,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error("StudyFlow AI crashed:", error, info);
+    console.error("StudyQue crashed:", error, info);
   }
 
   handleRetry = () => {
@@ -44,7 +44,7 @@ export default class ErrorBoundary extends Component {
             Something went wrong
           </h1>
           <p style={{ fontSize: "16px", lineHeight: 1.6, opacity: 0.9 }}>
-            StudyFlow AI hit an unexpected error. Your saved work is safe —
+            StudyQue hit an unexpected error. Your saved work is safe —
             please try loading the page again.
           </p>
           <button

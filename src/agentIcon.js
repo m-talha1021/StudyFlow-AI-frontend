@@ -1,6 +1,6 @@
-// StudyFlow AI agent icon as an embedded PNG data URI.
+// StudyQue agent icon as an embedded PNG data URI.
 //
-// The AI chatbot ("StudyFlow AI" agent) used a plain robot emoji as its
+// The AI chatbot ("StudyQue" agent) used a plain robot emoji as its
 // icon. The user supplied this robot avatar image instead. It is embedded
 // as a data URI (same approach as logoPng.js) because the snapshot push
 // only accepts text files, so the PNG itself cannot be pushed as a binary.
