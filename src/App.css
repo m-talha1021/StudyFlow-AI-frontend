@@ -12922,3 +12922,193 @@ html[data-theme="dark"] .shared-result-viewer {
     height: 32px;
   }
 }
+
+/* ============================================================
+   ROUND 70 (2026-11-28) — Plagiarism Checker report card.
+   Local check only: the document is compared against the user's
+   own saved StudyFlow library (never the internet). Score is
+   color-coded: green < 20%, amber 20-50%, red > 50%.
+   ============================================================ */
+.plagiarism-report {
+  text-align: left;
+}
+.plagiarism-score-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.plagiarism-score {
+  min-width: 132px;
+  text-align: center;
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: #ffffff;
+}
+.plagiarism-score strong {
+  display: block;
+  font-size: 38px;
+  line-height: 1;
+  color: #ffffff;
+}
+.plagiarism-score span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+.plagiarism-score.plagiarism-low {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+.plagiarism-score.plagiarism-medium {
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+.plagiarism-score.plagiarism-high {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+.plagiarism-summary {
+  flex: 1;
+  min-width: 220px;
+}
+.plagiarism-summary p {
+  margin: 0 0 8px;
+  color: #1e293b;
+}
+.plagiarism-scope {
+  font-size: 13px;
+  color: #475569;
+}
+.plagiarism-note {
+  font-size: 13px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.plagiarism-notice {
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.plagiarism-sources,
+.plagiarism-matches {
+  margin-top: 20px;
+}
+.plagiarism-sources h3,
+.plagiarism-matches h3 {
+  font-size: 15px;
+  margin: 0 0 10px;
+  color: #1e1b4b;
+}
+.plagiarism-source-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  margin-bottom: 8px;
+}
+.plagiarism-source-title {
+  flex: 1;
+  font-weight: 600;
+  color: #1e293b;
+}
+.plagiarism-source-percent {
+  font-weight: 800;
+  color: #4338ca;
+}
+.plagiarism-source-row small {
+  color: #64748b;
+}
+.plagiarism-match {
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border-left: 4px solid #818cf8;
+  background: #eef2ff;
+  border-radius: 0 10px 10px 0;
+}
+.plagiarism-match p {
+  margin: 0 0 6px;
+  color: #1e293b;
+}
+.plagiarism-match cite {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  color: #4338ca;
+}
+.plagiarism-no-match {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+@media (max-width: 560px) {
+  .plagiarism-score-row {
+    gap: 14px;
+  }
+  .plagiarism-score {
+    min-width: 112px;
+    padding: 14px 16px;
+  }
+  .plagiarism-score strong {
+    font-size: 30px;
+  }
+}
+/* Dark mode: report stays readable (explicit colors + fill, same
+   -webkit-text-fill-color lesson as Round 63/66). */
+html[data-theme="dark"] .plagiarism-summary p {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .plagiarism-scope {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .plagiarism-note,
+html[data-theme="dark"] .plagiarism-notice {
+  color: #fde68a !important;
+  background: #451a03 !important;
+  border-color: #92400e !important;
+}
+html[data-theme="dark"] .plagiarism-sources h3,
+html[data-theme="dark"] .plagiarism-matches h3 {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+html[data-theme="dark"] .plagiarism-source-row {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .plagiarism-source-title {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .plagiarism-source-percent {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .plagiarism-source-row small {
+  color: #94a3b8 !important;
+}
+html[data-theme="dark"] .plagiarism-match {
+  background: #1e1b4b !important;
+  border-left-color: #818cf8 !important;
+}
+html[data-theme="dark"] .plagiarism-match p {
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] .plagiarism-match cite {
+  color: #a5b4fc !important;
+}
+html[data-theme="dark"] .plagiarism-no-match {
+  background: #052e16 !important;
+  border-color: #166534 !important;
+  color: #86efac !important;
+}

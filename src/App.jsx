@@ -21,6 +21,7 @@ import { auth, db } from "./firebase";
 import { LOGO_PNG_DATA_URI } from "./logoPng.js";
 import { AGENT_ICON_DATA_URI } from "./agentIcon.js";
 import MindMap, { mindmapToText } from "./MindMap.jsx";
+import { checkPlagiarism, plagiarismReportAsText } from "./plagiarism.js";
 import { StudyPlannerPage } from "./Planner.jsx";
 import { DashboardAnalytics } from "./Analytics.jsx";
 
@@ -1221,6 +1222,13 @@ function App() {
 
   const [testLoading, setTestLoading] = useState(false);
   const [testSaved, setTestSaved] = useState(false);
+
+  // Plagiarism check (local only, no backend): the report for the
+  // current document compared against the user's own saved library.
+  const [plagiarismReport, setPlagiarismReport] = useState(null);
+  const [plagiarismSaved, setPlagiarismSaved] = useState(false);
+  const [plagiarismChecking, setPlagiarismChecking] = useState(false);
+  const [plagiarismNotice, setPlagiarismNotice] = useState("");
   const [testQuestions, setTestQuestions] = useState([]);
   const [testAnswers, setTestAnswers] = useState({});
   const [testIndex, setTestIndex] = useState(0);
@@ -2095,6 +2103,7 @@ function App() {
     setFlashcardsSaved(false);
     setMindmapSaved(false);
     setTestSaved(false);
+    setPlagiarismSaved(false);
     setDashboardStats({
       totalMaterials: 0,
       studySessions: 0,
@@ -2132,6 +2141,9 @@ function App() {
     stopSpeech();
     setResult("");
     setResultLanguage("");
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
+    setPlagiarismNotice("");
     setFlashcards([]);
     setFlashcardIndex(0);
     setFlashcardFlipped(false);
@@ -2327,6 +2339,90 @@ function App() {
     }
   };
 
+  // ========================================================
+  // PLAGIARISM CHECK — local only, no backend, no quota, no
+  // AI call. Compares the current material against the user's
+  // own saved library (generated + flashcard history). The
+  // report is NEVER auto-saved; see handleSavePlagiarism.
+  // ========================================================
+
+  const buildPlagiarismCorpus = () => {
+    const items = [];
+    for (const historyItem of dashboardGeneratedHistory) {
+      // A saved plagiarism report is a report, not source material.
+      if (historyItem.kind === "plagiarism" || historyItem.content?.kind === "plagiarism") continue;
+      const text = historyContentAsText(historyItem);
+      if (text?.trim()) {
+        items.push({
+          title: historyItem.title || historyItem.type || "Saved content",
+          text,
+        });
+      }
+    }
+    for (const historyItem of dashboardFlashcardHistory) {
+      const text = (historyItem.cards || [])
+        .map((card) => `${card.front || ""} ${card.back || ""}`.trim())
+        .filter(Boolean)
+        .join(" ");
+      if (text.trim()) {
+        items.push({
+          title: historyItem.fileNames?.[0]
+            ? `Flashcards - ${historyItem.fileNames[0]}`
+            : "Flashcards",
+          text,
+        });
+      }
+    }
+    return items;
+  };
+
+  const handleCheckPlagiarism = async () => {
+    if (processing) { alert("Your study material is still processing. Please wait."); return; }
+    const documentText = getCurrentMaterialText();
+    setPlagiarismNotice("");
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
+    setResult("");
+    setResultSaved(false);
+    if (!documentText) {
+      setPlagiarismNotice("Please upload a PDF or Word document, or paste your text above, then tap Check Plagiarism.");
+      setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+    setPlagiarismChecking(true);
+    stopSpeech();
+    setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    try {
+      // Local and synchronous — one tick so the "Checking…" state paints.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const report = checkPlagiarism(documentText, buildPlagiarismCorpus());
+      setPlagiarismReport(report);
+    } finally {
+      setPlagiarismChecking(false);
+    }
+  };
+
+  const handleSavePlagiarism = async () => {
+    if (!plagiarismReport || plagiarismSaved || saveBusyRef.current.plagiarism) return;
+    if (!user?.uid) { alert("Please sign in to save this plagiarism report."); return; }
+    saveBusyRef.current.plagiarism = true;
+    try {
+      const sourceNames = getCurrentSourceFileNames().filter((name) => name !== "Pasted study material");
+      const saved = await saveGeneratedHistory({
+        title: sourceNames[0] ? `Plagiarism Check - ${sourceNames[0]}` : "Plagiarism Check",
+        type: "Plagiarism Check",
+        kind: "plagiarism",
+        content: { kind: "plagiarism", report: plagiarismReport },
+        sourceFiles: getCurrentSourceFileNames(),
+        contentMode: "plagiarism",
+      });
+      if (saved) setPlagiarismSaved(true);
+      else alert("Could not save this plagiarism report. Please try again.");
+    } finally {
+      saveBusyRef.current.plagiarism = false;
+    }
+  };
+
   const historyContentAsText = (historyItem) => {
     const value = historyItem?.content;
     if (typeof value === "string") return value;
@@ -2342,6 +2438,9 @@ function App() {
     }
     if (value?.kind === "mindmap" || value?.mindmap) {
       return mindmapToText(value?.mindmap || value);
+    }
+    if (value?.kind === "plagiarism" || value?.report) {
+      return plagiarismReportAsText(value?.report || value);
     }
     if (value?.text) return value.text;
     return JSON.stringify(value ?? "", null, 2);
@@ -2432,6 +2531,9 @@ function App() {
   const openGeneratedHistoryItem = (historyItem) => {
     const value = historyItem?.content;
     setOpenedFromHistory(true);
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
+    setPlagiarismNotice("");
     setDashboardHistoryType(null);
     setShowDashboard(false);
     stopSpeech();
@@ -2471,6 +2573,17 @@ function App() {
       setMindmapLanguage(historyItem.language || "english");
       setMindmapSaved(true);
       setTimeout(() => document.getElementById("mindmap-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+      return;
+    }
+
+    if (historyItem.kind === "plagiarism" || value?.kind === "plagiarism") {
+      const report = value?.report || value;
+      if (!report || typeof report.percentage !== "number") return;
+      setMode("plagiarism");
+      setPlagiarismReport(report);
+      setPlagiarismSaved(true);
+      setResult("");
+      setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
 
@@ -3061,6 +3174,8 @@ function App() {
     setResult("");
     setResultSaved(false);
     setFlashcardsSaved(false);
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
 
     stopSpeech();
 
@@ -3193,6 +3308,8 @@ function App() {
     setMindmapSaved(false);
     setResult("");
     setResultSaved(false);
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
 
     stopSpeech();
 
@@ -3365,6 +3482,8 @@ function App() {
     setResult("");
     setResultSaved(false);
     setTestSaved(false);
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
     stopSpeech();
 
     try {
@@ -3662,6 +3781,11 @@ function App() {
       return;
     }
 
+    if (mode === "plagiarism") {
+      await handleCheckPlagiarism();
+      return;
+    }
+
     if (mode === "oral") {
       await handleStartOralExam();
       return;
@@ -3701,6 +3825,8 @@ function App() {
     setGenerating(true);
     setResult("");
     setResultSaved(false);
+    setPlagiarismReport(null);
+    setPlagiarismSaved(false);
 
     stopSpeech();
 
@@ -5487,7 +5613,8 @@ function App() {
                               "explain",
                               "explanation",
                               "quiz",
-                              "mind map"
+                              "mind map",
+                              "plagiarism check"
                             ].includes(type);
                           })
                           .map((historyItem) => (
@@ -6026,6 +6153,30 @@ function App() {
               </div>
             </button>
 
+            {/* PLAGIARISM CHECKER */}
+
+            <button type="button"
+              className={
+                mode === "plagiarism"
+                  ? "mode active"
+                  : "mode"
+              }
+              onClick={() => setMode("plagiarism")}
+            >
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
+                  <g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" />
+                    <path d="M9 12l2 2 4-4" />
+                  </g>
+                </svg>
+              </span>
+              <div>
+                <strong>Plagiarism</strong>
+                <small>Check your document against saved work</small>
+              </div>
+            </button>
+
             {/* ORAL TEST */}
 
             <button type="button"
@@ -6056,14 +6207,19 @@ function App() {
               flashcardsLoading ||
               testLoading ||
               mindmapLoading ||
+              plagiarismChecking ||
               oralExam.listening
             }
           >
-            {testLoading
+            {plagiarismChecking
+              ? "⏳ Checking…"
+              : testLoading
               ? "⏳ Generating..."
               : generating || flashcardsLoading || mindmapLoading
                 ? "⏳ Generating..."
-                : mode === "flashcards"
+                : mode === "plagiarism"
+                  ? "🔍 Check Plagiarism"
+                  : mode === "flashcards"
                   ? "✨ Generate Flashcards"
                   : mode === "oral"
                     ? "🎙️ Start Oral Test"
@@ -6194,10 +6350,10 @@ function App() {
             GENERATED RESULT
         ================================================= */}
 
-        {(result || generating) && (
+        {(result || generating || (mode === "plagiarism" && (plagiarismReport || plagiarismChecking || plagiarismNotice))) && (
           <section
             className={
-              generating && !result
+              (generating && !result) || (mode === "plagiarism" && plagiarismChecking && !plagiarismReport)
                 ? "result-section result-generating-state"
                 : "result-section"
             }
@@ -6210,11 +6366,20 @@ function App() {
 
                 <span className="result-icon">
 
-                  {mode === "summary"
-                    ? "📝"
-                    : mode === "explain"
-                      ? "💡"
-                      : "🧠"}
+                  {mode === "plagiarism"
+                    ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" aria-hidden="true">
+                        <g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" />
+                          <path d="M9 12l2 2 4-4" />
+                        </g>
+                      </svg>
+                    )
+                    : mode === "summary"
+                      ? "📝"
+                      : mode === "explain"
+                        ? "💡"
+                        : "🧠"}
 
                 </span>
 
@@ -6222,26 +6387,30 @@ function App() {
 
                   <h2>
 
-                    {mode === "summary"
-                      ? "Summary"
-                      : mode === "explain"
-                        ? "Explanation"
-                        : "Quiz"}
+                    {mode === "plagiarism"
+                      ? "Plagiarism Check"
+                      : mode === "summary"
+                        ? "Summary"
+                        : mode === "explain"
+                          ? "Explanation"
+                          : "Quiz"}
 
                   </h2>
 
                   <small>
 
-                    {resultLanguage ===
-                      "arabic"
-                      ? "العربية"
+                    {mode === "plagiarism"
+                      ? (getCurrentSourceFileNames()[0] || "Your document")
                       : resultLanguage ===
-                        "urdu"
-                        ? "Urdu"
+                        "arabic"
+                        ? "العربية"
                         : resultLanguage ===
-                          "mixed"
-                          ? "Mixed language"
-                          : "English"}
+                          "urdu"
+                          ? "Urdu"
+                          : resultLanguage ===
+                            "mixed"
+                            ? "Mixed language"
+                            : "English"}
 
                   </small>
 
@@ -6253,6 +6422,7 @@ function App() {
 
               <div className="result-actions">
 
+                {mode !== "plagiarism" && (<>
                 <button
                   onClick={
                     handleCopy
@@ -6299,16 +6469,21 @@ function App() {
                     : "🔊"}
 
                 </button>
+                </>)}
 
                 {!openedFromHistory && (
                 <button
                   type="button"
-                  onClick={handleSaveResult}
+                  onClick={mode === "plagiarism" ? handleSavePlagiarism : handleSaveResult}
                   className="save-history-button"
-                  title={resultSaved ? "Saved to history" : "Save this result to history"}
-                  disabled={resultSaved || !result?.trim()}
+                  title={mode === "plagiarism"
+                    ? (plagiarismSaved ? "Saved to history" : "Save this plagiarism report to history")
+                    : (resultSaved ? "Saved to history" : "Save this result to history")}
+                  disabled={mode === "plagiarism"
+                    ? (plagiarismSaved || !plagiarismReport)
+                    : (resultSaved || !result?.trim())}
                 >
-                  {resultSaved ? (
+                  {(mode === "plagiarism" ? plagiarismSaved : resultSaved) ? (
                     "✓ Saved"
                   ) : (
                     <>
@@ -6325,6 +6500,11 @@ function App() {
                   onClick={() => {
                     if (openedFromHistory) {
                       closeOpenedHistoryContent();
+                    } else if (mode === "plagiarism") {
+                      stopSpeech();
+                      setPlagiarismReport(null);
+                      setPlagiarismSaved(false);
+                      setPlagiarismNotice("");
                     } else {
                       stopSpeech();
                       setResult("");
@@ -6372,7 +6552,73 @@ function App() {
                 </div>
               )}
 
-              {result
+              {mode === "plagiarism" && plagiarismChecking && !plagiarismReport && (
+                <div className="result-generating" role="status">
+                  <span className="result-generating-spinner" aria-hidden="true" />
+                  <strong>Checking for matches…</strong>
+                  <span className="result-generating-sub">
+                    Comparing against your saved materials.
+                  </span>
+                </div>
+              )}
+
+              {mode === "plagiarism" && plagiarismNotice && !plagiarismReport && (
+                <p className="plagiarism-notice" role="alert">{plagiarismNotice}</p>
+              )}
+
+              {mode === "plagiarism" && plagiarismReport && (
+                <div className="plagiarism-report">
+                  <div className="plagiarism-score-row">
+                    <div className={`plagiarism-score plagiarism-${plagiarismReport.percentage < 20 ? "low" : plagiarismReport.percentage <= 50 ? "medium" : "high"}`}>
+                      <strong>{plagiarismReport.percentage}%</strong>
+                      <span>similarity</span>
+                    </div>
+                    <div className="plagiarism-summary">
+                      <p>
+                        {plagiarismReport.matchedSentences} of {plagiarismReport.totalSentences} sentence{plagiarismReport.totalSentences === 1 ? "" : "s"} matched a saved item.
+                      </p>
+                      <p className="plagiarism-scope">
+                        Checked against {plagiarismReport.checkedItems} saved item{plagiarismReport.checkedItems === 1 ? "" : "s"} in your StudyFlow library — your own saved materials only, not the internet.
+                      </p>
+                      {plagiarismReport.shortDocument && (
+                        <p className="plagiarism-note">Very short document — results are less reliable with fewer than 2 sentences.</p>
+                      )}
+                      {plagiarismReport.checkedItems === 0 && (
+                        <p className="plagiarism-note">Your saved library is empty, so there was nothing to compare against yet. Generate and save some content first.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {plagiarismReport.sources.length > 0 && (
+                    <div className="plagiarism-sources">
+                      <h3>Matched sources</h3>
+                      {plagiarismReport.sources.map((source) => (
+                        <div className="plagiarism-source-row" key={source.title}>
+                          <span className="plagiarism-source-title">{source.title}</span>
+                          <span className="plagiarism-source-percent">{source.percent}%</span>
+                          <small>{source.matchedCount} sentence{source.matchedCount === 1 ? "" : "s"}</small>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {plagiarismReport.matches.length > 0 ? (
+                    <div className="plagiarism-matches">
+                      <h3>Matched sentences</h3>
+                      {plagiarismReport.matches.map((match, index) => (
+                        <blockquote className="plagiarism-match" key={index}>
+                          <p>&ldquo;{match.sentence}&rdquo;</p>
+                          <cite>Source: {match.sourceTitle}</cite>
+                        </blockquote>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="plagiarism-no-match">No matches found — this document does not overlap with your saved materials.</p>
+                  )}
+                </div>
+              )}
+
+              {mode !== "plagiarism" && result
                 .split("\n")
                 .map(
                   (line, index) => (
