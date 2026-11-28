@@ -13355,7 +13355,9 @@ footer.rich-footer h3 {
   gap: 40px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 24px 36px;
+  /* ROUND 80: shorter main footer section — top 48px -> 24px,
+     bottom 36px -> 20px (saves ~40px of height). */
+  padding: 24px 24px 20px;
   box-sizing: border-box;
 }
 .rich-footer-brand .brand-mark {
@@ -13464,8 +13466,10 @@ footer.rich-footer .rich-footer-bottom p strong {
 @media (max-width: 768px) {
   .rich-footer-grid {
     grid-template-columns: 1fr;
-    gap: 28px;
-    padding: 36px 20px 28px;
+    /* ROUND 80: tighter on mobile — gap 28px -> 20px, padding
+       36px 20px 28px -> 20px 20px 16px (saves ~52px of height). */
+    gap: 20px;
+    padding: 20px 20px 16px;
   }
   .rich-footer-bottom {
     /* ROUND 78: taller strip on mobile too. */
