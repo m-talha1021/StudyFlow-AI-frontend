@@ -13479,6 +13479,10 @@ footer.rich-footer h3 {
   background: transparent !important;
   background-image: none !important;
   border: none !important;
+  /* ROUND 77: the navbar gradient-hover rule (nav button:hover, ~6826)
+     paints a violet+cyan box-shadow on these buttons — it beats nothing
+     here because this rule never set box-shadow. Kill it. */
+  box-shadow: none !important;
   color: #334155 !important;
   -webkit-text-fill-color: #334155;
   text-decoration: underline;
@@ -13488,20 +13492,34 @@ footer.rich-footer h3 {
 .rich-footer-col button:active {
   background: transparent !important;
   background-image: none !important;
+  /* ROUND 77: index.css :focus-visible + App.css button:focus-visible paint
+     a 2px indigo outline + 3px indigo halo on focused footer buttons —
+     that ring reads as a box. Neutralized on footer buttons only. */
+  outline: none !important;
+  box-shadow: none !important;
 }
 .rich-footer-col button::selection {
   background: transparent;
 }
 .rich-footer-bottom {
-  border-top: 1px solid #e2e8f0;
+  /* ROUND 77: ONLY this strip gets the navbar color #1e1b4b, both themes.
+     Full-bleed: the footer itself has no padding, so this block div spans
+     the footer's full width. Border removed — the indigo block is its own edge. */
+  border-top: none !important;
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
   padding: 18px 24px;
   text-align: center;
 }
 footer.rich-footer .rich-footer-bottom p {
   text-align: center !important;
   font-size: 14px;
-  color: #475569 !important;
-  -webkit-text-fill-color: #475569;
+  color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0;
+}
+footer.rich-footer .rich-footer-bottom p strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
 }
 @media (max-width: 768px) {
   .rich-footer-grid {
@@ -13546,6 +13564,8 @@ html[data-theme="dark"] .rich-footer-col button:hover {
   background: transparent !important;
   background-image: none !important;
   border: none !important;
+  /* ROUND 77: kill the navbar gradient-hover box-shadow here too. */
+  box-shadow: none !important;
   color: #cbd5e1 !important;
   -webkit-text-fill-color: #cbd5e1;
   text-decoration: underline;
@@ -13555,11 +13575,20 @@ html[data-theme="dark"] .rich-footer-col button:focus-visible,
 html[data-theme="dark"] .rich-footer-col button:active {
   background: transparent !important;
   background-image: none !important;
+  /* ROUND 77: neutralize the focus-visible outline + halo here too. */
+  outline: none !important;
+  box-shadow: none !important;
 }
 html[data-theme="dark"] .rich-footer-bottom {
-  border-top-color: #1e293b;
+  border-top: none !important;
+  background: #1e1b4b !important;
+  background-color: #1e1b4b !important;
 }
 html[data-theme="dark"] footer.rich-footer .rich-footer-bottom p {
-  color: #94a3b8 !important;
-  -webkit-text-fill-color: #94a3b8;
+  color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0;
+}
+html[data-theme="dark"] footer.rich-footer .rich-footer-bottom p strong {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
 }
