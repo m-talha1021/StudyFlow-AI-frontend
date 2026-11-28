@@ -340,6 +340,66 @@ function SiteLinksMenu({ onPrivacy, onTerms, onPricing, onFeatures, onFeedback }
   );
 }
 
+// ROUND 74: rich footer — brand column + STUDY TOOLS / EXPLORE / LEGAL
+// columns + bottom credit row, styled after the reference footer the
+// user sent. One shared component for the welcome page and every
+// logged-in view; the AuthPage footer is untouched. Only real
+// destinations are linked — nothing invented.
+const FOOTER_TOOLS = [
+  { label: "Lecture Transcribing", detailTitle: "Lecture Transcribing", target: "transcribing-section" },
+  { label: "Summaries", detailTitle: "Summaries", mode: "summary" },
+  { label: "Flashcards", detailTitle: "Flashcards", mode: "flashcards" },
+  { label: "Quizzes", detailTitle: "Quizzes", mode: "quiz" },
+  { label: "Mind Map", detailTitle: "Mind Map", mode: "mindmap" },
+  { label: "Study Planner", detailTitle: "Study Planner", view: "planner" },
+  { label: "Plagiarism Checker", detailTitle: "Plagiarism Checker", mode: "ai-detector" },
+];
+
+function RichFooter({ loggedIn, onTool, onPricing, onFeatures, onFeedback, onPrivacy, onTerms, onHistory }) {
+  return (
+    <footer className="rich-footer">
+      <div className="rich-footer-grid">
+        <div className="rich-footer-brand">
+          <BrandMark />
+          <p>Turn lectures into summaries, quizzes, flashcards and mind maps — study smarter with AI.</p>
+          <span className="rich-footer-status">
+            <span className="rich-footer-status-dot" aria-hidden="true" />
+            Live now
+          </span>
+        </div>
+        <nav className="rich-footer-col" aria-label="Study tools">
+          <h3>Study Tools</h3>
+          {FOOTER_TOOLS.map((tool) => (
+            <button type="button" key={tool.label} onClick={() => onTool(tool)}>
+              {tool.label}
+            </button>
+          ))}
+        </nav>
+        <nav className="rich-footer-col" aria-label="Explore">
+          <h3>Explore</h3>
+          <button type="button" onClick={onPricing}>Pricing</button>
+          <button type="button" onClick={onFeatures}>Features</button>
+          <button type="button" onClick={onFeedback}>Feedback</button>
+          {loggedIn && (
+            <button type="button" onClick={onHistory}>Content History</button>
+          )}
+        </nav>
+        <nav className="rich-footer-col" aria-label="Legal">
+          <h3>Legal</h3>
+          <button type="button" onClick={onPrivacy}>Privacy Policy</button>
+          <button type="button" onClick={onTerms}>Terms of Service</button>
+        </nav>
+      </div>
+      <div className="rich-footer-bottom">
+        <p>
+          © StudyQue · Learn better. Grow faster. — Developed by:{" "}
+          <strong>M. Talha</strong>
+        </p>
+      </div>
+    </footer>
+  );
+}
+
 function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans, theme, onToggleTheme }) {
   const [featureDetail, setFeatureDetail] = useState(null);
   return (
@@ -442,9 +502,21 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
         }
         onFeedback={onFeedback}
       />
-      <footer className="public-footer">
-        <p>© StudyQue · Learn better. Grow faster.</p>
-      </footer>
+      <RichFooter
+        loggedIn={false}
+        onTool={(tool) => {
+          const feature = FEATURE_DETAILS.find((item) => item.title === tool.detailTitle);
+          if (feature) setFeatureDetail(feature);
+        }}
+        onPricing={onPlans}
+        onFeatures={() =>
+          document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+        }
+        onFeedback={onFeedback}
+        onPrivacy={onPrivacy}
+        onTerms={onTerms}
+        onHistory={null}
+      />
       <CookieConsent onPrivacy={onPrivacy} />
       {featureDetail && (
         <FeatureDetailModal feature={featureDetail} onClose={() => setFeatureDetail(null)} />
@@ -5079,6 +5151,43 @@ function App() {
     }
   };
 
+  // ROUND 74: rich-footer navigation — always return to the main
+  // workspace first, then switch mode / open history / scroll, so the
+  // footer links work from sub-view pages too.
+  const goToFooterMode = (mode) => {
+    setAppView("app");
+    setMode(mode);
+    setTimeout(() => {
+      document.getElementById("action-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  };
+  const goToFooterTranscribing = () => {
+    setAppView("app");
+    setTimeout(() => {
+      document.getElementById("transcribing-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  };
+  const goToFooterHistory = () => {
+    setAppView("app");
+    setShowDashboard(true);
+    setDashboardHistoryType("generated");
+    setTimeout(() => {
+      document.getElementById("dashboard-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  };
+  const handleFooterTool = (tool) => {
+    if (tool.view === "planner") {
+      setAppView("planner");
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    if (tool.target === "transcribing-section") {
+      goToFooterTranscribing();
+      return;
+    }
+    goToFooterMode(tool.mode);
+  };
+
   // ========================================================
   // PHASE 2 SUB-VIEWS (logged-in): Plans / Settings / legal
   // ========================================================
@@ -5140,12 +5249,16 @@ function App() {
         {feedbackOpen && (
           <FeedbackModal user={user} onClose={() => setFeedbackOpen(false)} />
         )}
-        <footer>
-          <p style={{ color: "white", fontSize: "18px" }}>
-            <b>© StudyQue • Learn better, Grow faster. Developed by:{" "}
-              <strong style={{ fontSize: "20px" }}>M. Talha</strong></b>
-          </p>
-        </footer>
+        <RichFooter
+          loggedIn
+          onTool={handleFooterTool}
+          onPricing={() => setAppView("plans")}
+          onFeatures={() => goToFooterMode("summary")}
+          onFeedback={() => setFeedbackOpen(true)}
+          onPrivacy={() => setAppView("privacy")}
+          onTerms={() => setAppView("terms")}
+          onHistory={goToFooterHistory}
+        />
       </div>
     );
   }
@@ -7798,27 +7911,16 @@ function App() {
           FOOTER
       ================================================== */}
 
-      <footer>
-
-        <p
-          style={{
-            color: "white",
-            fontSize: "18px",
-          }}
-        >
-
-          <b>
-            © StudyQue • Learn better, Grow faster. Developed by:{" "}
-            <strong style={{ fontSize: "20px" }}>M. Talha</strong>
-          </b>
-
-        </p>
-
-        <p className="sf2-footer-links sf2-footer-links-dark">
-          <button type="button" onClick={() => setAppView("settings")}>Settings</button>
-        </p>
-
-      </footer>
+      <RichFooter
+        loggedIn
+        onTool={handleFooterTool}
+        onPricing={() => setAppView("plans")}
+        onFeatures={() => goToFooterMode("summary")}
+        onFeedback={() => setFeedbackOpen(true)}
+        onPrivacy={() => setAppView("privacy")}
+        onTerms={() => setAppView("terms")}
+        onHistory={goToFooterHistory}
+      />
 
       {
         showGoUp && (

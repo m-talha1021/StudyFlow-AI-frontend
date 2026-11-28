@@ -13413,3 +13413,173 @@ html[data-theme="dark"] .site-links-menu button:hover {
     font-size: 13px;
   }
 }
+
+/* ============================================================
+   ROUND 74 — rich footer (brand + STUDY TOOLS / EXPLORE / LEGAL)
+   Light like the reference in light mode; dark palette in dark mode.
+   Selectors use footer.rich-footer so they beat the older global
+   footer rules, including the !important indigo backgrounds.
+   ============================================================ */
+footer.rich-footer {
+  display: block !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  text-align: left !important;
+  font-size: 15px !important;
+  box-sizing: border-box;
+}
+footer.rich-footer p {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569;
+}
+footer.rich-footer strong {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+footer.rich-footer h3 {
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+.rich-footer-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.5fr) repeat(3, 1fr);
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 36px;
+  box-sizing: border-box;
+}
+.rich-footer-brand .brand-mark {
+  font-size: 20px;
+}
+.rich-footer-brand .brand-mark img {
+  width: 36px;
+  height: 36px;
+}
+.rich-footer-brand .brand-mark span,
+.rich-footer-brand .brand-mark b {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a;
+}
+.rich-footer-brand p {
+  margin-top: 16px !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.rich-footer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 13px;
+  color: #334155;
+  -webkit-text-fill-color: #334155;
+}
+.rich-footer-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+}
+.rich-footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.rich-footer-col button {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 5px 0;
+  margin: 0;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155;
+}
+.rich-footer-col button:hover {
+  color: #4f46e5 !important;
+  -webkit-text-fill-color: #4f46e5;
+  text-decoration: underline;
+}
+.rich-footer-bottom {
+  border-top: 1px solid #e2e8f0;
+  padding: 18px 24px;
+  text-align: center;
+}
+.rich-footer-bottom p {
+  text-align: center !important;
+  font-size: 14px;
+  color: #475569 !important;
+  -webkit-text-fill-color: #475569;
+}
+@media (max-width: 768px) {
+  .rich-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 20px 28px;
+  }
+  .rich-footer-bottom {
+    padding: 16px 20px;
+  }
+}
+html[data-theme="dark"] footer.rich-footer {
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  border-top-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+html[data-theme="dark"] footer.rich-footer p {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8;
+}
+html[data-theme="dark"] footer.rich-footer strong,
+html[data-theme="dark"] .rich-footer-brand .brand-mark span,
+html[data-theme="dark"] .rich-footer-brand .brand-mark b,
+html[data-theme="dark"] footer.rich-footer h3 {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc;
+}
+html[data-theme="dark"] .rich-footer-status {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+  -webkit-text-fill-color: #e2e8f0;
+}
+html[data-theme="dark"] .rich-footer-col button {
+  color: #cbd5e1 !important;
+  -webkit-text-fill-color: #cbd5e1;
+}
+html[data-theme="dark"] .rich-footer-col button:hover {
+  color: #a5b4fc !important;
+  -webkit-text-fill-color: #a5b4fc;
+}
+html[data-theme="dark"] .rich-footer-bottom {
+  border-top-color: #1e293b;
+}
+html[data-theme="dark"] .rich-footer-bottom p {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8;
+}
