@@ -4982,13 +4982,6 @@ function App() {
           </div>
 
 
-          <ThemeToggle
-            theme={theme}
-            onToggle={toggleTheme}
-            className="mobile-theme-toggle"
-            label={theme === "dark" ? "Light mode" : "Dark mode"}
-          />
-
           <div className="mobile-account-block">
             <span>
               👤 {user.displayName || user.email || "Account"}
@@ -5032,6 +5025,12 @@ function App() {
             Logout
           </button>
         </div>
+
+        <ThemeToggle
+          theme={theme}
+          onToggle={toggleTheme}
+          className="theme-toggle-button mobile-header-theme-toggle"
+        />
 
         <button
           type="button"

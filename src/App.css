@@ -12196,32 +12196,24 @@ footer,
   height: 20px;
   flex-shrink: 0;
 }
-/* Mobile-menu toggle: hidden on desktop like .mobile-account-block;
-   it only appears inside the opened mobile menu (<=900px). */
-.mobile-theme-toggle {
+/* ROUND 69 (2026-11-28) — theme toggle beside the hamburger in the
+   logged-in mobile header: hidden on desktop, visible <=900px next
+   to the hamburger (42px, matching it); removed from inside the
+   mobile nav menu. margin-left:auto pushes it + the hamburger to
+   the right edge; the tighter header gap keeps them adjacent. */
+.mobile-header-theme-toggle {
   display: none;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 13px 16px;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-}
-.mobile-theme-toggle svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
 }
 @media (max-width: 900px) {
-  .app-navbar .app-nav-links.mobile-open .mobile-theme-toggle {
-    display: flex;
+  .app-navbar {
+    gap: 10px;
+  }
+  .app-navbar .mobile-header-theme-toggle {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    margin-left: auto;
   }
 }
 
