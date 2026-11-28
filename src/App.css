@@ -13147,60 +13147,15 @@ html[data-theme="dark"] .ai-detector-no-match {
 }
 
 /* ============================================================
-   ROUND 72 (2026-11-28) — AI Detector signal breakdown +
+   ROUND 72 (2026-11-28) — AI Detector verdict +
    daily-limit line; welcome feature-card modal (Task H);
    feature cards are clickable (cursor + focus ring).
+   (ROUND 79 removed the per-signal breakdown.)
    ============================================================ */
 .ai-detector-verdict {
   font-size: 17px;
   font-weight: 800;
   color: #1e1b4b;
-}
-.ai-detector-signals {
-  margin-top: 20px;
-}
-.ai-detector-signals h3 {
-  font-size: 15px;
-  margin: 0 0 12px;
-  color: #1e1b4b;
-}
-.ai-detector-signal-row {
-  margin-bottom: 14px;
-}
-.ai-detector-signal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-}
-.ai-detector-signal-label {
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 14px;
-}
-.ai-detector-signal-points {
-  font-weight: 800;
-  color: #4338ca;
-  font-size: 13px;
-  white-space: nowrap;
-}
-.ai-detector-signal-bar {
-  height: 8px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  margin: 6px 0;
-  overflow: hidden;
-}
-.ai-detector-signal-bar span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-}
-.ai-detector-signal-row small {
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.45;
 }
 .ai-detector-limit {
   margin: 10px 0 0;
@@ -13211,22 +13166,6 @@ html[data-theme="dark"] .ai-detector-no-match {
 html[data-theme="dark"] .ai-detector-verdict {
   color: #f8fafc !important;
   -webkit-text-fill-color: #f8fafc !important;
-}
-html[data-theme="dark"] .ai-detector-signals h3 {
-  color: #f8fafc !important;
-  -webkit-text-fill-color: #f8fafc !important;
-}
-html[data-theme="dark"] .ai-detector-signal-label {
-  color: #e2e8f0 !important;
-}
-html[data-theme="dark"] .ai-detector-signal-points {
-  color: #a5b4fc !important;
-}
-html[data-theme="dark"] .ai-detector-signal-bar {
-  background: #334155 !important;
-}
-html[data-theme="dark"] .ai-detector-signal-row small {
-  color: #94a3b8 !important;
 }
 html[data-theme="dark"] .ai-detector-limit {
   color: #94a3b8 !important;

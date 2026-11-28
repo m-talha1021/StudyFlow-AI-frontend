@@ -2608,6 +2608,12 @@ function App() {
     setAiDetectionNotice("");
     setAiDetectionReport(null);
     setAiDetectionSaved(false);
+    // ROUND 79: a fresh check is a new result, not a history-opened one —
+    // without this, opening any saved item left openedFromHistory true and
+    // the Save button stayed hidden for every later check until the result
+    // section was closed (pre-existing since Round 68; same flag the close
+    // button clears in closeOpenedHistoryContent).
+    setOpenedFromHistory(false);
     setResult("");
     setResultSaved(false);
     if (!documentText) {
@@ -6917,23 +6923,6 @@ function App() {
                         </div>
                       </div>
 
-                      {Array.isArray(aiDetectionReport.signals) && aiDetectionReport.signals.length > 0 && (
-                        <div className="ai-detector-signals">
-                          <h3>Why this score</h3>
-                          {aiDetectionReport.signals.map((signal) => (
-                            <div className="ai-detector-signal-row" key={signal.id}>
-                              <div className="ai-detector-signal-head">
-                                <span className="ai-detector-signal-label">{signal.label}</span>
-                                <span className="ai-detector-signal-points">{signal.points} pts</span>
-                              </div>
-                              <div className="ai-detector-signal-bar" aria-hidden="true">
-                                <span style={{ width: `${Math.round(100 * signal.value)}%` }} />
-                              </div>
-                              <small>{signal.display}</small>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </>
                   )}
                 </div>

@@ -462,9 +462,6 @@ export function aiDetectionReportAsText(report) {
       `${report.totalWords || 0} words, ${report.totalSentences || 0} sentences.`,
       "A statistical estimate, not a certainty — short texts are less reliable.",
     ];
-    for (const signal of report.signals) {
-      lines.push(`- ${signal.label}: ${signal.display} (${signal.points} pts)`);
-    }
     return lines.join("\n");
   }
   // Legacy plagiarism report (Round 70 shape).
