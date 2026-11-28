@@ -325,6 +325,21 @@ function BrandMark() {
   );
 }
 
+// ROUND 73: site links menu — the same 5 links on the welcome page
+// (below the feature cards) and at the bottom of the logged-in
+// workspace, so the footers only keep their copyright line.
+function SiteLinksMenu({ onPrivacy, onTerms, onPricing, onFeatures, onFeedback }) {
+  return (
+    <nav className="site-links-menu" aria-label="Site links">
+      <button type="button" onClick={onPrivacy}>Privacy Policy</button>
+      <button type="button" onClick={onTerms}>Terms</button>
+      <button type="button" onClick={onPricing}>Pricing</button>
+      <button type="button" onClick={onFeatures}>Features</button>
+      <button type="button" onClick={onFeedback}>Feedback</button>
+    </nav>
+  );
+}
+
 function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlans, theme, onToggleTheme }) {
   const [featureDetail, setFeatureDetail] = useState(null);
   return (
@@ -418,15 +433,17 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
           </div>
         </section>
       </main>
+      <SiteLinksMenu
+        onPrivacy={onPrivacy}
+        onTerms={onTerms}
+        onPricing={onPlans}
+        onFeatures={() =>
+          document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+        }
+        onFeedback={onFeedback}
+      />
       <footer className="public-footer">
         <p>© StudyQue · Learn better. Grow faster.</p>
-        <p className="sf2-footer-links">
-          <button type="button" onClick={onPrivacy}>Privacy Policy</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={onTerms}>Terms of Service</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={onSignup}>Plans</button>
-        </p>
       </footer>
       <CookieConsent onPrivacy={onPrivacy} />
       {featureDetail && (
@@ -5128,15 +5145,6 @@ function App() {
             <b>© StudyQue • Learn better, Grow faster. Developed by:{" "}
               <strong style={{ fontSize: "20px" }}>M. Talha</strong></b>
           </p>
-          <p className="sf2-footer-links sf2-footer-links-dark">
-            <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
-            <span aria-hidden="true">·</span>
-            <button type="button" onClick={() => setAppView("terms")}>Terms of Service</button>
-            <span aria-hidden="true">·</span>
-            <button type="button" onClick={() => setAppView("plans")}>Plans</button>
-            <span aria-hidden="true">·</span>
-            <button type="button" onClick={() => setFeedbackOpen(true)}>Feedback</button>
-          </p>
         </footer>
       </div>
     );
@@ -7771,6 +7779,20 @@ function App() {
       }
       <CookieConsent onPrivacy={() => setAppView("privacy")} />
 
+      <SiteLinksMenu
+        onPrivacy={() => setAppView("privacy")}
+        onTerms={() => setAppView("terms")}
+        onPricing={() => setAppView("plans")}
+        onFeatures={() => {
+          setMode("summary");
+          document.getElementById("action-section")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }}
+        onFeedback={() => setFeedbackOpen(true)}
+      />
+
 
       {/* ==================================================
           FOOTER
@@ -7793,15 +7815,7 @@ function App() {
         </p>
 
         <p className="sf2-footer-links sf2-footer-links-dark">
-          <button type="button" onClick={() => setAppView("privacy")}>Privacy Policy</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={() => setAppView("terms")}>Terms of Service</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={() => setAppView("plans")}>Plans</button>
-          <span aria-hidden="true">·</span>
           <button type="button" onClick={() => setAppView("settings")}>Settings</button>
-          <span aria-hidden="true">·</span>
-          <button type="button" onClick={() => setFeedbackOpen(true)}>Feedback</button>
         </p>
 
       </footer>

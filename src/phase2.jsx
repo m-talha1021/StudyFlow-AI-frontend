@@ -62,7 +62,7 @@ export const PLANS = {
     features: [
       "150 AI calls per day — 30x the Free plan",
       "280 transcription minutes per day — 14x the Free plan",
-      "Everything in Free",
+      "Everything in Free — Mind Maps, Study Planner, Plagiarism Checker and more",
       "Priority generation when the service is busy",
       "Early access to new features",
     ],
