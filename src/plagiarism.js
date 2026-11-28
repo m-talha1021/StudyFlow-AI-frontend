@@ -458,7 +458,7 @@ export function aiDetectionReportAsText(report) {
   if (!report) return "";
   if (Array.isArray(report.signals)) {
     const lines = [
-      `AI Detector: ${report.percentage}% AI likelihood — ${report.verdict}.`,
+      `Plagiarism Checker: ${report.percentage}% AI likelihood — ${report.verdict}.`,
       `${report.totalWords || 0} words, ${report.totalSentences || 0} sentences.`,
       "A statistical estimate, not a certainty — short texts are less reliable.",
     ];

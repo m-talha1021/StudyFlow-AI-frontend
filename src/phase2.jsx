@@ -46,7 +46,7 @@ export const PLANS = {
     features: [
       "5 AI calls per day (summary, quiz, flashcards, chat, tests, mind maps, oral exam)",
       "20 transcription minutes per day",
-      "AI Detector — 2 document checks per day (AI or human-written)",
+      "Plagiarism Checker — 2 document checks per day (AI or human-written)",
       "Study Planner with exam countdown",
       "Unlimited file conversion (client-side)",
       "Study history & shared result links",

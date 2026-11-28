@@ -9310,6 +9310,13 @@ body {
   color: var(--sf-ink);
   overflow: hidden;
 }
+/* ROUND 72 Task L — same root cause as .feature-modal: the feedback
+   box is a <section>, so "#root section { background: transparent
+   !important }" forced it transparent in both themes. --sf-surface
+   is theme-aware (#fff light / #1e293b dark), so one rule covers both. */
+#root .feedback-modal {
+  background: var(--sf-surface) !important;
+}
 
 .feedback-art {
   background: var(--sf-gradient);
@@ -12805,6 +12812,15 @@ html[data-theme="dark"] .quiz-options-modal {
   color: #e2e8f0 !important;
   border-color: #334155 !important;
 }
+/* ROUND 72 Task L — same root cause as .feature-modal: the quiz
+   options box is a <section>, so "#root section { background:
+   transparent !important }" forced it transparent in both themes. */
+#root .quiz-options-modal {
+  background: #ffffff !important;
+}
+html[data-theme="dark"] #root .quiz-options-modal {
+  background: #1e293b !important;
+}
 html[data-theme="dark"] .quiz-options-modal h2 {
   color: #f8fafc !important;
 }
@@ -13314,13 +13330,22 @@ html[data-theme="dark"] .ai-detector-limit {
     font-size: 18px;
   }
 }
-html[data-theme="dark"] .feature-modal {
+/* ROUND 72 Task L — the modal box is a <section>, so the
+   "#root section { background: transparent !important }" rule above
+   (make wrappers transparent so the gradient shows) forced it
+   transparent in BOTH themes and the welcome page bled through it.
+   An ID selector wins over that rule; the overlay dimming stays. */
+#root .feature-modal {
+  background: #ffffff !important;
+}
+html[data-theme="dark"] #root .feature-modal {
   background: #1e293b !important;
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.6) !important;
 }
 html[data-theme="dark"] .feature-modal-close {
   background: #334155 !important;
   color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
 }
 html[data-theme="dark"] .feature-modal-icon {
   background: #0f172a !important;
@@ -13332,7 +13357,9 @@ html[data-theme="dark"] .feature-modal-head h2 {
 }
 html[data-theme="dark"] .feature-modal-head small {
   color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
 }
 html[data-theme="dark"] .feature-modal-lines p {
   color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
 }

@@ -856,7 +856,7 @@ const FEATURE_DETAILS = [
   },
 {
     icon: "🛡️",
-    title: "AI Detector",
+    title: "Plagiarism Checker",
     tagline: "Check if text was written by AI or a human",
     lines: [
       "Paste text or upload a PDF or Word document to check it.",
@@ -2547,7 +2547,7 @@ function App() {
     }
     // Daily limit: 2 AI Detector checks per day (localStorage counter).
     if (remainingAIDetectorChecks() <= 0) {
-      setAiDetectionNotice(`You've used your ${AI_DETECTOR_DAILY_LIMIT} AI Detector checks for today — come back tomorrow.`);
+      setAiDetectionNotice(`You've used your ${AI_DETECTOR_DAILY_LIMIT} Plagiarism Checker checks for today — come back tomorrow.`);
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       return;
     }
@@ -2575,8 +2575,8 @@ function App() {
     try {
       const sourceNames = getCurrentSourceFileNames().filter((name) => name !== "Pasted study material");
       const saved = await saveGeneratedHistory({
-        title: sourceNames[0] ? `AI Check - ${sourceNames[0]}` : "AI Check",
-        type: "AI Check",
+        title: sourceNames[0] ? `Plagiarism Check - ${sourceNames[0]}` : "Plagiarism Check",
+        type: "Plagiarism Check",
         kind: "ai-detector",
         content: { kind: "ai-detector", report: aiDetectionReport },
         sourceFiles: getCurrentSourceFileNames(),
@@ -6348,7 +6348,7 @@ function App() {
                 </svg>
               </span>
               <div>
-                <strong>AI Detector</strong>
+                <strong>Plagiarism Checker</strong>
                 <small>Check if text is AI or human-written</small>
               </div>
             </button>
@@ -6572,7 +6572,7 @@ function App() {
                   <h2>
 
                     {mode === "ai-detector"
-                      ? "AI Detector"
+                      ? "Plagiarism Checker"
                       : mode === "summary"
                         ? "Summary"
                         : mode === "explain"
