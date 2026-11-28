@@ -13508,16 +13508,17 @@ footer.rich-footer h3 {
   border-top: none !important;
   background: #1e1b4b !important;
   background-color: #1e1b4b !important;
-  padding: 18px 24px;
+  padding: 30px 24px;
   text-align: center;
 }
 footer.rich-footer .rich-footer-bottom p {
   text-align: center !important;
-  font-size: 14px;
+  font-size: 18px;
   color: #e2e8f0 !important;
   -webkit-text-fill-color: #e2e8f0;
 }
 footer.rich-footer .rich-footer-bottom p strong {
+  font-size: 20px;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff;
 }
@@ -13528,7 +13529,8 @@ footer.rich-footer .rich-footer-bottom p strong {
     padding: 36px 20px 28px;
   }
   .rich-footer-bottom {
-    padding: 16px 20px;
+    /* ROUND 78: taller strip on mobile too. */
+    padding: 26px 20px;
   }
 }
 html[data-theme="dark"] footer.rich-footer {
