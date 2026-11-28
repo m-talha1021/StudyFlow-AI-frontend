@@ -328,18 +328,6 @@ function BrandMark() {
 // ROUND 73: site links menu — the same 5 links on the welcome page
 // (below the feature cards) and at the bottom of the logged-in
 // workspace, so the footers only keep their copyright line.
-function SiteLinksMenu({ onPrivacy, onTerms, onPricing, onFeatures, onFeedback }) {
-  return (
-    <nav className="site-links-menu" aria-label="Site links">
-      <button type="button" onClick={onPrivacy}>Privacy Policy</button>
-      <button type="button" onClick={onTerms}>Terms</button>
-      <button type="button" onClick={onPricing}>Pricing</button>
-      <button type="button" onClick={onFeatures}>Features</button>
-      <button type="button" onClick={onFeedback}>Feedback</button>
-    </nav>
-  );
-}
-
 // ROUND 74: rich footer — brand column + STUDY TOOLS / EXPLORE / LEGAL
 // columns + bottom credit row, styled after the reference footer the
 // user sent. One shared component for the welcome page and every
@@ -379,7 +367,9 @@ function RichFooter({ loggedIn, onTool, onPricing, onFeatures, onFeedback, onPri
           <h3>Explore</h3>
           <button type="button" onClick={onPricing}>Pricing</button>
           <button type="button" onClick={onFeatures}>Features</button>
-          <button type="button" onClick={onFeedback}>Feedback</button>
+          {loggedIn && (
+            <button type="button" onClick={onFeedback}>Feedback</button>
+          )}
           {loggedIn && (
             <button type="button" onClick={onHistory}>Content History</button>
           )}
@@ -493,15 +483,6 @@ function WelcomePage({ onLogin, onSignup, onPrivacy, onTerms, onFeedback, onPlan
           </div>
         </section>
       </main>
-      <SiteLinksMenu
-        onPrivacy={onPrivacy}
-        onTerms={onTerms}
-        onPricing={onPlans}
-        onFeatures={() =>
-          document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
-        }
-        onFeedback={onFeedback}
-      />
       <RichFooter
         loggedIn={false}
         onTool={(tool) => {
@@ -7891,20 +7872,6 @@ function App() {
         )
       }
       <CookieConsent onPrivacy={() => setAppView("privacy")} />
-
-      <SiteLinksMenu
-        onPrivacy={() => setAppView("privacy")}
-        onTerms={() => setAppView("terms")}
-        onPricing={() => setAppView("plans")}
-        onFeatures={() => {
-          setMode("summary");
-          document.getElementById("action-section")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-        onFeedback={() => setFeedbackOpen(true)}
-      />
 
 
       {/* ==================================================
